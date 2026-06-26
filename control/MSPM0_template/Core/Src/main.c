@@ -1,6 +1,6 @@
-#include "ti_msp_dl_config.h"
-#include "board.h"
 #include <stdint.h>
+#include "board.h"
+#include "ti_msp_dl_config.h"
 
 int main(void)
 {

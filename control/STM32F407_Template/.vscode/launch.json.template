@@ -4,8 +4,8 @@
         {
             "name": "Cortex Debug with DAP-Link",
             "request": "launch",
-            "svdFile": "${workspaceFolder}/svd/STM32F103.svd",
-            // "svdFile": "${workspaceFolder}/svd/Cortex-M3.svd",
+            "svdFile": "${workspaceFolder}/svd/STM32F401.svd",
+            // "svdFile": "${workspaceFolder}/svd/Cortex-M4.svd",
             "runToEntryPoint": "main",
             "rtos": "auto",
             "swoConfig": {
@@ -77,7 +77,7 @@
             "deviceName": "${command:st-stm32-ide-debug-launch.get-device-name}",
             "deviceCore": "${command:st-stm32-ide-debug-launch.get-core-name}",
             "deviceTrustzone": "TZ-disabled",
-            "serverCwd": "D:/Scoop/apps/openocd/current/share/openocd/scripts", // Should be modified according to personal path
+            "serverCwd": "D:/Scoop/apps/openocd/current/share/openocd/scripts",
             "serverExe": "../../../bin/openocd",
             "serverParameters": [
                 "-f",
