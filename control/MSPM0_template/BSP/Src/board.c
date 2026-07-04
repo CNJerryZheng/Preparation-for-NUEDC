@@ -1,85 +1,49 @@
 #include "board.h"
-#include "stdio.h"
 
-#define RE_0_BUFF_LEN_MAX	128
+#define SYSTICK_COUNTER_MASK     (0x00FFFFFFUL)
+#define CPU_TICKS_PER_US         (CPUCLK_FREQ / 1000000UL)
+#define MAX_DELAY_US_PER_CHUNK   (SYSTICK_COUNTER_MASK / CPU_TICKS_PER_US)
 
-volatile uint8_t  recv0_buff[RE_0_BUFF_LEN_MAX] = {0};
-volatile uint16_t recv0_length = 0;
-volatile uint8_t  recv0_flag = 0;
+#if (CPUCLK_FREQ % 1000000UL) != 0
+#error "CPUCLK_FREQ must be an integer multiple of 1 MHz"
+#endif
+
+static void delay_cycles_systick(uint32_t cycles)
+{
+    const uint32_t start = SysTick->VAL;
+
+    while (((start - SysTick->VAL) & SYSTICK_COUNTER_MASK) < cycles)
+    {
+        __NOP();
+    }
+}
 
 void board_init(void)
 {
-	SYSCFG_DL_init();
-	
-	printf("Board Init [[ ** LCKFB ** ]]\r\n");
+    SYSCFG_DL_init();
+
+    /* delay_us() 使用完整的 24 位回卷周期。 */
+    DL_SYSTICK_init(SYSTICK_COUNTER_MASK + 1UL);
+    DL_SYSTICK_enable();
 }
 
-//搭配滴答定时器实现的精确us延时
-void delay_us(unsigned long __us) 
+void delay_us(uint32_t us)
 {
-    uint32_t ticks;
-    uint32_t told, tnow, tcnt = 38;
-
-    // 计算需要的时钟数 = 延迟微秒数 * 每微秒的时钟数
-    ticks = __us * (80000000 / 1000000);
-
-		// 获取当前的SysTick值
-		told = SysTick->VAL;
-
-    while (1)
+    while (us > 0U)
     {
-        // 重复刷新获取当前的SysTick值
-        tnow = SysTick->VAL;
+        const uint32_t chunk_us =
+            (us > MAX_DELAY_US_PER_CHUNK) ? MAX_DELAY_US_PER_CHUNK : us;
 
-        if (tnow != told)
-        {
-            if (tnow < told)
-                tcnt += told - tnow;
-            else
-                tcnt += SysTick->LOAD - tnow + told;
-
-            told = tnow;
-
-            // 如果达到了需要的时钟数，就退出循环
-            if (tcnt >= ticks)
-                break;
-        }
+        delay_cycles_systick(chunk_us * CPU_TICKS_PER_US);
+        us -= chunk_us;
     }
 }
-//搭配滴答定时器实现的精确ms延时
-void delay_ms(unsigned long ms) 
+
+void delay_ms(uint32_t ms)
 {
-	delay_us( ms * 1000 );
+    while (ms > 0U)
+    {
+        delay_us(1000U);
+        --ms;
+    }
 }
-
-void delay_1us(unsigned long __us){ delay_us(__us); }
-void delay_1ms(unsigned long ms){ delay_ms(ms); }
-
-
-
-#if !defined(__MICROLIB)
-#if (__ARMCLIB_VERSION <= 6000000)
-struct __FILE
-{
-	int handle;
-};
-#endif
-
-FILE __stdout;
-
-void _sys_exit(int x)
-{
-	x = x;
-}
-#endif
-
-
-int fputc(int ch, FILE *stream)
-{
-	// while( DL_UART_isBusy(UART_1_INST) == true );
-	
-	// DL_UART_Main_transmitData(UART_1_INST, ch);
-	
-	return ch;
-}
-

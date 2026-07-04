@@ -114,8 +114,8 @@ SYSCONFIG_WEAK void SYSCFG_DL_SYSCTL_init(void)
 
 SYSCONFIG_WEAK void SYSCFG_DL_SYSTICK_init(void)
 {
-    /* Initialize the period to 1.00 μs */
-    DL_SYSTICK_init(80);
+    /* Use the full 24-bit period so polling delays can detect wraparound. */
+    DL_SYSTICK_init(16777216);
     /* Enable the SysTick and start counting */
     DL_SYSTICK_enable();
 }

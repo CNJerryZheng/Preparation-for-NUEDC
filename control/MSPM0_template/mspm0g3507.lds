@@ -1,6 +1,6 @@
 /* Generate a link error if heap and stack don't fit into RAM */
 _Min_Heap_Size  = 0;      /* required amount of heap  */
-_Min_Stack_Size = 0x80; /* required amount of stack */
+_Min_Stack_Size = 0x400; /* reserve 1 KiB for the main stack */
 
 /* Specify the memory areas */
 MEMORY
@@ -26,6 +26,9 @@ REGION_ALIAS("REGION_HEAP", SRAM);
 REGION_ALIAS("REGION_TEXT_RAM", SRAM);
 REGION_ALIAS("REGION_ARM_EXIDX", FLASH);
 REGION_ALIAS("REGION_ARM_EXTAB", FLASH);
+
+__StackTop = ORIGIN(SRAM) + LENGTH(SRAM);
+__StackLimit = __StackTop - _Min_Stack_Size;
 
 /* Define output sections */
 SECTIONS
@@ -148,11 +151,6 @@ SECTIONS
         __HeapLimit = __heap_end__;
     } > REGION_HEAP AT> REGION_HEAP
 
-    .stack (NOLOAD) : ALIGN(0x8) {
-        _stack = .;
-        KEEP(*(.stack))
-    } > REGION_STACK AT> REGION_STACK
-
     .BCRConfig :
     {
         KEEP(*(.BCRConfig))
@@ -163,6 +161,8 @@ SECTIONS
         KEEP(*(.BSLConfig))
     } > BSL_CONFIG
 
-    __StackTop = ORIGIN(REGION_STACK) + LENGTH(REGION_STACK);
     PROVIDE(__stack = __StackTop);
+    PROVIDE(_stack = __StackLimit);
+
+    ASSERT(__heap_end__ <= __StackLimit, "RAM overflow: data/heap overlaps the stack")
 }

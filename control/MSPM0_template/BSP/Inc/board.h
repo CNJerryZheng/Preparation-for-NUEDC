@@ -1,21 +1,12 @@
-#ifndef	__BOARD_H__
-#define __BOARD_H__
+#ifndef BOARD_H
+#define BOARD_H
 
 #include "ti_msp_dl_config.h"
-#include "string.h"
-#include "math.h"
-
+#include <stdint.h>
 
 void board_init(void);
 
-void delay_us(unsigned long __us);
-void delay_ms(unsigned long ms);
-void delay_1us(unsigned long __us);
-void delay_1ms(unsigned long ms);
+void delay_us(uint32_t us);
+void delay_ms(uint32_t ms);
 
-void uart0_send_char(char ch);
-void uart0_send_string(char* str);
-
-
-
-#endif
+#endif /* BOARD_H */

@@ -63,7 +63,7 @@ SYSCTL.forceDefaultClkConfig = true;
 SYSCTL.clockTreeEn           = true;
 
 SYSTICK.periodEnable  = true;
-SYSTICK.period        = 80;
+SYSTICK.period        = 16777216;
 SYSTICK.systickEnable = true;
 
 ProjectConfig.deviceSpin = "MSPM0G3507";

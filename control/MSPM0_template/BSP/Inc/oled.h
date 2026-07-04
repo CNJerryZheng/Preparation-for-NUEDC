@@ -1,8 +1,6 @@
-#ifndef	__OLED_H__
-#define __OLED_H__
+#ifndef OLED_H
+#define OLED_H
 
+/* OLED 的总线和引脚尚未配置，暂不暴露无效接口。 */
 
-
-
-
-#endif /* __OLED_H__ */
+#endif /* OLED_H */

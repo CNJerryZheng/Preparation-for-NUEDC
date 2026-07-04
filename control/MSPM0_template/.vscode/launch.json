@@ -21,17 +21,6 @@
                     "programBinary": "build/empty.elf"
                 }
             ]
-        },
-        {
-            "name": "Cortex Debug",
-            "cwd": "${workspaceFolder}",
-            "executable": "./build/empty.elf",
-            "request": "launch",
-            "type": "cortex-debug",
-            "runToEntryPoint": "main",
-            "servertype": "pyocd",
-            "targetId": "mspm0l1306",
-            "cmsisPack": "TexasInstruments.MSPM0L_DFP.1.2.1.pack"
         }
     ]
 }
