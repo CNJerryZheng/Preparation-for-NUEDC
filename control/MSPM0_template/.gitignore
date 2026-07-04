@@ -1,3 +1,4 @@
 .cache
 build
 probe-rs_supportd.txt
+.vscode/tasks.json

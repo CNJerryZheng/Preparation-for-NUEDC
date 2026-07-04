@@ -62,15 +62,11 @@
         {
             "label": "MSPM0: Open SysConfig GUI",
             "type": "process",
-            "command": "${input:sysconfigGui}",
+            "command": "powershell.exe",
             "args": [
-                "-s",
-                "${input:mspm0ProductJson}",
-                "-d",
-                "MSPM0G3507",
-                "-p",
-                "LQFP-48(PT)",
-                "${workspaceFolder}/Core/empty.syscfg"
+                "-NoProfile",
+                "-Command",
+                "& '__SYSCONFIG_GUI_PATH__' -s '__MSPM0_PRODUCT_JSON_PATH__' -d 'MSPM0G3507' -p 'LQFP-48(PT)' '${workspaceFolder}/Core/empty.syscfg'"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -79,20 +75,6 @@
             "presentation": {
                 "reveal": "never"
             }
-        }
-    ],
-    "inputs": [
-        {
-            "id": "sysconfigGui",
-            "type": "promptString",
-            "description": "本机 sysconfig_gui.bat 路径",
-            "default": "D:/ti/SYSCONFIG/sysconfig_gui.bat"
-        },
-        {
-            "id": "mspm0ProductJson",
-            "type": "promptString",
-            "description": "本机 MSPM0 SDK product.json 路径",
-            "default": "D:/ti/MSPM0_SDK/mspm0_sdk_2_02_00_05/.metadata/product.json"
         }
     ]
 }
