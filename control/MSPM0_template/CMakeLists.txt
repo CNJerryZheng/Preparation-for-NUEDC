@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 
+if(CMAKE_GENERATOR MATCHES "Visual Studio")
+    message(FATAL_ERROR
+        "This is an ARM cross-compiled project. Select the arm-gcc-debug "
+        "CMake preset (Ninja); the Visual Studio generator uses cl.exe.")
+endif()
+
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR arm)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)

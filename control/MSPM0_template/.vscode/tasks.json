@@ -1,1 +1,63 @@
-{}
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "MSPM0: Build",
+            "type": "process",
+            "command": "ninja",
+            "args": [
+                "-C",
+                "build"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": "$gcc",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "MSPM0: Download",
+            "type": "process",
+            "command": "probe-rs",
+            "args": [
+                "download",
+                "--chip",
+                "MSPM0G3507",
+                "--verify",
+                "${workspaceFolder}/build/empty.elf"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "MSPM0: Reset & Run",
+            "type": "process",
+            "command": "probe-rs",
+            "args": [
+                "reset",
+                "--chip",
+                "MSPM0G3507"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "MSPM0: Build, Flash & Run",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "MSPM0: Build",
+                "MSPM0: Download",
+                "MSPM0: Reset & Run"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        }
+    ]
+}

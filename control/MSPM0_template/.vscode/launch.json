@@ -13,7 +13,7 @@
             "chip": "MSPM0G3507",
             "flashingConfig": {
                 "flashingEnabled": true,
-                "haltAfterReset": true
+                "haltAfterReset": false
             },
             "coreConfigs": [
                 {
@@ -36,7 +36,6 @@
             "configFiles": [
                 "${workspaceFolder}/openocd.cfg"
             ],
-            "gdbPath": "D:/Program Files (x86)/10 2021.10/bin/arm-none-eabi-gdb.exe",
             "deviceName": "MSPM0G3507",
             "runToEntryPoint": "main",
             "showDevDebugOutput": "raw"
