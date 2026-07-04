@@ -21,6 +21,25 @@
                     "programBinary": "build/empty.elf"
                 }
             ]
+        },
+        {
+            "name": "Cortex-Debug (DAP-Link + MSPM0G3507)",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/empty.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "serverpath": "${config:ti-embedded-debug.openocdExecutablePath}",
+            "searchDir": [
+                "${config:ti-embedded-debug.openocdSearchPath}"
+            ],
+            "configFiles": [
+                "${workspaceFolder}/openocd.cfg"
+            ],
+            "gdbPath": "D:/Program Files (x86)/10 2021.10/bin/arm-none-eabi-gdb.exe",
+            "deviceName": "MSPM0G3507",
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "raw"
         }
     ]
 }
