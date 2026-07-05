@@ -41,6 +41,7 @@
 #define ti_msp_dl_config_h
 
 #define CONFIG_MSPM0G350X
+#define CONFIG_MSPM0G3507
 
 #if defined(__ti_version__) || defined(__TI_COMPILER_VERSION__)
 #define SYSCONFIG_WEAK __attribute__((weak))
@@ -82,22 +83,12 @@ extern "C" {
 
 
 
-/* Port definition for Pin Group GPIO_LED */
-#define GPIO_LED_PORT                                                    (GPIOA)
-
-/* Defines for PIN_LED: GPIOA.14 with pinCMx 36 on package pin 29 */
-#define GPIO_LED_PIN_LED_PIN                                    (DL_GPIO_PIN_14)
-#define GPIO_LED_PIN_LED_IOMUX                                   (IOMUX_PINCM36)
-
-
-
 /* clang-format on */
 
 void SYSCFG_DL_init(void);
 void SYSCFG_DL_initPower(void);
 void SYSCFG_DL_GPIO_init(void);
 void SYSCFG_DL_SYSCTL_init(void);
-
 void SYSCFG_DL_SYSTICK_init(void);
 
 

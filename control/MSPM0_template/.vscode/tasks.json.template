@@ -66,7 +66,7 @@
             "args": [
                 "-NoProfile",
                 "-Command",
-                "& '__SYSCONFIG_GUI_PATH__' -s '__MSPM0_PRODUCT_JSON_PATH__' -d 'MSPM0G3507' -p 'LQFP-48(PT)' '${workspaceFolder}/Core/empty.syscfg'"
+                "& '__SYSCONFIG_ROOT__/sysconfig_gui.bat' -s '__MSPM0_SDK_ROOT__/.metadata/product.json' -d 'MSPM0G3507' -p 'LQFP-48(PT)' '${workspaceFolder}/Core/empty.syscfg'"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -75,6 +75,26 @@
             "presentation": {
                 "reveal": "never"
             }
+        },
+        {
+            "label": "MSPM0: Generate SysConfig",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}/tools/generate_sysconfig.ps1",
+                "-SysConfigRoot",
+                "__SYSCONFIG_ROOT__",
+                "-Mspm0SdkRoot",
+                "__MSPM0_SDK_ROOT__"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
         }
     ]
 }

@@ -71,11 +71,6 @@ SYSCONFIG_WEAK void SYSCFG_DL_GPIO_init(void)
     DL_GPIO_initPeripheralAnalogFunction(GPIO_HFXIN_IOMUX);
     DL_GPIO_initPeripheralAnalogFunction(GPIO_HFXOUT_IOMUX);
 
-    DL_GPIO_initDigitalOutput(GPIO_LED_PIN_LED_IOMUX);
-
-    DL_GPIO_clearPins(GPIO_LED_PORT, GPIO_LED_PIN_LED_PIN);
-    DL_GPIO_enableOutput(GPIO_LED_PORT, GPIO_LED_PIN_LED_PIN);
-
 }
 
 
@@ -114,9 +109,10 @@ SYSCONFIG_WEAK void SYSCFG_DL_SYSCTL_init(void)
 
 SYSCONFIG_WEAK void SYSCFG_DL_SYSTICK_init(void)
 {
-    /* Use the full 24-bit period so polling delays can detect wraparound. */
-    DL_SYSTICK_init(16777216);
-    /* Enable the SysTick and start counting */
-    DL_SYSTICK_enable();
+    /*
+     * Initializes the SysTick period to 1.00 ms,
+     * enables the interrupt, and starts the SysTick Timer
+     */
+    DL_SYSTICK_config(80000);
 }
 
