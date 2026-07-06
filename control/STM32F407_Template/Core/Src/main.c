@@ -18,11 +18,16 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "fatfs.h"
 #include "gpio.h"
-#include "stm32f4xx_hal.h"
+#include "rtc.h"
+#include "sdio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+
+#include "sd_log.h"
+#include "config.h"
 
 /* USER CODE END Includes */
 
@@ -44,6 +49,10 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+
+/* Inspect these variables in the debugger after startup. */
+volatile FRESULT g_sd_result = FR_NOT_READY;
+volatile uint8_t g_sd_test_ok = 0U;
 
 /* USER CODE END PV */
 
@@ -86,7 +95,13 @@ int main(void)
 
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
+    MX_SDIO_SD_Init();
+    MX_RTC_Init();
+    MX_FATFS_Init();
     /* USER CODE BEGIN 2 */
+
+    g_sd_result = SD_Log_Start(APP_LOG_FILE_PATH, APP_LOG_STARTUP_MESSAGE);
+    g_sd_test_ok = (g_sd_result == FR_OK) ? 1U : 0U;
 
     /* USER CODE END 2 */
 
@@ -95,7 +110,8 @@ int main(void)
     while (1)
     {
         HAL_GPIO_TogglePin(LED0_GPIO_Port, LED0_Pin);
-        HAL_Delay(1000);
+        HAL_Delay(g_sd_test_ok != 0U ? APP_LED_LOG_OK_DELAY_MS
+                                     : APP_LED_LOG_ERROR_DELAY_MS);
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */
@@ -120,14 +136,15 @@ void SystemClock_Config(void)
     /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE | RCC_OSCILLATORTYPE_LSE;
     RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+    RCC_OscInitStruct.LSEState = RCC_LSE_ON;
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
     RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
     RCC_OscInitStruct.PLL.PLLM = 8;
     RCC_OscInitStruct.PLL.PLLN = 336;
     RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-    RCC_OscInitStruct.PLL.PLLQ = 4;
+    RCC_OscInitStruct.PLL.PLLQ = 7;
     if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
     {
         Error_Handler();
