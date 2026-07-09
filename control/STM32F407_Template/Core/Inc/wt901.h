@@ -43,7 +43,33 @@ typedef enum
     WT901_REG_ANG_P = 0x3E, // 俯仰角
     WT901_REG_ANG_Y = 0x3F, // 航向角
     WT901_REG_KEY = 0x69, // 解锁
-} WT901_RegTypedef;
+} WT901_RegTypeDef;
+
+/**
+ * @brief SAVE 寄存器可选的写入值
+ */
+typedef enum
+{
+    WT901_SAVE_SAVE = 0x0000, // 保存值
+    WT901_SAVE_RESTART = 0x00FF, // 重启值
+    WT901_SAVE_RESET = 0x0001, // 恢复出厂值
+} WT901_SaveRegTypeDef;
+
+/**
+ * @brief CALSW 寄存器可选的写入值
+ */
+typedef enum
+{
+    WT901_CALSW_NORMAL = 0x0000,
+} WT901_CalswRegTypeDef;
+
+/**
+ * @brief KEY 寄存器可选的写入值
+ */
+typedef enum
+{
+    WT901_KEY_UNLOCK = 0xB588,
+} WT901_KeyRegTypeDef;
 
 /* <-------------------通信协议相关-------------------> */
 // 宏定义
@@ -51,7 +77,6 @@ typedef enum
 #define WT901_HEADER_1 0xFF // 帧头 1
 #define WT901_HEADER_2 0xAA // 帧头 2
 
-// 类型定义
 /**
  * @brief WT901 通信协议中的数据类型对应字节
  */
@@ -62,7 +87,7 @@ typedef enum
     WT901_DATA_GYRO = 0x52, // 角速度
     WT901_DATA_ANGEL = 0x54, // 角度
     WT901_DATA_READ = 0x5F, // 读取
-} WT901_DataTypedef;
+} WT901_DataTypeDef;
 
 /* <---------------------变量相关---------------------> */
 // 变量结构体
@@ -97,60 +122,18 @@ struct WT901_Angle
 };
 
 // 外部变量声明
-extern const uint8_t WT901_CMD_UNLOCK[5];
-extern const uint8_t WT901_CMD_SAVE[5];
-extern const uint8_t WT901_CMD_READ_ACCEL[5];
-extern const uint8_t WT901_CMD_READ_GYRO[5];
-extern const uint8_t WT901_CMD_READ_ANGLE[5];
-extern uint8_t g_wt901_buf[WT901_BUF_SIZE];
+extern volatile uint8_t g_wt901_buf[WT901_BUF_SIZE];
+extern const uint8_t WT901_HEADER[];
 
 /* <---------------------函数相关---------------------> */
 /**
- * @brief 向 WT901 发送解锁命令
- */
-__STATIC_INLINE void WT901_Unlock(void)
-{
-    HAL_UART_Transmit_DMA(&WT901_UART, WT901_CMD_UNLOCK, sizeof(WT901_CMD_UNLOCK));
-}
-
-/**
- * @brief 向 WT901 发送保存命令
- */
-__STATIC_INLINE void WT901_Save(void)
-{
-    HAL_UART_Transmit_DMA(&WT901_UART, WT901_CMD_SAVE, sizeof(WT901_CMD_SAVE));
-}
-
-/**
- * @brief 向 WT901 发送读取加速度指令
- */
-__STATIC_INLINE void WT901_ReadAccel(void)
-{
-    HAL_UART_Transmit_DMA(&WT901_UART, WT901_CMD_READ_ACCEL, sizeof(WT901_CMD_READ_ACCEL));
-}
-
-/**
- * @brief 向 WT901 发送读取角速度指令
- */
-__STATIC_INLINE void WT901_ReadGyro(void)
-{
-    HAL_UART_Transmit_DMA(&WT901_UART, WT901_CMD_READ_GYRO, sizeof(WT901_CMD_READ_GYRO));
-}
-
-/**
- * @brief 向 WT901 发送读取角度指令
- */
-__STATIC_INLINE void WT901_ReadAngle(void)
-{
-    HAL_UART_Transmit_DMA(&WT901_UART, WT901_CMD_READ_ANGLE, sizeof(WT901_CMD_READ_ANGLE));
-}
-
-/**
  * @brief 开启对 WT901 的数据接收
+ *
+ * @retval HAL_StatusTypeDef 开启结果
  */
-__STATIC_INLINE void WT901_StartReceive(void)
+__STATIC_INLINE HAL_StatusTypeDef WT901_StartReceive(void)
 {
-    HAL_UARTEx_ReceiveToIdle_DMA(&WT901_UART, g_wt901_buf, WT901_BUF_SIZE);
+    return HAL_UARTEx_ReceiveToIdle_DMA(&WT901_UART, (uint8_t*)g_wt901_buf, WT901_BUF_SIZE);
 }
 
 #ifdef __cplusplus

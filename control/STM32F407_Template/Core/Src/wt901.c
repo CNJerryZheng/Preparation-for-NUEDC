@@ -17,16 +17,40 @@ int16_t g_wt901_temperature = 0; // 温度
 int16_t g_wt901_version = 0; // 版本号
 
 /* <----------------指令常量----------------> */
-const uint8_t WT901_CMD_UNLOCK[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_KEY, 0x88, 0xB5 }; // 解锁
-const uint8_t WT901_CMD_SAVE[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_SAVE, 0x00, 0x00 }; // 保存
-const uint8_t WT901_CMD_READ_ACCEL[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_READ, WT901_REG_ACC_X, 0x00 }; // 读取加速度
-const uint8_t WT901_CMD_READ_GYRO[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_READ, WT901_REG_GX, 0x00 }; // 读取角速度
-const uint8_t WT901_CMD_READ_ANGLE[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_READ, WT901_REG_ANG_R, 0x00 }; // 读取角度
+const uint8_t WT901_HEADER[] = { WT901_HEADER_1, WT901_HEADER_2 };
 
 /* <-----------------缓冲区-----------------> */
-uint8_t g_wt901_buf[WT901_BUF_SIZE] = { 0 }; // 串口接收缓冲区
+volatile uint8_t g_wt901_buf[WT901_BUF_SIZE] = { 0 }; // 串口接收缓冲区
 
 /* <------------------函数------------------> */
+/**
+ * @brief 
+ * 
+ * @param Reg 
+ * @param Value 
+ */
+static void WT901_WriteReg(WT901_RegTypeDef Reg, int16_t Value)
+{
+    // 进行拼帧
+    uint8_t frame[5];
+    frame[0] = WT901_HEADER_1;
+    frame[1] = WT901_HEADER_2;
+    frame[2] = (uint8_t)Reg;
+    frame[3] = (uint8_t)(Value & 0xFF);
+    frame[4] = (uint8_t)((Value >> 8) & 0xFF);
+
+    // 传输
+    HAL_UART_Transmit_DMA(&WT901_UART, frame, sizeof(frame));
+}
+
+/**
+ * @brief 进行 WT901 的加速度校准
+ */
+void WT901_Accel_Callibrate(void)
+{
+    HAL_Delay(200);
+}
+
 /**
  * @brief 计算校验和
  * 
@@ -66,6 +90,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef* huart, uint16_t Size)
         }
         else // 传输完成中断
         {
+            WT901_StartReceive();
         }
     }
     else
