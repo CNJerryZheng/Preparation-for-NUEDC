@@ -79,7 +79,7 @@ struct WT901_Accel
 /**
  * @brief 角速度
  */
-struct WT901_Palst
+struct WT901_Gyro
 {
     int16_t x;
     int16_t y;
@@ -100,7 +100,7 @@ struct WT901_Angle
 extern const uint8_t WT901_CMD_UNLOCK[5];
 extern const uint8_t WT901_CMD_SAVE[5];
 extern const uint8_t WT901_CMD_READ_ACCEL[5];
-extern const uint8_t WT901_CMD_READ_PALST[5];
+extern const uint8_t WT901_CMD_READ_GYRO[5];
 extern const uint8_t WT901_CMD_READ_ANGLE[5];
 extern uint8_t g_wt901_buf[WT901_BUF_SIZE];
 
@@ -134,7 +134,7 @@ __STATIC_INLINE void WT901_ReadAccel(void)
  */
 __STATIC_INLINE void WT901_ReadPalst(void)
 {
-    HAL_UART_Transmit_DMA(&WT901_UART, WT901_CMD_READ_PALST, sizeof(WT901_CMD_READ_PALST));
+    HAL_UART_Transmit_DMA(&WT901_UART, WT901_CMD_READ_GYRO, sizeof(WT901_CMD_READ_GYRO));
 }
 
 /**

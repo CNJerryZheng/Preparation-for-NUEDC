@@ -10,7 +10,7 @@
 
 /* <----------------数据变量----------------> */
 struct WT901_Accel g_wt901_accel = { 0 }; // 加速度
-struct WT901_Palst g_wt901_palst = { 0 }; // 角速度
+struct WT901_Gyro g_wt901_gyro = { 0 }; // 角速度
 struct WT901_Angle g_wt901_angle = { 0 }; // 角度
 
 int16_t g_wt901_temprature = 0; // 温度
@@ -20,7 +20,7 @@ int16_t g_wt901_version = 0; // 版本号
 const uint8_t WT901_CMD_UNLOCK[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_KEY, 0x88, 0xB5 }; // 解锁
 const uint8_t WT901_CMD_SAVE[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_SAVE, 0x00, 0x00 }; // 保存
 const uint8_t WT901_CMD_READ_ACCEL[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_READ, WT901_REG_ACC_X, 0x00 }; // 读取加速度
-const uint8_t WT901_CMD_READ_PALST[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_READ, WT901_REG_GX, 0x00 }; // 读取角速度
+const uint8_t WT901_CMD_READ_GYRO[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_READ, WT901_REG_GX, 0x00 }; // 读取角速度
 const uint8_t WT901_CMD_READ_ANGLE[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_READ, WT901_REG_ANG_R, 0x00 }; // 读取角度
 
 /* <-----------------缓冲区-----------------> */
