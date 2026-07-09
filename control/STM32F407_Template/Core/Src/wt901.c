@@ -13,7 +13,7 @@ struct WT901_Accel g_wt901_accel = { 0 }; // 加速度
 struct WT901_Gyro g_wt901_gyro = { 0 }; // 角速度
 struct WT901_Angle g_wt901_angle = { 0 }; // 角度
 
-int16_t g_wt901_temprature = 0; // 温度
+int16_t g_wt901_temperature = 0; // 温度
 int16_t g_wt901_version = 0; // 版本号
 
 /* <----------------指令常量----------------> */
@@ -33,10 +33,16 @@ uint8_t g_wt901_buf[WT901_BUF_SIZE] = { 0 }; // 串口接收缓冲区
  * @param Data 传入的数组
  * @param Length 计算长度
  * @retval uint8_t 校验和
- * @note 内部没有越界校验，使用时注意不要越界！
+ * @warning 内部没有越界校验，使用时注意不要越界！
  */
-static uint8_t CheckSum(uint8_t* Data, uint32_t Length)
+static uint8_t CheckSum(const uint8_t* Data, uint32_t Length)
 {
+    if (Data == nullptr) // 指针判空
+    {
+        return 0;
+    }
+
+    // 计算校验和
     uint32_t sum = 0;
     for (uint32_t index = 0; index < Length; index++)
     {
@@ -57,7 +63,6 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef* huart, uint16_t Size)
     {
         if (__HAL_DMA_GET_FLAG(&WT901_DMA, WT901_DMA_HT_FLAG)) // 半传输中断
         {
-            __HAL_DMA_CLEAR_FLAG(&WT901_DMA, WT901_DMA_HT_FLAG);
         }
         else // 传输完成中断
         {
