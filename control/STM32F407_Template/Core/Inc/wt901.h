@@ -61,6 +61,8 @@ typedef enum
 typedef enum
 {
     WT901_CALSW_NORMAL = 0x0000,
+    WT901_CALSW_ACCEL_CALLIB = 0x0101,
+    WT901_CALSW_ANGLE_CALLIB = 0x0008,
 } WT901_CalswRegTypeDef;
 
 /**
@@ -85,7 +87,7 @@ typedef enum
     WT901_DATA_TIME = 0x50, // 时间
     WT901_DATA_ACCEL = 0x51, // 加速度
     WT901_DATA_GYRO = 0x52, // 角速度
-    WT901_DATA_ANGEL = 0x54, // 角度
+    WT901_DATA_ANGLE = 0x54, // 角度
     WT901_DATA_READ = 0x5F, // 读取
 } WT901_DataTypeDef;
 
@@ -135,6 +137,20 @@ __STATIC_INLINE HAL_StatusTypeDef WT901_StartReceive(void)
 {
     return HAL_UARTEx_ReceiveToIdle_DMA(&WT901_UART, (uint8_t*)g_wt901_buf, WT901_BUF_SIZE);
 }
+
+/**
+ * @brief 校准 WT901 加速度传感器
+ * 
+ * @return HAL_StatusTypeDef 传输状态
+ */
+HAL_StatusTypeDef WT901_Accel_Callibrate(void);
+
+/**
+ * @brief 设置 WT901 角度参考
+ * 
+ * @return HAL_StatusTypeDef 传输状态
+ */
+HAL_StatusTypeDef WT901_Angle_Callibrate(void);
 
 #ifdef __cplusplus
 }
