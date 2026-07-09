@@ -19,9 +19,9 @@ int16_t g_wt901_version = 0; // 版本号
 /* <----------------指令常量----------------> */
 const uint8_t WT901_CMD_UNLOCK[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_KEY, 0x88, 0xB5 }; // 解锁
 const uint8_t WT901_CMD_SAVE[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_SAVE, 0x00, 0x00 }; // 保存
-const uint8_t WT901_CMD_ACCEL[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_READ, WT901_REG_ACC_X, 0x00 }; // 读取加速度
-const uint8_t WT901_CMD_PALST[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_READ, WT901_REG_GX, 0x00 }; // 读取角速度
-const uint8_t WT901_CMD_ANGLE[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_READ, WT901_REG_ANG_R, 0x00 }; // 读取角度
+const uint8_t WT901_CMD_READ_ACCEL[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_READ, WT901_REG_ACC_X, 0x00 }; // 读取加速度
+const uint8_t WT901_CMD_READ_PALST[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_READ, WT901_REG_GX, 0x00 }; // 读取角速度
+const uint8_t WT901_CMD_READ_ANGLE[5] = { WT901_HEADER_1, WT901_HEADER_2, WT901_REG_READ, WT901_REG_ANG_R, 0x00 }; // 读取角度
 
 /* <-----------------缓冲区-----------------> */
 uint8_t g_wt901_buf[WT901_BUF_SIZE] = { 0 }; // 串口接收缓冲区

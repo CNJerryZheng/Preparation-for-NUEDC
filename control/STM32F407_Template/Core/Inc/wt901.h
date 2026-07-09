@@ -10,6 +10,10 @@
 
 #include "usart.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* <---------------WT901 连接的主控外设---------------> */
 #define WT901_UART huart1 // 串口
 #define WT901_DMA hdma_usart1_rx // DMA 通道
@@ -95,6 +99,9 @@ struct WT901_Angle
 // 外部变量声明
 extern const uint8_t WT901_CMD_UNLOCK[5];
 extern const uint8_t WT901_CMD_SAVE[5];
+extern const uint8_t WT901_CMD_READ_ACCEL[5];
+extern const uint8_t WT901_CMD_READ_PALST[5];
+extern const uint8_t WT901_CMD_READ_ANGLE[5];
 extern uint8_t g_wt901_buf[WT901_BUF_SIZE];
 
 /* <---------------------函数相关---------------------> */
@@ -115,9 +122,37 @@ __STATIC_INLINE void WT901_Save(void)
 }
 
 /**
+ * @brief 向 WT901 发送读取加速度指令
+ */
+__STATIC_INLINE void WT901_ReadAccel(void)
+{
+    HAL_UART_Transmit_DMA(&WT901_UART, WT901_CMD_READ_ACCEL, sizeof(WT901_CMD_READ_ACCEL));
+}
+
+/**
+ * @brief 向 WT901 发送读取角速度指令
+ */
+__STATIC_INLINE void WT901_ReadPalst(void)
+{
+    HAL_UART_Transmit_DMA(&WT901_UART, WT901_CMD_READ_PALST, sizeof(WT901_CMD_READ_PALST));
+}
+
+/**
+ * @brief 向 WT901 发送读取角度指令
+ */
+__STATIC_INLINE void WT901_ReadAngle(void)
+{
+    HAL_UART_Transmit_DMA(&WT901_UART, WT901_CMD_READ_ANGLE, sizeof(WT901_CMD_READ_ANGLE));
+}
+
+/**
  * @brief 开启对 WT901 的数据接收
  */
 __STATIC_INLINE void WT901_StartReceive(void)
 {
     HAL_UARTEx_ReceiveToIdle_DMA(&WT901_UART, g_wt901_buf, WT901_BUF_SIZE);
 }
+
+#ifdef __cplusplus
+}
+#endif
