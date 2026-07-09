@@ -59,7 +59,7 @@ typedef enum
 {
     WT901_DATA_TIME = 0x50, // 时间
     WT901_DATA_ACCEL = 0x51, // 加速度
-    WT901_DATA_PALST = 0x52, // 角速度
+    WT901_DATA_GYRO = 0x52, // 角速度
     WT901_DATA_ANGEL = 0x54, // 角度
     WT901_DATA_READ = 0x5F, // 读取
 } WT901_DataTypedef;
@@ -132,7 +132,7 @@ __STATIC_INLINE void WT901_ReadAccel(void)
 /**
  * @brief 向 WT901 发送读取角速度指令
  */
-__STATIC_INLINE void WT901_ReadPalst(void)
+__STATIC_INLINE void WT901_ReadGyro(void)
 {
     HAL_UART_Transmit_DMA(&WT901_UART, WT901_CMD_READ_GYRO, sizeof(WT901_CMD_READ_GYRO));
 }
