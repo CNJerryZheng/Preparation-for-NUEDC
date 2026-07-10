@@ -21,10 +21,10 @@
 #include "dma.h"
 #include "gpio.h"
 #include "usart.h"
-#include "wt901.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "wt901.h"
 
 /* USER CODE END Includes */
 
@@ -90,8 +90,8 @@ int main(void)
     MX_GPIO_Init();
     MX_DMA_Init();
     MX_USART1_UART_Init();
-    WT901_StartReceive();
     /* USER CODE BEGIN 2 */
+    WT901_StartReceive();
 
     /* USER CODE END 2 */
 

@@ -16,82 +16,107 @@ struct WT901_Angle g_wt901_angle = { 0 }; // 角度
 int16_t g_wt901_temperature = 0; // 温度
 int16_t g_wt901_version = 0; // 版本号
 
-static uint8_t s_wt901_frame[5]; // WT901 的数据帧
-
 /* <----------------指令常量----------------> */
 const uint8_t WT901_HEADER[] = { WT901_HEADER_1, WT901_HEADER_2 };
 
 /* <-----------------缓冲区-----------------> */
-volatile uint8_t g_wt901_buf[WT901_BUF_SIZE] = { 0 }; // 串口接收缓冲区
+
+volatile WT901_CircularBuffer g_wt901_cirbuf = { { 0 }, 0, 0 }; // 初始化环形缓冲区
+volatile uint32_t g_wt901_overflow_count = 0; //丢字节计数
 
 /* <------------------函数------------------> */
 /**
- * @brief WT901 写寄存器
+ * @brief buf缓冲区下个位置
  * 
- * @param Reg 目标寄存器
- * @param Value 寄存器值
- * @retval HAL_StatusTypeDef 状态
+ * @param index 当前索引
+ * @retval uint16_t 下个索引
  */
-static HAL_StatusTypeDef WT901_WriteReg(WT901_RegTypeDef Reg, int16_t Value)
+uint16_t WT901_BufNext(uint16_t index)
+{
+    return (index + 1) % WT901_BUF_SIZE;
+}
+
+/**
+ * @brief 环形缓冲区下个位置
+ * 
+ * @param index 当前索引
+ * @retval uint16_t 下个索引
+ */
+static uint16_t WT901_CirNext(uint16_t index)
+{
+    return (index + 1) % WT901_CIR_SIZE;
+}
+
+/**
+ * @brief 写入一个字节
+ * 
+ * @param data 要写入的字节
+ * @retval bool 写入是否成功
+ */
+bool WT901_CirWrite(uint8_t data)
+{
+    uint16_t next = WT901_CirNext(g_wt901_cirbuf.tail);
+    if (next == g_wt901_cirbuf.head) // 缓冲区满
+    {
+        g_wt901_overflow_count = -~g_wt901_overflow_count;
+        return false;
+    }
+    g_wt901_cirbuf.cirbuf[g_wt901_cirbuf.tail] = data;
+    g_wt901_cirbuf.tail = next;
+    return true;
+}
+
+/**
+ * @brief 读取一个字节
+ * 
+ * @param data 读取到的字节
+ * @retval bool 是否成功读取
+ */
+bool WT901_CirRead(uint8_t* data)
+{
+    if (data == NULL)
+    {
+        return false;
+    }
+
+    if (g_wt901_cirbuf.head == g_wt901_cirbuf.tail)
+    {
+        return false;
+    }
+
+    *data = g_wt901_cirbuf.cirbuf[g_wt901_cirbuf.head];
+
+    g_wt901_cirbuf.head = WT901_CirNext(g_wt901_cirbuf.head);
+
+    return true;
+}
+
+/**
+ * @brief 
+ * 
+ * @param Reg 
+ * @param Value 
+ */
+static void WT901_WriteReg(WT901_RegTypeDef Reg, int16_t Value)
 {
     // 进行拼帧
-    s_wt901_frame[0] = WT901_HEADER_1;
-    s_wt901_frame[1] = WT901_HEADER_2;
-    s_wt901_frame[2] = (uint8_t)Reg;
-    s_wt901_frame[3] = (uint8_t)(Value & 0xFF);
-    s_wt901_frame[4] = (uint8_t)((Value >> 8) & 0xFF);
+    static uint8_t frame[5];
+    frame[0] = WT901_HEADER_1;
+    frame[1] = WT901_HEADER_2;
+    frame[2] = (uint8_t)Reg;
+    frame[3] = (uint8_t)(Value & 0xFF);
+    frame[4] = (uint8_t)((Value >> 8) & 0xFF);
 
     // 传输
-    return HAL_UART_Transmit_DMA(&WT901_UART, s_wt901_frame, sizeof(s_wt901_frame));
+    HAL_UART_Transmit_DMA(&WT901_UART, frame, sizeof(frame));
 }
 
-HAL_StatusTypeDef WT901_Accel_Callibrate(void)
+/**
+ * @brief 进行 WT901 的加速度校准
+ */
+void WT901_Accel_Callibrate(void)
 {
-    HAL_StatusTypeDef status;
-
-    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
     HAL_Delay(200);
-
-    status = WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_ACCEL_CALLIB);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
-    HAL_Delay(4000);
-
-    status = WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_NORMAL);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
-    HAL_Delay(100);
-
-    return WT901_WriteReg(WT901_REG_SAVE, (int16_t)WT901_SAVE_SAVE);
-}
-
-HAL_StatusTypeDef WT901_Angle_Callibrate(void)
-{
-    HAL_StatusTypeDef status;
-
-    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
-    HAL_Delay(200);
-
-    status = WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_ANGLE_CALLIB);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
-    HAL_Delay(3000);
-
-    return WT901_WriteReg(WT901_REG_SAVE, (int16_t)WT901_SAVE_SAVE);
 }
 
 /**
@@ -128,13 +153,6 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef* huart, uint16_t Size)
 {
     if (huart == &WT901_UART)
     {
-        if (__HAL_DMA_GET_FLAG(&WT901_DMA, WT901_DMA_HT_FLAG)) // 半传输中断
-        {
-        }
-        else // 传输完成中断
-        {
-            WT901_StartReceive();
-        }
     }
     else
     {

@@ -61,8 +61,6 @@ typedef enum
 typedef enum
 {
     WT901_CALSW_NORMAL = 0x0000,
-    WT901_CALSW_ACCEL_CALLIB = 0x0101,
-    WT901_CALSW_ANGLE_CALLIB = 0x0008,
 } WT901_CalswRegTypeDef;
 
 /**
@@ -75,7 +73,7 @@ typedef enum
 
 /* <-------------------通信协议相关-------------------> */
 // 宏定义
-#define WT901_BUF_SIZE 20 // 缓冲区长度
+#define WT901_CIR_SIZE 256 // 缓冲区长度
 #define WT901_HEADER_1 0xFF // 帧头 1
 #define WT901_HEADER_2 0xAA // 帧头 2
 
@@ -87,7 +85,7 @@ typedef enum
     WT901_DATA_TIME = 0x50, // 时间
     WT901_DATA_ACCEL = 0x51, // 加速度
     WT901_DATA_GYRO = 0x52, // 角速度
-    WT901_DATA_ANGLE = 0x54, // 角度
+    WT901_DATA_ANGEL = 0x54, // 角度
     WT901_DATA_READ = 0x5F, // 读取
 } WT901_DataTypeDef;
 
@@ -123,9 +121,20 @@ struct WT901_Angle
     int16_t yaw;
 };
 
+/**
+ * @brief 环形缓冲区
+ */
+typedef struct
+{
+    volatile uint8_t cirbuf[WT901_CIR_SIZE]; // 环形接收缓冲区
+    volatile uint16_t head; // 头指针
+    volatile uint16_t tail; // 尾指针
+} WT901_CircularBuffer;
+
 // 外部变量声明
-extern volatile uint8_t g_wt901_buf[WT901_BUF_SIZE];
+extern volatile WT901_CircularBuffer g_wt901_cirbuf; //环形缓冲区
 extern const uint8_t WT901_HEADER[];
+extern volatile uint32_t g_wt901_overflow_count; //丢字节计数
 
 /* <---------------------函数相关---------------------> */
 /**
@@ -138,19 +147,11 @@ __STATIC_INLINE HAL_StatusTypeDef WT901_StartReceive(void)
     return HAL_UARTEx_ReceiveToIdle_DMA(&WT901_UART, (uint8_t*)g_wt901_buf, WT901_BUF_SIZE);
 }
 
-/**
- * @brief 校准 WT901 加速度传感器
- * 
- * @return HAL_StatusTypeDef 传输状态
- */
-HAL_StatusTypeDef WT901_Accel_Callibrate(void);
+uint16_t WT901_BufNext(uint16_t index);
 
-/**
- * @brief 设置 WT901 角度参考
- * 
- * @return HAL_StatusTypeDef 传输状态
- */
-HAL_StatusTypeDef WT901_Angle_Callibrate(void);
+bool WT901_CirRead(uint8_t* data);
+
+bool WT901_CirWrite(uint8_t data);
 
 #ifdef __cplusplus
 }
