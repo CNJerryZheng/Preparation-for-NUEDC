@@ -61,6 +61,8 @@ typedef enum
 typedef enum
 {
     WT901_CALSW_NORMAL = 0x0000,
+    WT901_CALSW_ACCEL_CALLIB = 0x0101,
+    WT901_CALSW_ANGLE_CALLIB = 0x0008,
 } WT901_CalswRegTypeDef;
 
 /**
@@ -70,6 +72,17 @@ typedef enum
 {
     WT901_KEY_UNLOCK = 0xB588,
 } WT901_KeyRegTypeDef;
+
+typedef enum
+{
+    WT901_BAUD_4800 = 0x0001,
+    WT901_BAUD_9600 = 0x0002,
+    WT901_BAUD_19200 = 0x0003,
+    WT901_BAUD_38400 = 0x0004,
+    WT901_BAUD_57600 = 0x0005,
+    WT901_BAUD_115200 = 0x0006,
+    WT901_BAUD_230400 = 0x0007,
+} WT901_BAUDTypeDef;
 
 /* <-------------------通信协议相关-------------------> */
 // 宏定义
@@ -152,6 +165,14 @@ uint16_t WT901_BufNext(uint16_t index);
 bool WT901_CirRead(uint8_t* data);
 
 bool WT901_CirWrite(uint8_t data);
+
+HAL_StatusTypeDef WT901_Restart(void);
+
+HAL_StatusTypeDef WT901_Reset(void);
+
+HAL_StatusTypeDef WT901_Baud_Modify(WT901_BAUDTypeDef Baud);
+
+HAL_StatusTypeDef WT901_Init(void);
 
 #ifdef __cplusplus
 }

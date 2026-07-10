@@ -97,7 +97,7 @@ bool WT901_CirRead(uint8_t* data)
  * @param Reg 
  * @param Value 
  */
-static void WT901_WriteReg(WT901_RegTypeDef Reg, int16_t Value)
+static HAL_StatusTypeDef WT901_WriteReg(WT901_RegTypeDef Reg, int16_t Value)
 {
     // 进行拼帧
     static uint8_t frame[5];
@@ -108,15 +108,102 @@ static void WT901_WriteReg(WT901_RegTypeDef Reg, int16_t Value)
     frame[4] = (uint8_t)((Value >> 8) & 0xFF);
 
     // 传输
-    HAL_UART_Transmit_DMA(&WT901_UART, frame, sizeof(frame));
+    return HAL_UART_Transmit_DMA(&WT901_UART, frame, sizeof(frame));
 }
 
 /**
  * @brief 进行 WT901 的加速度校准
  */
-void WT901_Accel_Callibrate(void)
+HAL_StatusTypeDef WT901_Restart(void)
 {
+    return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_RESTART);
+}
+
+HAL_StatusTypeDef WT901_Reset(void)
+{
+    return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_RESET);
+}
+
+static HAL_StatusTypeDef WT901_Accel_Callibrate(void)
+{
+    HAL_StatusTypeDef status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
     HAL_Delay(200);
+
+    status = WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_ACCEL_CALLIB);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+    HAL_Delay(4000);
+
+    status = WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_NORMAL);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+    HAL_Delay(100);
+
+    return WT901_WriteReg(WT901_REG_SAVE, (int16_t)WT901_SAVE_SAVE);
+}
+
+static HAL_StatusTypeDef WT901_Angle_Callibrate(void)
+{
+    HAL_StatusTypeDef status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+    HAL_Delay(200);
+
+    status = WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_ANGLE_CALLIB);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+    HAL_Delay(3000);
+
+    return WT901_WriteReg(WT901_REG_SAVE, (int16_t)WT901_SAVE_SAVE);
+}
+
+HAL_StatusTypeDef WT901_Baud_Modify(WT901_BAUDTypeDef Baud)
+{
+    HAL_StatusTypeDef status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+    HAL_Delay(200);
+
+    status = WT901_WriteReg(WT901_REG_BAUD, (int16_t)Baud);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+    HAL_Delay(200);
+
+    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+    HAL_Delay(200);
+
+    return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_SAVE);
+}
+
+HAL_StatusTypeDef WT901_Init(void)
+{
+    HAL_StatusTypeDef status = WT901_Accel_Callibrate();
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+
+    return WT901_Angle_Callibrate();
 }
 
 /**
