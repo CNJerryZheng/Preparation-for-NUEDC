@@ -18,13 +18,16 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
 #include "fatfs.h"
 #include "gpio.h"
 #include "rtc.h"
 #include "sdio.h"
+#include "usart.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "wt901.h"
 
 #include "sd_log.h"
 #include "config.h"
@@ -94,11 +97,14 @@ int main(void)
     /* USER CODE END SysInit */
 
     /* Initialize all configured peripherals */
+    MX_DMA_Init();
     MX_GPIO_Init();
     MX_SDIO_SD_Init();
     MX_RTC_Init();
     MX_FATFS_Init();
+    MX_USART1_UART_Init();
     /* USER CODE BEGIN 2 */
+    WT901_StartReceive();
 
     g_sd_result = SD_Log_Start(APP_LOG_FILE_PATH, APP_LOG_STARTUP_MESSAGE);
     g_sd_test_ok = (g_sd_result == FR_OK) ? 1U : 0U;
