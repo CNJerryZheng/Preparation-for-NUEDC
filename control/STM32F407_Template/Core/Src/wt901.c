@@ -18,11 +18,10 @@ int16_t g_wt901_version = 0; // 版本号
 
 static uint8_t s_wt901_frame[5]; // WT901 的数据帧
 
+volatile uint8_t g_wt901_buf[WT901_BUF_SIZE] = { 0 }; // 串口接收缓冲区
+
 /* <----------------指令常量----------------> */
 const uint8_t WT901_HEADER[] = { WT901_HEADER_1, WT901_HEADER_2 };
-
-/* <-----------------缓冲区-----------------> */
-volatile uint8_t g_wt901_buf[WT901_BUF_SIZE] = { 0 }; // 串口接收缓冲区
 
 /* <------------------函数------------------> */
 /**
