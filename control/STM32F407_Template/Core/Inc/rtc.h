@@ -1,9 +1,9 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    gpio.h
+  * @file    rtc.h
   * @brief   This file contains all the function prototypes for
-  *          the gpio.c file
+  *          the rtc.c file
   ******************************************************************************
   * @attention
   *
@@ -31,11 +31,13 @@ extern "C" {
 
 /* USER CODE END Includes */
 
+extern RTC_HandleTypeDef hrtc;
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
-void MX_GPIO_Init(void);
+void MX_RTC_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
@@ -44,4 +46,5 @@ void MX_GPIO_Init(void);
 #ifdef __cplusplus
 }
 #endif
+
 

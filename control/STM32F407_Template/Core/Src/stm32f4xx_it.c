@@ -22,6 +22,7 @@
 #include "main.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "sdio.h"
 #include "wt901.h"
 /* USER CODE END Includes */
 
@@ -253,5 +254,20 @@ void DMA2_Stream7_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+
+void DMA2_Stream3_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(&hdma_sdio_rx);
+}
+
+void DMA2_Stream6_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(&hdma_sdio_tx);
+}
+
+void SDIO_IRQHandler(void)
+{
+  HAL_SD_IRQHandler(&hsd);
+}
 
 /* USER CODE END 1 */

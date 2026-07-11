@@ -1,9 +1,9 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    gpio.h
+  * @file    sdio.h
   * @brief   This file contains all the function prototypes for
-  *          the gpio.c file
+  *          the sdio.c file
   ******************************************************************************
   * @attention
   *
@@ -31,11 +31,15 @@ extern "C" {
 
 /* USER CODE END Includes */
 
+extern SD_HandleTypeDef hsd;
+extern DMA_HandleTypeDef hdma_sdio_rx;
+extern DMA_HandleTypeDef hdma_sdio_tx;
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
-void MX_GPIO_Init(void);
+void MX_SDIO_SD_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
@@ -44,4 +48,5 @@ void MX_GPIO_Init(void);
 #ifdef __cplusplus
 }
 #endif
+
 

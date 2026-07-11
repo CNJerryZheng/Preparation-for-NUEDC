@@ -123,11 +123,6 @@ HAL_StatusTypeDef WT901_Reset(void)
     return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_RESET);
 }
 
-/**
- * @brief 校准 WT901 加速度传感器
- * 
- * @return HAL_StatusTypeDef 传输状态
- */
 static HAL_StatusTypeDef WT901_Accel_Callibrate(void)
 {
     HAL_StatusTypeDef status;
@@ -156,16 +151,9 @@ static HAL_StatusTypeDef WT901_Accel_Callibrate(void)
     return WT901_WriteReg(WT901_REG_SAVE, (int16_t)WT901_SAVE_SAVE);
 }
 
-/**
- * @brief 设置 WT901 角度参考
- * 
- * @return HAL_StatusTypeDef 传输状态
- */
 static HAL_StatusTypeDef WT901_Angle_Callibrate(void)
 {
-    HAL_StatusTypeDef status;
-
-    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
+    HAL_StatusTypeDef status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
     if (status != HAL_OK)
     {
         return status;
@@ -184,9 +172,7 @@ static HAL_StatusTypeDef WT901_Angle_Callibrate(void)
 
 HAL_StatusTypeDef WT901_Baud_Modify(WT901_BAUDTypeDef Baud)
 {
-    HAL_StatusTypeDef status;
-
-    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
+    HAL_StatusTypeDef status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
     if (status != HAL_OK)
     {
         return status;
@@ -207,14 +193,12 @@ HAL_StatusTypeDef WT901_Baud_Modify(WT901_BAUDTypeDef Baud)
     }
     HAL_Delay(200);
 
-    return status = WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_SAVE);
+    return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_SAVE);
 }
 
 HAL_StatusTypeDef WT901_Init(void)
 {
-    HAL_StatusTypeDef status;
-
-    status = WT901_Accel_Callibrate();
+    HAL_StatusTypeDef status = WT901_Accel_Callibrate();
     if (status != HAL_OK)
     {
         return status;

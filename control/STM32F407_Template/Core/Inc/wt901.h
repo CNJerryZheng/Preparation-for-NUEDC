@@ -73,9 +73,6 @@ typedef enum
     WT901_KEY_UNLOCK = 0xB588,
 } WT901_KeyRegTypeDef;
 
-/**
- * @brief BAUD 寄存器可选的写入值
- */
 typedef enum
 {
     WT901_BAUD_4800 = 0x0001,

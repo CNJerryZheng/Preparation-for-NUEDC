@@ -44,8 +44,13 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user sources here
+    Core/Src/sd_log.c
     ${CMAKE_CURRENT_LIST_DIR}/Core/Src/wt901.c
+)
+
+# Enable floating-point formatting in SD_Log_Printf() with newlib-nano.
+target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
+    -Wl,-u,_printf_float
 )
 
 # Add include paths

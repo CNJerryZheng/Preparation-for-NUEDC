@@ -21,8 +21,7 @@
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F4xx_HAL_CONF_H
-#define __STM32F4xx_HAL_CONF_H
+#pragma once
 
 #ifdef __cplusplus
  extern "C" {
@@ -58,9 +57,9 @@
 /* #define HAL_IWDG_MODULE_ENABLED */
 /* #define HAL_LTDC_MODULE_ENABLED */
 /* #define HAL_RNG_MODULE_ENABLED */
-/* #define HAL_RTC_MODULE_ENABLED */
+#define HAL_RTC_MODULE_ENABLED
 /* #define HAL_SAI_MODULE_ENABLED */
-/* #define HAL_SD_MODULE_ENABLED */
+#define HAL_SD_MODULE_ENABLED
 /* #define HAL_MMC_MODULE_ENABLED */
 /* #define HAL_SPI_MODULE_ENABLED */
 /* #define HAL_TIM_MODULE_ENABLED */
@@ -492,4 +491,3 @@
 }
 #endif
 
-#endif /* __STM32F4xx_HAL_CONF_H */
