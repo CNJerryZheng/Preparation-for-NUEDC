@@ -4,7 +4,7 @@
                 JerryZheng
  * @brief       WT901通信驱动
  * @warning     注意数组越界风险
- * @date        2026-07-011
+ * @date        2026-07-11
 */
 
 #include "wt901.h"
@@ -91,7 +91,7 @@ static HAL_StatusTypeDef WT901_WriteReg(WT901_RegTypeDef Reg, int16_t Value)
     s_wt901_frame[4] = (uint8_t)((Value >> 8) & 0xFF);
 
     // 传输
-    return HAL_UART_Transmit_DMA(&WT901_UART, s_wt901_frame, sizeof(s_wt901_frame));
+    return HAL_UART_Transmit(&WT901_UART, s_wt901_frame, sizeof(s_wt901_frame), 100);
 }
 
 HAL_StatusTypeDef WT901_Restart(void)

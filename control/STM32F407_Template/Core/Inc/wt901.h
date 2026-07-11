@@ -150,7 +150,6 @@ typedef struct
 // 外部变量声明
 extern volatile uint8_t g_wt901_buf[WT901_BUF_SIZE]; // DMA 接收缓冲区
 extern volatile WT901_CircularBuffer g_wt901_cirbuf; //环形缓冲区
-extern const uint8_t WT901_HEADER[];
 extern volatile uint32_t g_wt901_overflow_count; //丢字节计数
 
 /* <---------------------函数相关---------------------> */
