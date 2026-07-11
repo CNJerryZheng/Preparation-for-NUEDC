@@ -20,7 +20,10 @@
 
 /* <-------------------通信协议相关-------------------> */
 // 宏定义
-#define WT901_CIR_SIZE 256 // 环形缓冲区长度
+#define WT901_CIR_SIZE 254 // 环形缓冲区长度
 #define WT901_HEADER_1 0xFF // 帧头 1
 #define WT901_HEADER_2 0xAA // 帧头 2
 #define WT901_BUF_SIZE 128 // 串口缓冲区长度
+#define WT901_FRAME_SIZE 11 //数据包缓冲区长度
+#define WT901_FRAME_HEADER 0x55 //数据包包头
+#define WT901_FRAME_TAILER 0x0A //数据包包尾

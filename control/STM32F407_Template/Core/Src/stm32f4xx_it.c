@@ -53,30 +53,6 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-static uint16_t usart1_dma_rx_last_pos = 0; //DMA接收缓冲区上次处理的位置
-
-/**
- * @brief 将 DMA 接收缓冲区的数据写入环形缓冲区
- * 
- */
-static void USART1_RxDmaToCir(void)
-{
-    uint16_t pos = WT901_BUF_SIZE - __HAL_DMA_GET_COUNTER(&hdma_usart1_rx);
-    uint16_t index = usart1_dma_rx_last_pos;
-
-    if (pos >= WT901_BUF_SIZE)
-    {
-        pos = 0;
-    }
-
-    while (index != pos)
-    {
-        WT901_CirWrite(g_wt901_buf[index]);
-        index = WT901_BufNext(index);
-    }
-
-    usart1_dma_rx_last_pos = pos;
-}
 
 /* USER CODE END 0 */
 
@@ -86,6 +62,7 @@ extern DMA_HandleTypeDef hdma_sdio_tx;
 extern SD_HandleTypeDef hsd;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart1_tx;
+extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -229,6 +206,20 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles USART1 global interrupt.
+  */
+void USART1_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART1_IRQn 0 */
+
+  /* USER CODE END USART1_IRQn 0 */
+  HAL_UART_IRQHandler(&huart1);
+  /* USER CODE BEGIN USART1_IRQn 1 */
+
+  /* USER CODE END USART1_IRQn 1 */
+}
+
+/**
   * @brief This function handles SDIO global interrupt.
   */
 void SDIO_IRQHandler(void)
@@ -248,7 +239,6 @@ void SDIO_IRQHandler(void)
 void DMA2_Stream2_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA2_Stream2_IRQn 0 */
-    USART1_RxDmaToCir();
 
   /* USER CODE END DMA2_Stream2_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_usart1_rx);
