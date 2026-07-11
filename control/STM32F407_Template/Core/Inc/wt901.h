@@ -150,7 +150,7 @@ typedef struct
 // 外部变量声明
 extern volatile uint8_t g_wt901_buf[WT901_BUF_SIZE]; // DMA 接收缓冲区
 extern volatile WT901_CircularBuffer g_wt901_cirbuf; //环形缓冲区
-extern volatile uint32_t g_wt901_overflow_count; //丢字节计数
+extern volatile uint32_t g_wt901_lose_count, g_wt901_count; //丢包计数和总包数
 
 /* <---------------------函数相关---------------------> */
 /**
@@ -221,7 +221,7 @@ uint16_t WT901_BufNext(uint16_t index);
  * @param data 读取到的字节
  * @retval bool 是否成功读取
  */
-bool WT901_CirRead(uint8_t* data);
+bool WT901_CirRead(uint8_t* Data, uint32_t Length);
 
 /**
  * @brief 写入一个字节
@@ -229,7 +229,7 @@ bool WT901_CirRead(uint8_t* data);
  * @param data 要写入的字节
  * @retval bool 写入是否成功
  */
-bool WT901_CirWrite(uint8_t data);
+void WT901_CirWrite_Data(uint8_t data);
 
 #ifdef __cplusplus
 }

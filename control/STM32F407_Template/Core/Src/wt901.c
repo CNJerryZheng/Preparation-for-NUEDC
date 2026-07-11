@@ -23,9 +23,41 @@ static uint8_t s_wt901_frame[5] = { 0 }; // WT901 数据帧
 /* <-----------------缓冲区-----------------> */
 
 volatile WT901_CircularBuffer g_wt901_cirbuf = { { 0 }, 0, 0 }; // 初始化环形缓冲区
-volatile uint32_t g_wt901_overflow_count = 0; //丢字节计数
+static volatile uint8_t s_wt901_framebuf[WT901_FRAME_SIZE];
+static volatile uint16_t s_frame_pos = 0;
+static uint16_t s_wt901_dma_last_pos = 0;
+volatile uint32_t g_wt901_lose_count = 0, g_wt901_count = 0; //丢包计数和总包数
 
 /* <------------------函数------------------> */
+/**
+ * @brief 计算校验和
+ * 
+ * @param Data 传入的数组
+ * @param Length 包长度
+ * @retval bool 数据包是否正确
+ * @warning 内部没有越界校验，使用时注意不要越界！
+ */
+static bool CheckSum(const volatile uint8_t* Data, uint32_t Length)
+{
+    if (Data == nullptr) // 指针判空
+        return false;
+    if (Data[0] != WT901_FRAME_HEADER) //包头不对
+        return false;
+
+    uint32_t sum = 0; // 计算校验和
+    for (uint32_t index = 0; index < Length - 1; index++)
+    {
+        sum += Data[index];
+    }
+    return (uint8_t)sum == Data[Length - 1];
+}
+
+/**
+ * @brief 缓冲区下个位置
+ * 
+ * @param index 当前索引
+ * @retval uint16_t 下个索引
+ */
 uint16_t WT901_BufNext(uint16_t index)
 {
     return (index + 1) % WT901_BUF_SIZE;
@@ -42,36 +74,126 @@ static uint16_t WT901_CirNext(uint16_t index)
     return (index + 1) % WT901_CIR_SIZE;
 }
 
-bool WT901_CirWrite(uint8_t data)
+/**
+ * @brief 数据包重设位置，传完一个设置到下个包头开始
+ */
+static void WT901_Reset_Frame_Pos(void)
 {
-    uint16_t next = WT901_CirNext(g_wt901_cirbuf.tail);
-    if (next == g_wt901_cirbuf.head) // 缓冲区满
+    uint16_t next_pos = 1;
+    while (next_pos < WT901_FRAME_SIZE)
     {
-        g_wt901_overflow_count = -~g_wt901_overflow_count;
+        if (s_wt901_framebuf[next_pos] == WT901_FRAME_HEADER)
+            break;
+        next_pos = -~next_pos;
+    }
+
+    for (uint16_t index = 0; index < WT901_FRAME_SIZE - next_pos; index = -~index)
+    {
+        s_wt901_framebuf[index] = s_wt901_framebuf[next_pos + index];
+    }
+    s_frame_pos = WT901_FRAME_SIZE - next_pos;
+    return;
+}
+
+/**
+ * @brief 环形缓冲区写入数据包
+ * 
+ * @retval bool 数据包是否写入成功
+ */
+static bool WT901_CirWrite_Frame(void)
+{
+    uint16_t write_pos;
+
+    if (!CheckSum(s_wt901_framebuf, WT901_FRAME_SIZE))
+    {
+        WT901_Reset_Frame_Pos();
         return false;
     }
-    g_wt901_cirbuf.cirbuf[g_wt901_cirbuf.tail] = data;
-    g_wt901_cirbuf.tail = next;
+
+    if (WT901_CirNext(g_wt901_cirbuf.tail) == g_wt901_cirbuf.head)
+    {
+        s_frame_pos = 0;
+        return false;
+    }
+
+    s_wt901_framebuf[WT901_FRAME_SIZE - 1] = WT901_FRAME_TAILER;
+    write_pos = g_wt901_cirbuf.tail;
+    for (uint16_t index = 0; index < WT901_FRAME_SIZE; index = -~index)
+    {
+        g_wt901_cirbuf.cirbuf[write_pos] = s_wt901_framebuf[index];
+        write_pos = WT901_CirNext(write_pos);
+    }
+    g_wt901_cirbuf.tail = write_pos;
+    s_frame_pos = 0;
     return true;
 }
 
-bool WT901_CirRead(uint8_t* data)
+void WT901_CirWrite_Data(uint8_t data)
 {
-    if (data == nullptr)
+    s_wt901_framebuf[s_frame_pos] = data;
+    s_frame_pos = -~s_frame_pos;
+    if (s_frame_pos == WT901_FRAME_SIZE)
+    {
+        if (WT901_CirWrite_Frame())
+        {
+            g_wt901_count = -~g_wt901_count;
+        }
+        else
+        {
+            g_wt901_lose_count = -~g_wt901_lose_count;
+            g_wt901_count = -~g_wt901_count;
+        }
+    }
+    return;
+}
+
+bool WT901_CirRead(uint8_t* Data, uint32_t Length)
+{
+    if ((Data == nullptr) || (Length != WT901_FRAME_SIZE))
     {
         return false;
     }
-
     if (g_wt901_cirbuf.head == g_wt901_cirbuf.tail)
     {
         return false;
     }
-
-    *data = g_wt901_cirbuf.cirbuf[g_wt901_cirbuf.head];
-
-    g_wt901_cirbuf.head = WT901_CirNext(g_wt901_cirbuf.head);
-
+    if (g_wt901_cirbuf.cirbuf[g_wt901_cirbuf.head] != WT901_FRAME_HEADER || g_wt901_cirbuf.cirbuf[(g_wt901_cirbuf.head + Length - 1) % WT901_CIR_SIZE] != WT901_FRAME_TAILER)
+    {
+        return false;
+    }
+    uint16_t read_pos = g_wt901_cirbuf.head;
+    for (int index = 0; index < Length; index = -~index)
+    {
+        Data[index] = g_wt901_cirbuf.cirbuf[read_pos];
+        read_pos = WT901_CirNext(read_pos);
+    }
+    g_wt901_cirbuf.head = read_pos;
     return true;
+}
+
+/**
+ * @brief 中断回调处理dma数据
+ */
+static void WT901_ProcessDmaRx(uint16_t size)
+{
+    uint16_t write_pos = (size >= WT901_BUF_SIZE) ? 0U : size;
+
+    while (s_wt901_dma_last_pos != write_pos)
+    {
+        WT901_CirWrite_Data(g_wt901_buf[s_wt901_dma_last_pos]);
+        s_wt901_dma_last_pos = WT901_BufNext(s_wt901_dma_last_pos);
+    }
+}
+
+/**
+ * @brief HAL callback for USART Receive-to-IDLE DMA events.
+ */
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef* huart, uint16_t Size)
+{
+    if (huart == &WT901_UART)
+    {
+        WT901_ProcessDmaRx(Size);
+    }
 }
 
 /**
@@ -364,28 +486,4 @@ HAL_StatusTypeDef WT901_Init(void)
 
     // 设置角度参考
     return WT901_Angle_Calibrate();
-}
-
-/**
- * @brief 计算校验和
- * 
- * @param Data 传入的数组
- * @param Length 计算长度
- * @retval uint8_t 校验和
- * @warning 内部没有越界校验，使用时注意不要越界！
- */
-static uint8_t CheckSum(const uint8_t* Data, uint32_t Length)
-{
-    if (Data == nullptr) // 指针判空
-    {
-        return 0;
-    }
-
-    // 计算校验和
-    uint32_t sum = 0;
-    for (uint32_t index = 0; index < Length; index++)
-    {
-        sum += Data[index];
-    }
-    return (uint8_t)(sum & 0xFF);
 }
