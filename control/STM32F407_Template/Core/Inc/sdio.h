@@ -18,7 +18,8 @@
   */
 /* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
-#pragma once
+#ifndef __SDIO_H__
+#define __SDIO_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,8 +33,6 @@ extern "C" {
 /* USER CODE END Includes */
 
 extern SD_HandleTypeDef hsd;
-extern DMA_HandleTypeDef hdma_sdio_rx;
-extern DMA_HandleTypeDef hdma_sdio_tx;
 
 /* USER CODE BEGIN Private defines */
 
@@ -49,4 +48,5 @@ void MX_SDIO_SD_Init(void);
 }
 #endif
 
+#endif /* __SDIO_H__ */
 

@@ -18,7 +18,8 @@
   */
 /* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
-#pragma once
+#ifndef __RTC_H__
+#define __RTC_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -47,4 +48,5 @@ void MX_RTC_Init(void);
 }
 #endif
 
+#endif /* __RTC_H__ */
 
