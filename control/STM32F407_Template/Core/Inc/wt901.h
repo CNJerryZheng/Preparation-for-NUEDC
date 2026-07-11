@@ -3,6 +3,7 @@
  * @brief       WT901通信驱动
  * @warning     注意数组越界风险
  * @author      Misybon
+                JerryChen
  * @date        2026-07-07
 */
 
@@ -129,9 +130,9 @@ struct WT901_Gyro
  */
 struct WT901_Angle
 {
-    int16_t roll;
-    int16_t pitch;
-    int16_t yaw;
+    int16_t roll; // 横滚轴
+    int16_t pitch; // 俯仰轴
+    int16_t yaw; // 航向轴
 };
 
 /**
@@ -196,10 +197,28 @@ HAL_StatusTypeDef WT901_Baud_Modify(WT901_BAUDTypeDef Baud);
  */
 HAL_StatusTypeDef WT901_Init(void);
 
+/**
+ * @brief buf缓冲区下个位置
+ * 
+ * @param index 当前索引
+ * @retval uint16_t 下个索引
+ */
 uint16_t WT901_BufNext(uint16_t index);
 
+/**
+ * @brief 读取一个字节
+ * 
+ * @param data 读取到的字节
+ * @retval bool 是否成功读取
+ */
 bool WT901_CirRead(uint8_t* data);
 
+/**
+ * @brief 写入一个字节
+ * 
+ * @param data 要写入的字节
+ * @retval bool 写入是否成功
+ */
 bool WT901_CirWrite(uint8_t data);
 
 #ifdef __cplusplus
