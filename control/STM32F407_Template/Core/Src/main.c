@@ -29,8 +29,8 @@
 /* USER CODE BEGIN Includes */
 #include "wt901.h"
 
-#include "sd_log.h"
 #include "config.h"
+#include "sd_log.h"
 
 /* USER CODE END Includes */
 
@@ -116,8 +116,7 @@ int main(void)
     while (1)
     {
         HAL_GPIO_TogglePin(LED0_GPIO_Port, LED0_Pin);
-        HAL_Delay(g_sd_test_ok != 0U ? APP_LED_LOG_OK_DELAY_MS
-                                     : APP_LED_LOG_ERROR_DELAY_MS);
+        HAL_Delay(g_sd_test_ok != 0U ? APP_LED_LOG_OK_DELAY_MS : APP_LED_LOG_ERROR_DELAY_MS);
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */

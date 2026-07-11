@@ -10,15 +10,11 @@
 #pragma once
 
 #include "usart.h"
+#include "wt901_config.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* <---------------WT901 连接的主控外设---------------> */
-#define WT901_UART huart1 // 串口
-#define WT901_DMA hdma_usart1_rx // DMA 通道
-#define WT901_DMA_HT_FLAG DMA_FLAG_HTIF1_5 // DMA 半传输中断标志
 
 /* <--------------------寄存器相关--------------------> */
 /**
@@ -86,11 +82,6 @@ typedef enum
 } WT901_BAUDTypeDef;
 
 /* <-------------------通信协议相关-------------------> */
-// 宏定义
-#define WT901_CIR_SIZE 256 // 缓冲区长度
-#define WT901_HEADER_1 0xFF // 帧头 1
-#define WT901_HEADER_2 0xAA // 帧头 2
-
 /**
  * @brief WT901 通信协议中的数据类型对应字节
  */
