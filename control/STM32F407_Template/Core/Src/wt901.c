@@ -17,7 +17,7 @@ struct WT901_Angle g_wt901_angle = { 0 }; // 角度
 int16_t g_wt901_temperature = 0; // 温度
 int16_t g_wt901_version = 0; // 版本号
 
-volatile uint8_t g_wt901_buf[WT901_BUF_SIZE] = { 0 }; // DMA receive buffer
+volatile uint8_t g_wt901_buf[WT901_BUF_SIZE] = { 0 }; // DMA 接收缓冲区
 
 /* <-----------------缓冲区-----------------> */
 
@@ -460,6 +460,10 @@ static HAL_StatusTypeDef WT901_OutputRate_Modify(void)
 
     // 保存
     return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_SAVE);
+}
+
+static HAL_StatusTypeDef WT901_GyroRange_Modify(void)
+{
 }
 
 HAL_StatusTypeDef WT901_Read(void)

@@ -18,7 +18,7 @@ extern "C" {
 
 /* <--------------------寄存器相关--------------------> */
 /**
- * @brief WT901 通信协议中的寄存器对应的字节
+ * @brief WT901 寄存器地址
  */
 typedef enum
 {
@@ -27,7 +27,10 @@ typedef enum
     WT901_REG_RSW = 0x02, // 输出内容
     WT901_REG_RRATE = 0x03, // 输出速率
     WT901_REG_BAUD = 0x04, // 串口波特率
+    WT901_REG_GYRORANGE = 0x20, // 陀螺仪量程
+    WT901_REG_ACCRANGE = 0x23, // 加速度计量程
     WT901_REG_SLEEP = 0x22, // 休眠
+    WT901_REG_AXIS6 = 0x24, // 算法
     WT901_REG_READ = 0x27, // 读取寄存器
     WT901_REG_VERSION = 0x2E, // 版本号
     WT901_REG_ACC_X = 0x34, // 加速度 X
@@ -101,7 +104,14 @@ typedef enum
     WT901_DATA_TIME = 0x50, // 时间
     WT901_DATA_ACCEL = 0x51, // 加速度
     WT901_DATA_GYRO = 0x52, // 角速度
-    WT901_DATA_ANGLE = 0x54, // 角度
+    WT901_DATA_ANGLE = 0x53, // 角度
+    WT901_DATA_MAG = 0x54, // 角度
+    WT901_DATA_PORT = 0x55, // 端口状态
+    WT901_DATA_PRESS = 0x56, // 气压高度
+    WT901_DATA_GPS = 0x57, // 经纬度
+    WT901_DATA_VELOCITY = 0x58, // 地速
+    WT901_DATA_QUATER = 0x59, // 四元数
+    WT901_DATA_GSA = 0x5A, // 定位精度
     WT901_DATA_READ = 0x5F, // 读取
 } WT901_DataTypeDef;
 
