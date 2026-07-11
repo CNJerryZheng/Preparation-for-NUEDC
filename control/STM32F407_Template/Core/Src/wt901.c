@@ -16,6 +16,8 @@ struct WT901_Angle g_wt901_angle = { 0 }; // 角度
 int16_t g_wt901_temperature = 0; // 温度
 int16_t g_wt901_version = 0; // 版本号
 
+static uint8_t s_wt901_frame[5] = { 0 };
+
 /* <----------------指令常量----------------> */
 const uint8_t WT901_HEADER[] = { WT901_HEADER_1, WT901_HEADER_2 };
 
@@ -92,31 +94,133 @@ bool WT901_CirRead(uint8_t* data)
 }
 
 /**
- * @brief 
+ * @brief WT901 写寄存器
  * 
- * @param Reg 
- * @param Value 
+ * @param Reg 目标寄存器
+ * @param Value 寄存器值
+ * @retval HAL_StatusTypeDef 状态
  */
-static void WT901_WriteReg(WT901_RegTypeDef Reg, int16_t Value)
+static HAL_StatusTypeDef WT901_WriteReg(WT901_RegTypeDef Reg, int16_t Value)
 {
     // 进行拼帧
-    static uint8_t frame[5];
-    frame[0] = WT901_HEADER_1;
-    frame[1] = WT901_HEADER_2;
-    frame[2] = (uint8_t)Reg;
-    frame[3] = (uint8_t)(Value & 0xFF);
-    frame[4] = (uint8_t)((Value >> 8) & 0xFF);
+    s_wt901_frame[0] = WT901_HEADER_1;
+    s_wt901_frame[1] = WT901_HEADER_2;
+    s_wt901_frame[2] = (uint8_t)Reg;
+    s_wt901_frame[3] = (uint8_t)(Value & 0xFF);
+    s_wt901_frame[4] = (uint8_t)((Value >> 8) & 0xFF);
 
     // 传输
-    HAL_UART_Transmit_DMA(&WT901_UART, frame, sizeof(frame));
+    return HAL_UART_Transmit_DMA(&WT901_UART, s_wt901_frame, sizeof(s_wt901_frame));
+}
+
+HAL_StatusTypeDef WT901_Restart(void)
+{
+    return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_RESTART);
+}
+
+HAL_StatusTypeDef WT901_Reset(void)
+{
+    return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_RESET);
 }
 
 /**
- * @brief 进行 WT901 的加速度校准
+ * @brief 校准 WT901 加速度传感器
+ * 
+ * @return HAL_StatusTypeDef 传输状态
  */
-void WT901_Accel_Callibrate(void)
+static HAL_StatusTypeDef WT901_Accel_Callibrate(void)
 {
+    HAL_StatusTypeDef status;
+
+    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
     HAL_Delay(200);
+
+    status = WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_ACCEL_CALLIB);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+    HAL_Delay(4000);
+
+    status = WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_NORMAL);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+    HAL_Delay(100);
+
+    return WT901_WriteReg(WT901_REG_SAVE, (int16_t)WT901_SAVE_SAVE);
+}
+
+/**
+ * @brief 设置 WT901 角度参考
+ * 
+ * @return HAL_StatusTypeDef 传输状态
+ */
+static HAL_StatusTypeDef WT901_Angle_Callibrate(void)
+{
+    HAL_StatusTypeDef status;
+
+    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+    HAL_Delay(200);
+
+    status = WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_ANGLE_CALLIB);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+    HAL_Delay(3000);
+
+    return WT901_WriteReg(WT901_REG_SAVE, (int16_t)WT901_SAVE_SAVE);
+}
+
+HAL_StatusTypeDef WT901_Baud_Modify(WT901_BAUDTypeDef Baud)
+{
+    HAL_StatusTypeDef status;
+
+    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+    HAL_Delay(200);
+
+    status = WT901_WriteReg(WT901_REG_BAUD, (int16_t)Baud);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+    HAL_Delay(200);
+
+    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+    HAL_Delay(200);
+
+    return status = WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_SAVE);
+}
+
+HAL_StatusTypeDef WT901_Init(void)
+{
+    HAL_StatusTypeDef status;
+
+    status = WT901_Accel_Callibrate();
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+
+    return WT901_Angle_Callibrate();
 }
 
 /**
@@ -141,20 +245,4 @@ static uint8_t CheckSum(const uint8_t* Data, uint32_t Length)
         sum += Data[index];
     }
     return sum;
-}
-
-/**
- * @brief 重写串口接收中断回调函数
- * 
- * @param huart 串口句柄
- * @param Size 接收的数据长度
- */
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef* huart, uint16_t Size)
-{
-    if (huart == &WT901_UART)
-    {
-    }
-    else
-    {
-    }
 }
