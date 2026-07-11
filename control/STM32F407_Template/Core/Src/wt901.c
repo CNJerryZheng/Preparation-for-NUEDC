@@ -96,11 +96,31 @@ static HAL_StatusTypeDef WT901_WriteReg(WT901_RegTypeDef Reg, int16_t Value)
 
 HAL_StatusTypeDef WT901_Restart(void)
 {
+    HAL_StatusTypeDef status;
+
+    // 解锁
+    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+
+    // 重启
     return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_RESTART);
 }
 
 HAL_StatusTypeDef WT901_Reset(void)
 {
+    HAL_StatusTypeDef status;
+
+    // 解锁
+    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+
+    // 重置
     return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_RESET);
 }
 
@@ -168,8 +188,8 @@ static HAL_StatusTypeDef WT901_Output_Modify(void)
     }
     HAL_Delay(200);
 
+    // 拼接写入值
     uint32_t val = 0;
-
 #if defined(WT901_TIME_OUT)
     val |= 0x01 << 0;
 #endif
