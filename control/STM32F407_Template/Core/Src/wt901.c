@@ -4,7 +4,7 @@
                 JerryZheng
  * @brief       WT901通信驱动
  * @warning     注意数组越界风险
- * @date        2026-07-07
+ * @date        2026-07-011
 */
 
 #include "wt901.h"
@@ -20,7 +20,10 @@ int16_t g_wt901_version = 0; // 版本号
 static uint8_t s_wt901_frame[5] = { 0 }; // WT901 数据帧
 
 /* <----------------指令常量----------------> */
-const uint8_t WT901_HEADER[] = { WT901_HEADER_1, WT901_HEADER_2 };
+const uint8_t WT901_READ[] = {
+    WT901_HEADER_1,
+    WT901_HEADER_2,
+};
 
 /* <-----------------缓冲区-----------------> */
 
@@ -81,7 +84,7 @@ bool WT901_CirRead(uint8_t* data)
  * 
  * @param Reg 目标寄存器
  * @param Value 寄存器值
- * @retval HAL_StatusTypeDef 状态
+ * @retval HAL_StatusTypeDef 传输状态
  */
 static HAL_StatusTypeDef WT901_WriteReg(WT901_RegTypeDef Reg, int16_t Value)
 {
@@ -229,7 +232,7 @@ static HAL_StatusTypeDef WT901_Output_Modify(void)
 
 HAL_StatusTypeDef WT901_Baud_Modify(WT901_BAUDTypeDef Baud)
 {
-    /// 解锁
+    // 解锁
     HAL_StatusTypeDef status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
     if (status != HAL_OK)
     {
@@ -257,6 +260,70 @@ HAL_StatusTypeDef WT901_Baud_Modify(WT901_BAUDTypeDef Baud)
     return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_SAVE);
 }
 
+/**
+ * @brief 设置输出速率
+ * 
+ * @return HAL_StatusTypeDef 传输状态
+ */
+static HAL_StatusTypeDef WT901_OutputRate_Modify(void)
+{
+    HAL_StatusTypeDef status;
+
+    // 解锁
+    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)(WT901_KEY_UNLOCK));
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+    HAL_Delay(200);
+
+    // 设置写入值
+    uint32_t val = 0;
+#ifdef WT901_RRATE_0_2HZ
+    val = 0x01;
+#elifdef WT901_RRATE_0_5HZ
+    val = 0x02;
+#elifdef WT901_RRATE_1HZ
+    val = 0x03;
+#elifdef WT901_RRATE_2HZ
+    val = 0x04;
+#elifdef WT901_RRATE_5HZ
+    val = 0x05;
+#elifdef WT901_RRATE_10HZ
+    val = 0x06;
+#elifdef WT901_RRATE_20HZ
+    val = 0x07;
+#elifdef WT901_RRATE_50HZ
+    val = 0x08;
+#elifdef WT901_RRATE_100HZ
+    val = 0x09;
+#elifdef WT901_RRATE_200HZ
+    val = 0x0B;
+#elifdef WT901_RRATE_SINGLE
+    val = 0x0C;
+#elifdef WT901_RRATE_NO
+    val = 0x0D;
+#else
+#error WT901 RRATE Error!!!
+#endif
+
+    // 写入寄存器
+    status = WT901_WriteReg(WT901_REG_RRATE, (int16_t)val);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+    HAL_Delay(200);
+
+    // 保存
+    return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_SAVE);
+}
+
+HAL_StatusTypeDef WT901_Read(void)
+{
+    return WT901_WriteReg(WT901_REG_READ, WT901_READ_READ);
+}
+
 HAL_StatusTypeDef WT901_Init(void)
 {
     // 校准加速度
@@ -273,6 +340,14 @@ HAL_StatusTypeDef WT901_Init(void)
         return status;
     }
 
+    // 修改输出速率
+    status = WT901_OutputRate_Modify();
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+
+    // 设置角度参考
     return WT901_Angle_Calibrate();
 }
 

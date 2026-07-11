@@ -4,7 +4,7 @@
                 JerryZheng
  * @brief       WT901通信驱动
  * @warning     注意数组越界风险
- * @date        2026-07-07
+ * @date        2026-07-11
 */
 
 #pragma once
@@ -70,6 +70,9 @@ typedef enum
     WT901_KEY_UNLOCK = 0xB588,
 } WT901_KeyRegTypeDef;
 
+/**
+ * @brief BAUD 寄存器可选的写入值
+ */
 typedef enum
 {
     WT901_BAUD_4800 = 0x0001,
@@ -80,6 +83,14 @@ typedef enum
     WT901_BAUD_115200 = 0x0006,
     WT901_BAUD_230400 = 0x0007,
 } WT901_BAUDTypeDef;
+
+/**
+ * @brief READ 寄存器可选的写入值
+ */
+typedef enum
+{
+    WT901_READ_READ = 0x0000,
+} WT901_ReadRegTypeDef;
 
 /* <-------------------通信协议相关-------------------> */
 /**
@@ -180,6 +191,14 @@ HAL_StatusTypeDef WT901_Reset(void);
  * @return HAL_StatusTypeDef 传输状态
  */
 HAL_StatusTypeDef WT901_Baud_Modify(WT901_BAUDTypeDef Baud);
+
+/**
+ * @brief 读一次 WT901 数据
+ * 
+ * @note 仅在 WT901 设置为单次传输模式时使用
+ * @return HAL_StatusTypeDef 传输状态
+ */
+HAL_StatusTypeDef WT901_Read(void);
 
 /**
  * @brief 初始化 WT901，校准加速度传感器并设置角度参考
