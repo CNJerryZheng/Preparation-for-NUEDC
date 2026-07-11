@@ -1,9 +1,9 @@
 /**
  * @file        wt901.c
- * @brief       WT901通信驱动
- * @warning     注意数组越界风险
  * @author      Misybon
                 JerryZheng
+ * @brief       WT901通信驱动
+ * @warning     注意数组越界风险
  * @date        2026-07-07
 */
 
@@ -106,7 +106,7 @@ HAL_StatusTypeDef WT901_Reset(void)
     return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_RESET);
 }
 
-static HAL_StatusTypeDef WT901_Accel_Callibrate(void)
+static HAL_StatusTypeDef WT901_Accel_Calibrate(void)
 {
     HAL_StatusTypeDef status;
 
@@ -119,7 +119,7 @@ static HAL_StatusTypeDef WT901_Accel_Callibrate(void)
     HAL_Delay(200);
 
     // 校准加速度
-    status = WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_ACCEL_CALLIB);
+    status = WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_ACCEL_CALIB);
     if (status != HAL_OK)
     {
         return status;
@@ -138,7 +138,7 @@ static HAL_StatusTypeDef WT901_Accel_Callibrate(void)
     return WT901_WriteReg(WT901_REG_SAVE, (int16_t)WT901_SAVE_SAVE);
 }
 
-static HAL_StatusTypeDef WT901_Angle_Callibrate(void)
+static HAL_StatusTypeDef WT901_Angle_Calibrate(void)
 {
     // 解锁
     HAL_StatusTypeDef status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
@@ -149,7 +149,7 @@ static HAL_StatusTypeDef WT901_Angle_Callibrate(void)
     HAL_Delay(200);
 
     // 设置角度参考
-    status = WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_ANGLE_CALLIB);
+    status = WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_ANGLE_CALIB);
     if (status != HAL_OK)
     {
         return status;
@@ -217,7 +217,7 @@ static HAL_StatusTypeDef WT901_Output_Modify(void)
 #endif
 
     // 设置输出内容
-    status = WT901_WriteReg(WT901_REG_RSW, (int16_t)(val & 0xFF));
+    status = WT901_WriteReg(WT901_REG_RSW, (int16_t)(val & 0x7FF));
     if (status != HAL_OK)
     {
         return status;
@@ -260,7 +260,7 @@ HAL_StatusTypeDef WT901_Baud_Modify(WT901_BAUDTypeDef Baud)
 HAL_StatusTypeDef WT901_Init(void)
 {
     // 校准加速度
-    HAL_StatusTypeDef status = WT901_Accel_Callibrate();
+    HAL_StatusTypeDef status = WT901_Accel_Calibrate();
     if (status != HAL_OK)
     {
         return status;
@@ -273,7 +273,7 @@ HAL_StatusTypeDef WT901_Init(void)
         return status;
     }
 
-    return WT901_Angle_Callibrate();
+    return WT901_Angle_Calibrate();
 }
 
 /**
@@ -297,5 +297,5 @@ static uint8_t CheckSum(const uint8_t* Data, uint32_t Length)
     {
         sum += Data[index];
     }
-    return sum;
+    return (uint8_t)(sum & 0xFF);
 }

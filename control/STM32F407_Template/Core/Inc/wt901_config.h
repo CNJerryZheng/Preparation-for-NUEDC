@@ -1,3 +1,11 @@
+/**
+ * @file        wt901_config.h
+ * @author      Misybon
+                JerryZheng
+ * @brief       WT901 配置文件
+ * @date        2026-07-11
+ */
+
 #pragma once
 
 /* <-------------输出内容（未注释则输出）-------------> */

@@ -1,9 +1,9 @@
 /**
  * @file        wt901.h
- * @brief       WT901通信驱动
- * @warning     注意数组越界风险
  * @author      Misybon
                 JerryZheng
+ * @brief       WT901通信驱动
+ * @warning     注意数组越界风险
  * @date        2026-07-07
 */
 
@@ -58,8 +58,8 @@ typedef enum
 typedef enum
 {
     WT901_CALSW_NORMAL = 0x0000, // 正常工作模式
-    WT901_CALSW_ACCEL_CALLIB = 0x0101, // 自动加速度计校准
-    WT901_CALSW_ANGLE_CALLIB = 0x0008, // 设置角度参考
+    WT901_CALSW_ACCEL_CALIB = 0x0101, // 自动加速度计校准
+    WT901_CALSW_ANGLE_CALIB = 0x0008, // 设置角度参考
 } WT901_CalswRegTypeDef;
 
 /**
@@ -175,8 +175,8 @@ HAL_StatusTypeDef WT901_Reset(void);
  *          @arg WT901_BAUD_19200
  *          @arg WT901_BAUD_38400
  *          @arg WT901_BAUD_57600
- *          @arg WT901_BAUD_1152006
- *          @arg WT901_BAUD_2304007
+ *          @arg WT901_BAUD_115200
+ *          @arg WT901_BAUD_230400
  * @return HAL_StatusTypeDef 传输状态
  */
 HAL_StatusTypeDef WT901_Baud_Modify(WT901_BAUDTypeDef Baud);
