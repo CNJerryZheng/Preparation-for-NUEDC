@@ -19,12 +19,6 @@ int16_t g_wt901_version = 0; // 版本号
 
 static uint8_t s_wt901_frame[5] = { 0 }; // WT901 数据帧
 
-/* <----------------指令常量----------------> */
-const uint8_t WT901_READ[] = {
-    WT901_HEADER_1,
-    WT901_HEADER_2,
-};
-
 /* <-----------------缓冲区-----------------> */
 
 volatile WT901_CircularBuffer g_wt901_cirbuf = { { 0 }, 0, 0 }; // 初始化环形缓冲区

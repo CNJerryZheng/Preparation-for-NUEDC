@@ -27,10 +27,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "wt901.h"
-
 #include "config.h"
 #include "sd_log.h"
+#include "wt901.h"
 
 /* USER CODE END Includes */
 
