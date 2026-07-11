@@ -21,7 +21,6 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-volatile uint8_t g_wt901_buf[WT901_BUF_SIZE] = { 0 }; // DMA receive buffer
 
 /* USER CODE END 0 */
 

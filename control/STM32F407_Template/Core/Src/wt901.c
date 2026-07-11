@@ -17,6 +17,7 @@ struct WT901_Angle g_wt901_angle = { 0 }; // 角度
 int16_t g_wt901_temperature = 0; // 温度
 int16_t g_wt901_version = 0; // 版本号
 
+volatile uint8_t g_wt901_buf[WT901_BUF_SIZE] = { 0 }; // DMA receive buffer
 static uint8_t s_wt901_frame[5] = { 0 }; // WT901 数据帧
 
 /* <-----------------缓冲区-----------------> */
