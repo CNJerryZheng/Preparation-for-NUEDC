@@ -61,7 +61,8 @@ typedef enum
 typedef enum
 {
     WT901_CALSW_NORMAL = 0x0000, // 正常工作模式
-    WT901_CALSW_ACCEL_CALIB = 0x0101, // 自动加速度计校准
+    WT901_CALSW_ACCEL_CALIB = 0x0001, // 自动加速度计校准
+    WT901_CALSW_YAW_CALIB = 0x0004, // 航向轴校准
     WT901_CALSW_ANGLE_CALIB = 0x0008, // 设置角度参考
 } WT901_CalswRegTypeDef;
 
@@ -95,6 +96,15 @@ typedef enum
     WT901_READ_READ = 0x0000,
 } WT901_ReadRegTypeDef;
 
+/**
+ * @brief AXIS6 寄存器可选的写入值
+ */
+typedef enum
+{
+    WT901_AXIS6_9 = 0x0000, // 九轴算法
+    WT901_AXIS6_6 = 0x0001, // 六轴算法
+} WT901_Axis6RegTypeDef;
+
 /* <-------------------通信协议相关-------------------> */
 /**
  * @brief WT901 通信协议中的数据类型对应字节
@@ -105,7 +115,7 @@ typedef enum
     WT901_DATA_ACCEL = 0x51, // 加速度
     WT901_DATA_GYRO = 0x52, // 角速度
     WT901_DATA_ANGLE = 0x53, // 角度
-    WT901_DATA_MAG = 0x54, // 角度
+    WT901_DATA_MAG = 0x54, // 磁场
     WT901_DATA_PORT = 0x55, // 端口状态
     WT901_DATA_PRESS = 0x56, // 气压高度
     WT901_DATA_GPS = 0x57, // 经纬度
@@ -211,7 +221,7 @@ HAL_StatusTypeDef WT901_Baud_Modify(WT901_BAUDTypeDef Baud);
 HAL_StatusTypeDef WT901_Read(void);
 
 /**
- * @brief 初始化 WT901，校准加速度传感器并设置角度参考
+ * @brief 初始化 WT901
  * 
  * @return HAL_StatusTypeDef 传输状态
  */
