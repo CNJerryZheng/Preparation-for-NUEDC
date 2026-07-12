@@ -1,8 +1,11 @@
-#pragma once
+/**
+ * @file        sd_config.h
+ * @author      JerryZheng
+ * @brief       SD 配置文件
+ * @date        2026-07-6
+ */
 
-/* Application identity. */
-#define APP_NAME "STM32F407 Logger"
-#define APP_VERSION "1.0.0"
+#pragma once
 
 /* TF card and log file. Keep the filename in 8.3 format while LFN is off. */
 #define APP_LOG_FILE_PATH "0:/TEST1.TXT"
