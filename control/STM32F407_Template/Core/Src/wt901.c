@@ -601,7 +601,7 @@ bool WT901_AnalyzeData(void)
     case WT901_DATA_ACCEL: // 加速度
         g_wt901_accel.x = (int16_t)(s_wt901_raw_data[2] | (int16_t)(s_wt901_raw_data[3] << 8)) * (9.8 * 16 / 32768);
         g_wt901_accel.y = (int16_t)(s_wt901_raw_data[4] | (int16_t)(s_wt901_raw_data[5] << 8)) * (9.8 * 16 / 32768);
-        g_wt901_accel.z = (int16_t)(s_wt901_raw_data[6] | (int16_t)(s_wt901_raw_data[7] << 8)) * (9.8 * 16 / 32768) - 9.8;
+        g_wt901_accel.z = (int16_t)(s_wt901_raw_data[6] | (int16_t)(s_wt901_raw_data[7] << 8)) * (9.8 * 16 / 32768);
         g_wt901_temperature = (s_wt901_raw_data[8] | (s_wt901_raw_data[9] << 8)) / 100;
         break;
 
