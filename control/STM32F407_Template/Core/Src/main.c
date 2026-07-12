@@ -108,15 +108,28 @@ int main(void)
     g_sd_result = SD_Log_Start(APP_LOG_FILE_PATH, APP_LOG_STARTUP_MESSAGE);
     g_sd_test_ok = (g_sd_result == FR_OK) ? 1U : 0U;
 
-  /* USER CODE END 2 */
+    WT901_Init();
+    WT901_StartReceive();
+
+    uint32_t tick_start = HAL_GetTick();
+
+    /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
     while (1)
     {
-        HAL_GPIO_TogglePin(LED0_GPIO_Port, LED0_Pin);
-        HAL_Delay(g_sd_test_ok != 0U ? APP_LED_LOG_OK_DELAY_MS : APP_LED_LOG_ERROR_DELAY_MS);
-    /* USER CODE END WHILE */
+        // HAL_GPIO_TogglePin(LED0_GPIO_Port, LED0_Pin);
+        // HAL_Delay(g_sd_test_ok != 0U ? APP_LED_LOG_OK_DELAY_MS : APP_LED_LOG_ERROR_DELAY_MS);
+
+        WT901_AnalyzeData();
+
+        if (HAL_GetTick() - tick_start >= 500)
+        {
+            tick_start = HAL_GetTick();
+        }
+
+        /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
     }

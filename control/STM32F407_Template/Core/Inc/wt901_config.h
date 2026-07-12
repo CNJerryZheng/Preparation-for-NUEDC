@@ -27,11 +27,11 @@
 // #define WT901_RRATE_1HZ // 1 赫兹
 // #define WT901_RRATE_2HZ // 2 赫兹
 // #define WT901_RRATE_5HZ // 5 赫兹
-#define WT901_RRATE_10HZ // 10 赫兹
+// #define WT901_RRATE_10HZ // 10 赫兹
 // #define WT901_RRATE_20HZ // 20 赫兹
 // #define WT901_RRATE_50HZ // 50 赫兹
 // #define WT901_RRATE_100HZ // 100 赫兹
-// #define WT901_RRATE_200HZ // 200 赫兹
+#define WT901_RRATE_200HZ // 200 赫兹
 // #define WT901_RRATE_SINGLE // 单次回传
 // #define WT901_RRATE_NO // 不回传
 
@@ -46,6 +46,6 @@
 #define WT901_HEADER_1 0xFF // 帧头 1
 #define WT901_HEADER_2 0xAA // 帧头 2
 #define WT901_BUF_SIZE 128 // 串口缓冲区长度
-#define WT901_FRAME_SIZE 11 //数据包缓冲区长度
+#define WT901_FRAME_SIZE 11 //数据包长度
 #define WT901_FRAME_HEADER 0x55 //数据包包头
 #define WT901_FRAME_TAILER 0x0A //数据包包尾
