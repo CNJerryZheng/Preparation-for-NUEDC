@@ -118,33 +118,33 @@ typedef enum
 /* <---------------------变量相关---------------------> */
 // 变量结构体
 /**
- * @brief 加速度
+ * @brief 加速度，单位m/s²
  */
 struct WT901_Accel
 {
-    int16_t x;
-    int16_t y;
-    int16_t z;
+    float x;
+    float y;
+    float z;
 };
 
 /**
- * @brief 角速度
+ * @brief 角速度，单位°/s
  */
 struct WT901_Gyro
 {
-    int16_t x;
-    int16_t y;
-    int16_t z;
+    float x;
+    float y;
+    float z;
 };
 
 /**
- * @brief 角度
+ * @brief 角度，单位°
  */
 struct WT901_Angle
 {
-    int16_t roll; // 横滚轴
-    int16_t pitch; // 俯仰轴
-    int16_t yaw; // 航向轴
+    float roll; // 横滚轴
+    float pitch; // 俯仰轴
+    float yaw; // 航向轴
 };
 
 /**
@@ -226,9 +226,10 @@ HAL_StatusTypeDef WT901_Init(void);
 uint16_t WT901_BufNext(uint16_t index);
 
 /**
- * @brief 读取一个字节
+ * @brief 读取环形缓冲区数据包
  * 
- * @param data 读取到的字节
+ * @param Data 数据存放位置
+ * @param Length 读取长度
  * @retval bool 是否成功读取
  */
 bool WT901_CirRead(uint8_t* Data, uint32_t Length);
@@ -240,6 +241,13 @@ bool WT901_CirRead(uint8_t* Data, uint32_t Length);
  * @retval bool 写入是否成功
  */
 void WT901_CirWrite_Data(uint8_t data);
+
+/**
+ * @brief 分析 WT901 数据帧
+ * 
+ * @retval 分析是否成功
+ */
+bool WT901_AnalyzeData(void);
 
 #ifdef __cplusplus
 }

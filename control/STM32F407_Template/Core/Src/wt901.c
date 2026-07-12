@@ -16,8 +16,11 @@ struct WT901_Angle g_wt901_angle = { 0 }; // 角度
 
 int16_t g_wt901_temperature = 0; // 温度
 int16_t g_wt901_version = 0; // 版本号
+static bool s_wt901_version_obtained = false; // 版本号已获取标志位
 
 volatile uint8_t g_wt901_buf[WT901_BUF_SIZE] = { 0 }; // DMA 接收缓冲区
+
+static uint8_t s_wt901_raw_data[11] = { 0 }; // WT901 原始数据
 
 /* <-----------------缓冲区-----------------> */
 
@@ -494,6 +497,57 @@ HAL_StatusTypeDef WT901_Init(void)
         return status;
     }
 
+    status = WT901_Baud_Modify(WT901_BAUD_230400);
+
     // 设置角度参考
     return WT901_Angle_Calibrate();
+}
+
+bool WT901_AnalyzeData(void)
+{
+    if (WT901_CirRead(s_wt901_raw_data, WT901_FRAME_SIZE) != true)
+    {
+        return false;
+    }
+    else if (s_wt901_raw_data[0] != WT901_FRAME_HEADER)
+    {
+        return false;
+    }
+    else if (s_wt901_raw_data[10] != WT901_FRAME_TAILER)
+    {
+        return false;
+    }
+
+    switch (s_wt901_raw_data[1])
+    {
+    case WT901_DATA_ACCEL: // 加速度
+        g_wt901_accel.x = (int16_t)(s_wt901_raw_data[2] | (int16_t)(s_wt901_raw_data[3] << 8)) * 9.8 / 32768 * 16;
+        g_wt901_accel.y = (int16_t)(s_wt901_raw_data[4] | (int16_t)(s_wt901_raw_data[5] << 8)) * 9.8 / 32768 * 16;
+        g_wt901_accel.z = (int16_t)(s_wt901_raw_data[6] | (int16_t)(s_wt901_raw_data[7] << 8)) * 9.8 / 32768 * 16 - 9.8;
+        g_wt901_temperature = (s_wt901_raw_data[8] | (s_wt901_raw_data[9] << 8)) / 100;
+        break;
+
+    case WT901_DATA_ANGLE: // 角度
+        g_wt901_angle.roll = (float)(int16_t)(s_wt901_raw_data[2] | (int16_t)(s_wt901_raw_data[3] << 8)) * 180 / 32768;
+        g_wt901_angle.pitch = (float)(int16_t)(s_wt901_raw_data[4] | (int16_t)(s_wt901_raw_data[5] << 8)) * 180 / 32768;
+        g_wt901_angle.yaw = (float)(int16_t)(s_wt901_raw_data[6] | (int16_t)(s_wt901_raw_data[7] << 8)) * 180 / 32768;
+        if (!s_wt901_version_obtained) // 如果版本号未获取
+        {
+            // 获取版本号
+            s_wt901_version_obtained = true;
+            g_wt901_version = (s_wt901_raw_data[8] | (s_wt901_raw_data[9] << 8));
+        }
+        break;
+
+    case WT901_DATA_GYRO: // 角速度
+        g_wt901_gyro.x = (float)(int16_t)(s_wt901_raw_data[2] | (int16_t)(s_wt901_raw_data[3] << 8)) * 2000 / 32768;
+        g_wt901_gyro.y = (float)(int16_t)(s_wt901_raw_data[4] | (int16_t)(s_wt901_raw_data[5] << 8)) * 2000 / 32768;
+        g_wt901_gyro.z = (float)(int16_t)(s_wt901_raw_data[6] | (int16_t)(s_wt901_raw_data[7] << 8)) * 2000 / 32768;
+        break;
+
+    default:
+        break;
+    }
+
+    return true;
 }
