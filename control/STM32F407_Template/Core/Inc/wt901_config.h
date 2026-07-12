@@ -27,11 +27,11 @@
 // #define WT901_RRATE_1HZ // 1 赫兹
 // #define WT901_RRATE_2HZ // 2 赫兹
 // #define WT901_RRATE_5HZ // 5 赫兹
-#define WT901_RRATE_10HZ // 10 赫兹
+// #define WT901_RRATE_10HZ // 10 赫兹
 // #define WT901_RRATE_20HZ // 20 赫兹
 // #define WT901_RRATE_50HZ // 50 赫兹
 // #define WT901_RRATE_100HZ // 100 赫兹
-// #define WT901_RRATE_200HZ // 200 赫兹
+#define WT901_RRATE_200HZ // 200 赫兹
 // #define WT901_RRATE_SINGLE // 单次回传
 // #define WT901_RRATE_NO // 不回传
 

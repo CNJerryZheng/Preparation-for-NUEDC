@@ -4,7 +4,7 @@
         {
             "name": "Cortex Debug with DAP-Link",
             "request": "launch",
-            "svdFile": "${workspaceFolder}/svd/STM32F401.svd",
+            "svdFile": "${workspaceFolder}/svd/STM32F407.svd",
             // "svdFile": "${workspaceFolder}/svd/Cortex-M4.svd",
             "runToEntryPoint": "main",
             "rtos": "auto",
