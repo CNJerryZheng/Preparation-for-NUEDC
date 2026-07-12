@@ -35,6 +35,10 @@
 // #define WT901_RRATE_SINGLE // 单次回传
 // #define WT901_RRATE_NO // 不回传
 
+/* <---------------------输出速率---------------------> */
+#define WT901_ALG_6 // 六轴算法
+// #define WT901_ALG_9 // 九轴算法
+
 /* <---------------WT901 连接的主控外设---------------> */
 #define WT901_UART huart1 // 串口
 #define WT901_DMA hdma_usart1_rx // DMA 通道

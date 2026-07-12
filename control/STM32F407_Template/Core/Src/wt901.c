@@ -289,8 +289,10 @@ static HAL_StatusTypeDef WT901_Accel_Calibrate(void)
 
 static HAL_StatusTypeDef WT901_Angle_Calibrate(void)
 {
+    HAL_StatusTypeDef status;
+
     // 解锁
-    HAL_StatusTypeDef status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
+    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
     if (status != HAL_OK)
     {
         return status;
@@ -307,6 +309,34 @@ static HAL_StatusTypeDef WT901_Angle_Calibrate(void)
 
     // 保存
     return WT901_WriteReg(WT901_REG_SAVE, (int16_t)WT901_SAVE_SAVE);
+}
+
+/**
+ * @brief 设置 WT901 航向轴参考
+ * 
+ * @return HAL_StatusTypeDef 传输状态
+ */
+static HAL_StatusTypeDef WT901_YawAxis_Calibrate(void)
+{
+    HAL_StatusTypeDef status;
+
+    // 解锁
+    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+    HAL_Delay(200);
+
+    // 设置航向轴角度参考
+    status = WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_YAW_CALIB);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+    HAL_Delay(3000);
+
+    return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_SAVE);
 }
 
 static HAL_StatusTypeDef WT901_Output_Modify(void)
@@ -465,8 +495,37 @@ static HAL_StatusTypeDef WT901_OutputRate_Modify(void)
     return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_SAVE);
 }
 
-static HAL_StatusTypeDef WT901_GyroRange_Modify(void)
+/**
+ * @brief 设置 WT901 算法
+ * 
+ * @return HAL_StatusTypeDef 传输状态
+ */
+static HAL_StatusTypeDef WT901_Axis6_Modify(void)
 {
+    HAL_StatusTypeDef status;
+
+    // 解锁
+    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+
+    // 设置算法
+#ifdef WT901_ALG_6
+    status = WT901_WriteReg(WT901_REG_AXIS6, (int16_t)WT901_AXIS6_6);
+#elifdef WT901_ALG_9
+    status = WT901_WriteReg(WT901_REG_AXIS6, WT901_AXIS6_9);
+#else
+#error WT901 Axis Error!!!
+#endif
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+
+    // 保存
+    return WT901_WriteReg(WT901_REG_SAVE, (int16_t)(WT901_SAVE_SAVE));
 }
 
 HAL_StatusTypeDef WT901_Read(void)
@@ -497,7 +556,26 @@ HAL_StatusTypeDef WT901_Init(void)
         return status;
     }
 
+    // 设置波特率
     status = WT901_Baud_Modify(WT901_BAUD_230400);
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+
+    // 设置算法
+    status = WT901_Axis6_Modify();
+    if (status != HAL_OK)
+    {
+        return status;
+    }
+
+    // 设置航向轴参考
+    status = WT901_YawAxis_Calibrate();
+    if (status != HAL_OK)
+    {
+        return status;
+    }
 
     // 设置角度参考
     return WT901_Angle_Calibrate();
