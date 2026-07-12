@@ -7,6 +7,12 @@
 extern "C" {
 #endif
 
+typedef struct
+{
+    FIL file;
+    bool is_open;
+} SD_LogFile_t;
+
 /**
  * @brief Mount the TF card and open a log file for read/append access.
  * @param path FatFs path, for example "0:/LOG.TXT".
@@ -21,6 +27,11 @@ FRESULT SD_Log_Write(const void* data, UINT length, UINT* written); //本行继�
  * @return Number of bytes appended, or -1 on error.
  */
 int SD_Log_Printf(const char* format, ...); //RTC+日志合并输出并换行
+
+FRESULT SD_Log_FileOpen(SD_LogFile_t* log_file, const char* path);
+int SD_Log_FilePrintf(SD_LogFile_t* log_file, const char* format, ...);
+FRESULT SD_Log_FileFlush(SD_LogFile_t* log_file);
+FRESULT SD_Log_FileClose(SD_LogFile_t* log_file);
 
 FRESULT SD_Log_Read(FSIZE_t offset, void* buffer, UINT length, UINT* read); //读取指定偏移量的数据，再移动到文件末
 

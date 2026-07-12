@@ -17,6 +17,96 @@ static FRESULT SD_Log_SetError(FRESULT result)
     return result;
 }
 
+static FRESULT SD_Log_WriteFile(FIL* file, const void* data, UINT length, UINT* written)
+{
+    UINT local_written = 0U;
+    FRESULT result;
+
+    if (written != NULL)
+    {
+        *written = 0U;
+    }
+
+    if ((file == NULL) || (data == NULL) || (length == 0U))
+    {
+        return SD_Log_SetError(FR_INVALID_PARAMETER);
+    }
+
+    result = f_lseek(file, f_size(file));
+    if (result == FR_OK)
+    {
+        result = f_write(file, data, length, &local_written);
+    }
+
+    if ((result == FR_OK) && (local_written != length))
+    {
+        result = FR_DISK_ERR;
+    }
+
+    if (written != NULL)
+    {
+        *written = local_written;
+    }
+
+    return SD_Log_SetError(result);
+}
+
+static int SD_Log_VPrintf(FIL* file, const char* format, va_list arguments)
+{
+    RTC_TimeTypeDef time = { 0 };
+    RTC_DateTypeDef date = { 0 };
+    char line[APP_LOG_LINE_SIZE];
+    int prefix_length;
+    int body_length;
+    UINT total_length;
+    UINT written;
+
+    if ((file == NULL) || (format == NULL))
+    {
+        (void)SD_Log_SetError(FR_INVALID_PARAMETER);
+        return -1;
+    }
+
+    if ((HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN) != HAL_OK) ||
+        (HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN) != HAL_OK))
+    {
+        (void)SD_Log_SetError(FR_INT_ERR);
+        return -1;
+    }
+
+    prefix_length = snprintf(line, sizeof(line),
+                             "[20%02u-%02u-%02u %02u:%02u:%02u] ",
+                             (unsigned int)date.Year, (unsigned int)date.Month,
+                             (unsigned int)date.Date, (unsigned int)time.Hours,
+                             (unsigned int)time.Minutes, (unsigned int)time.Seconds);
+    if ((prefix_length < 0) || ((UINT)prefix_length >= sizeof(line)))
+    {
+        (void)SD_Log_SetError(FR_INVALID_PARAMETER);
+        return -1;
+    }
+
+    body_length = vsnprintf(&line[prefix_length],
+                            sizeof(line) - (UINT)prefix_length - 2U,
+                            format, arguments);
+    if ((body_length < 0) ||
+        ((UINT)body_length >= (sizeof(line) - (UINT)prefix_length - 2U)))
+    {
+        (void)SD_Log_SetError(FR_INVALID_PARAMETER);
+        return -1;
+    }
+
+    total_length = (UINT)prefix_length + (UINT)body_length;
+    line[total_length++] = '\r';
+    line[total_length++] = '\n';
+
+    if (SD_Log_WriteFile(file, line, total_length, &written) != FR_OK)
+    {
+        return -1;
+    }
+
+    return (int)written;
+}
+
 FRESULT SD_Log_Init(const char* path)
 {
     FRESULT result;
@@ -87,53 +177,18 @@ FRESULT SD_Log_Start(const char* path, const char* startup_message)
 
 FRESULT SD_Log_Write(const void* data, UINT length, UINT* written)
 {
-    UINT local_written = 0U;
-    FRESULT result;
-
-    if (written != NULL)
-    {
-        *written = 0U;
-    }
-
     if (!s_log_open)
     {
         return SD_Log_SetError(FR_NOT_READY);
     }
 
-    if ((data == NULL) || (length == 0U))
-    {
-        return SD_Log_SetError(FR_INVALID_PARAMETER);
-    }
-
-    result = f_lseek(&s_log_file, f_size(&s_log_file));
-    if (result == FR_OK)
-    {
-        result = f_write(&s_log_file, data, length, &local_written);
-    }
-
-    if ((result == FR_OK) && (local_written != length))
-    {
-        result = FR_DISK_ERR;
-    }
-
-    if (written != NULL)
-    {
-        *written = local_written;
-    }
-
-    return SD_Log_SetError(result);
+    return SD_Log_WriteFile(&s_log_file, data, length, written);
 }
 
 int SD_Log_Printf(const char* format, ...)
 {
-    RTC_TimeTypeDef time = { 0 };
-    RTC_DateTypeDef date = { 0 };
-    char line[APP_LOG_LINE_SIZE];
     va_list arguments;
-    int prefix_length;
-    int body_length;
-    UINT total_length;
-    UINT written;
+    int result;
 
     if ((!s_log_open) || (format == NULL))
     {
@@ -141,42 +196,95 @@ int SD_Log_Printf(const char* format, ...)
         return -1;
     }
 
-    if ((HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN) != HAL_OK) || (HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN) != HAL_OK))
+    va_start(arguments, format);
+    result = SD_Log_VPrintf(&s_log_file, format, arguments);
+    va_end(arguments);
+
+    return result;
+}
+
+FRESULT SD_Log_FileOpen(SD_LogFile_t* log_file, const char* path)
+{
+    FRESULT result;
+
+    if ((log_file == NULL) || (path == NULL))
     {
-        (void)SD_Log_SetError(FR_INT_ERR);
-        return -1;
+        return SD_Log_SetError(FR_INVALID_PARAMETER);
     }
 
-    prefix_length = snprintf(line, sizeof(line), "[20%02u-%02u-%02u %02u:%02u:%02u] ", (unsigned int)date.Year, (unsigned int)date.Month, (unsigned int)date.Date, (unsigned int)time.Hours, (unsigned int)time.Minutes, (unsigned int)time.Seconds);
-    if ((prefix_length < 0) || ((UINT)prefix_length >= sizeof(line)))
+    if (!s_log_open)
     {
-        (void)SD_Log_SetError(FR_INVALID_PARAMETER);
+        return SD_Log_SetError(FR_NOT_READY);
+    }
+
+    if (log_file->is_open)
+    {
+        return SD_Log_SetError(FR_OK);
+    }
+
+    result = f_open(&log_file->file, path, FA_OPEN_ALWAYS | FA_READ | FA_WRITE);
+    if (result == FR_OK)
+    {
+        result = f_lseek(&log_file->file, f_size(&log_file->file));
+        if (result != FR_OK)
+        {
+            (void)f_close(&log_file->file);
+        }
+    }
+
+    if (result == FR_OK)
+    {
+        log_file->is_open = true;
+    }
+
+    return SD_Log_SetError(result);
+}
+
+int SD_Log_FilePrintf(SD_LogFile_t* log_file, const char* format, ...)
+{
+    va_list arguments;
+    int result;
+
+    if ((log_file == NULL) || !log_file->is_open || (format == NULL))
+    {
+        (void)SD_Log_SetError(FR_NOT_READY);
         return -1;
     }
 
     va_start(arguments, format);
-    body_length = vsnprintf(&line[prefix_length],
-                            sizeof(line) - (UINT)prefix_length - 2U,
-                            format,
-                            arguments);
+    result = SD_Log_VPrintf(&log_file->file, format, arguments);
     va_end(arguments);
 
-    if ((body_length < 0) || ((UINT)body_length >= (sizeof(line) - (UINT)prefix_length - 2U)))
+    return result;
+}
+
+FRESULT SD_Log_FileFlush(SD_LogFile_t* log_file)
+{
+    if ((log_file == NULL) || !log_file->is_open)
     {
-        (void)SD_Log_SetError(FR_INVALID_PARAMETER);
-        return -1;
+        return SD_Log_SetError(FR_NOT_READY);
     }
 
-    total_length = (UINT)prefix_length + (UINT)body_length;
-    line[total_length++] = '\r';
-    line[total_length++] = '\n';
+    return SD_Log_SetError(f_sync(&log_file->file));
+}
 
-    if (SD_Log_Write(line, total_length, &written) != FR_OK)
+FRESULT SD_Log_FileClose(SD_LogFile_t* log_file)
+{
+    FRESULT result;
+
+    if ((log_file == NULL) || !log_file->is_open)
     {
-        return -1;
+        return SD_Log_SetError(FR_NOT_READY);
     }
 
-    return (int)written;
+    result = f_sync(&log_file->file);
+    if (f_close(&log_file->file) != FR_OK)
+    {
+        result = FR_DISK_ERR;
+    }
+    log_file->is_open = false;
+
+    return SD_Log_SetError(result);
 }
 
 FRESULT SD_Log_Read(FSIZE_t offset, void* buffer, UINT length, UINT* read)
