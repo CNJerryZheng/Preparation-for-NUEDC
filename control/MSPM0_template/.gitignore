@@ -1,5 +1,0 @@
-.cache
-build
-build-release
-probe-rs_supportd.txt
-.vscode/tasks.json
