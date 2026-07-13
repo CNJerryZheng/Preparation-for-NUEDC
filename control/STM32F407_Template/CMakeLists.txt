@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 3.22)
 #
 
 # Setup compiler settings
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
@@ -37,6 +37,13 @@ add_executable(${CMAKE_PROJECT_NAME})
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
 
+# CubeMX regenerates FATFS/Target/sd_diskio.c. Compile the user-owned DMA
+# implementation instead, so code generation cannot overwrite it.
+set_source_files_properties(
+    "${CMAKE_CURRENT_SOURCE_DIR}/FATFS/Target/sd_diskio.c"
+    PROPERTIES HEADER_FILE_ONLY TRUE
+)
+
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined library search paths
@@ -44,7 +51,9 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    Core/Src/sd_log.c
+    ${CMAKE_CURRENT_LIST_DIR}/Core/Src/sd_log.c
+    ${CMAKE_CURRENT_LIST_DIR}/Core/Src/sd_diskio_dma.c
+    ${CMAKE_CURRENT_LIST_DIR}/Core/Src/wt901.c
 )
 
 # Enable floating-point formatting in SD_Log_Printf() with newlib-nano.

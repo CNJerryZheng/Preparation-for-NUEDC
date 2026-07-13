@@ -16,8 +16,8 @@
   */
 /* USER CODE END Header */
 
-#pragma once
-#define _FFCONF 68300	/* FatFs configuration revision ID */
+#ifndef _FFCONF
+#define _FFCONF 68300	/* Revision ID */
 
 /*-----------------------------------------------------------------------------/
 / Additional user header to be used
@@ -265,3 +265,4 @@
 #define ff_free  free
 #endif
 
+#endif /* _FFCONF */

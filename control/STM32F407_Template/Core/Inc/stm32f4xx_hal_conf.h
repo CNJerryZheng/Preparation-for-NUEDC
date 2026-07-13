@@ -21,7 +21,8 @@
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#pragma once
+#ifndef __STM32F4xx_HAL_CONF_H
+#define __STM32F4xx_HAL_CONF_H
 
 #ifdef __cplusplus
  extern "C" {
@@ -63,7 +64,7 @@
 /* #define HAL_MMC_MODULE_ENABLED */
 /* #define HAL_SPI_MODULE_ENABLED */
 /* #define HAL_TIM_MODULE_ENABLED */
-/* #define HAL_UART_MODULE_ENABLED */
+#define HAL_UART_MODULE_ENABLED
 /* #define HAL_USART_MODULE_ENABLED */
 /* #define HAL_IRDA_MODULE_ENABLED */
 /* #define HAL_SMARTCARD_MODULE_ENABLED */
@@ -491,3 +492,4 @@
 }
 #endif
 
+#endif /* __STM32F4xx_HAL_CONF_H */

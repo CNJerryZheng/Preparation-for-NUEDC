@@ -64,7 +64,6 @@ void HAL_SD_MspInit(SD_HandleTypeDef* sdHandle)
   /* USER CODE END SDIO_MspInit 0 */
     /* SDIO clock enable */
     __HAL_RCC_SDIO_CLK_ENABLE();
-    __HAL_RCC_DMA2_CLK_ENABLE();
 
     __HAL_RCC_GPIOC_CLK_ENABLE();
     __HAL_RCC_GPIOD_CLK_ENABLE();
@@ -91,7 +90,8 @@ void HAL_SD_MspInit(SD_HandleTypeDef* sdHandle)
     GPIO_InitStruct.Alternate = GPIO_AF12_SDIO;
     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-    /* SDIO RX DMA: DMA2 Stream3 Channel4 */
+    /* SDIO DMA Init */
+    /* SDIO_RX Init */
     hdma_sdio_rx.Instance = DMA2_Stream3;
     hdma_sdio_rx.Init.Channel = DMA_CHANNEL_4;
     hdma_sdio_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
@@ -109,9 +109,10 @@ void HAL_SD_MspInit(SD_HandleTypeDef* sdHandle)
     {
       Error_Handler();
     }
-    __HAL_LINKDMA(sdHandle, hdmarx, hdma_sdio_rx);
 
-    /* SDIO TX DMA: DMA2 Stream6 Channel4 */
+    __HAL_LINKDMA(sdHandle,hdmarx,hdma_sdio_rx);
+
+    /* SDIO_TX Init */
     hdma_sdio_tx.Instance = DMA2_Stream6;
     hdma_sdio_tx.Init.Channel = DMA_CHANNEL_4;
     hdma_sdio_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
@@ -129,16 +130,12 @@ void HAL_SD_MspInit(SD_HandleTypeDef* sdHandle)
     {
       Error_Handler();
     }
-    __HAL_LINKDMA(sdHandle, hdmatx, hdma_sdio_tx);
 
-    /* DMA IRQ priority must be higher than the SDIO peripheral IRQ. */
-    HAL_NVIC_SetPriority(DMA2_Stream3_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(DMA2_Stream3_IRQn);
-    HAL_NVIC_SetPriority(DMA2_Stream6_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(DMA2_Stream6_IRQn);
+    __HAL_LINKDMA(sdHandle,hdmatx,hdma_sdio_tx);
+
+    /* SDIO interrupt Init */
     HAL_NVIC_SetPriority(SDIO_IRQn, 6, 0);
     HAL_NVIC_EnableIRQ(SDIO_IRQn);
-
   /* USER CODE BEGIN SDIO_MspInit 1 */
 
   /* USER CODE END SDIO_MspInit 1 */
@@ -169,13 +166,12 @@ void HAL_SD_MspDeInit(SD_HandleTypeDef* sdHandle)
 
     HAL_GPIO_DeInit(GPIOD, GPIO_PIN_2);
 
+    /* SDIO DMA DeInit */
     HAL_DMA_DeInit(sdHandle->hdmarx);
     HAL_DMA_DeInit(sdHandle->hdmatx);
 
-    HAL_NVIC_DisableIRQ(DMA2_Stream3_IRQn);
-    HAL_NVIC_DisableIRQ(DMA2_Stream6_IRQn);
+    /* SDIO interrupt Deinit */
     HAL_NVIC_DisableIRQ(SDIO_IRQn);
-
   /* USER CODE BEGIN SDIO_MspDeInit 1 */
 
   /* USER CODE END SDIO_MspDeInit 1 */

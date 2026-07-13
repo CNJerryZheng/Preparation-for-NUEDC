@@ -1,9 +1,9 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    sdio.h
+  * @file    usart.h
   * @brief   This file contains all the function prototypes for
-  *          the sdio.c file
+  *          the usart.c file
   ******************************************************************************
   * @attention
   *
@@ -18,8 +18,8 @@
   */
 /* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __SDIO_H__
-#define __SDIO_H__
+#ifndef __USART_H__
+#define __USART_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,13 +32,14 @@ extern "C" {
 
 /* USER CODE END Includes */
 
-extern SD_HandleTypeDef hsd;
+extern UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN Private defines */
+extern DMA_HandleTypeDef hdma_usart1_rx; // 用于控制 DMA 中断
 
 /* USER CODE END Private defines */
 
-void MX_SDIO_SD_Init(void);
+void MX_USART1_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
@@ -48,5 +49,5 @@ void MX_SDIO_SD_Init(void);
 }
 #endif
 
-#endif /* __SDIO_H__ */
+#endif /* __USART_H__ */
 
