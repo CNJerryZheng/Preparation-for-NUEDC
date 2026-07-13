@@ -1,0 +1,97 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Cortex Debug with DAP-Link",
+            "request": "launch",
+            "svdFile": "${workspaceFolder}/svd/STM32F407.svd",
+            // "svdFile": "${workspaceFolder}/svd/Cortex-M4.svd",
+            "runToEntryPoint": "main",
+            "rtos": "auto",
+            "swoConfig": {
+                "enabled": false,
+                "cpuFrequency": 72000000,
+                "swoFrequency": 2000000,
+                "source": "probe",
+                "decoders": [
+                    {
+                        "port": 0,
+                        "type": "console"
+                    }
+                ]
+            },
+            "cwd": "${workspaceFolder}",
+            "executable": "${command:st-stm32-ide-debug-launch.get-projects-binary-from-context1}",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "configFiles": [
+                "interface/cmsis-dap.cfg",
+                "target/stm32f4x.cfg"
+            ],
+            "serverpath": "openocd",
+            "gdbPath": "arm-none-eabi-gdb",
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 4
+            },
+            "showDevDebugOutput": "parsed"
+        },
+        {
+            "type": "stlinkgdbtarget",
+            "request": "launch",
+            "runEntry": "main",
+            "serverRtos": {
+                "enabled": false,
+                "port": "60000",
+                "driver": "freertos"
+            },
+            "name": "STM32Cube: STM32 Launch ST-Link GDB Server",
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": "4"
+            },
+            "origin": "snippet",
+            "cwd": "${workspaceFolder}",
+            "preBuild": "${command:st-stm32-ide-debug-launch.build}",
+            "imagesAndSymbols": [
+                {
+                    "imageFileName": "${command:st-stm32-ide-debug-launch.get-projects-binary-from-context1}"
+                }
+            ]
+        },
+        {
+            "type": "stgdbtarget",
+            "request": "launch",
+            "runEntry": "main",
+            "serverRtos": {
+                "enabled": true,
+                "port": "60000",
+                "driver": "freertos"
+            },
+            "name": "STM32Cube: STM32 Launch DAP-Link GDB Server",
+            "origin": "snippet",
+            "cwd": "${workspaceFolder}",
+            "preBuild": "${command:st-stm32-ide-debug-launch.build}",
+            "program": "${command:st-stm32-ide-debug-launch.get-projects-binary-from-context1}",
+            "gdb": "${command:st-stm32-ide-debug-launch.get-gdb-executable}",
+            "deviceName": "${command:st-stm32-ide-debug-launch.get-device-name}",
+            "deviceCore": "${command:st-stm32-ide-debug-launch.get-core-name}",
+            "deviceTrustzone": "TZ-disabled",
+            "serverCwd": "D:/Scoop/apps/openocd/current/share/openocd/scripts",
+            "serverExe": "../../../bin/openocd",
+            "serverParameters": [
+                "-f",
+                "interface/cmsis-dap.cfg",
+                "-f",
+                "target/stm32f4x.cfg"
+            ],
+            "serverHost": "127.0.0.1",
+            "serverPort": "3333",
+            "imagesAndSymbols": [
+                {
+                    "imageFileName": "${command:st-stm32-ide-debug-launch.get-projects-binary-from-context1}"
+                }
+            ]
+        }
+    ]
+}
