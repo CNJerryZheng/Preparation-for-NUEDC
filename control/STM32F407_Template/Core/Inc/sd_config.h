@@ -8,9 +8,9 @@
 #pragma once
 
 /* 日志打印位置（要求文件名长度不超过8） */
-#define APP_SYSTEM_LOG_FILE_PATH "0:/SYSTEM.TXT"
-#define APP_LINETRACK_LOG_FILE_PATH "0:/LINE.TXT"
-#define APP_WT901_LOG_FILE_PATH "0:/WT901.TXT"
+#define APP_SYSTEM_LOG_FILE_PATH "0:/SYSTEM.LOG"
+#define APP_LINETRACK_LOG_FILE_PATH "0:/LINE.LOG"
+#define APP_WT901_LOG_FILE_PATH "0:/WT901.LOG"
 
 #define APP_SYSTEM_LOG_STARTUP_MESSAGE "System log start"
 #define APP_LINETRACK_LOG_STARTUP_MESSAGE "Line tracking log start"
