@@ -29,7 +29,6 @@
 #include "sd_config.h"
 #include "sd_diskio.h"
 
-
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* use the default SD timout as defined in the platform BSP driver*/

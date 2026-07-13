@@ -1,13 +1,24 @@
+/**
+ * @file        sd_config.h
+ * @author      JerryZheng
+ * @brief       SD 配置文件
+ * @date        2026-07-6
+ */
+
 #pragma once
 
-/* Application identity. */
-#define APP_NAME "STM32F407 Logger"
-#define APP_VERSION "1.0.0"
+/* 日志打印位置（要求文件名长度不超过8） */
+#define APP_SYSTEM_LOG_FILE_PATH "0:/SYSTEM.LOG"
+#define APP_LINETRACK_LOG_FILE_PATH "0:/LINE.LOG"
+#define APP_WT901_LOG_FILE_PATH "0:/WT901.LOG"
 
-/* TF card and log file. Keep the filename in 8.3 format while LFN is off. */
-#define APP_LOG_FILE_PATH "0:/TEST1.TXT"
-#define APP_LOG_STARTUP_MESSAGE "System startup"
+#define APP_SYSTEM_LOG_STARTUP_MESSAGE "System log start"
+#define APP_LINETRACK_LOG_STARTUP_MESSAGE "Line tracking log start"
+#define APP_WT901_LOG_STARTUP_MESSAGE "WT901 log start"
+#define APP_LOG_FILE_PATH APP_SYSTEM_LOG_FILE_PATH
+#define APP_LOG_STARTUP_MESSAGE APP_SYSTEM_LOG_STARTUP_MESSAGE
 #define APP_LOG_LINE_SIZE 256U //临时缓冲区大小，溢出返回-1
+#define APP_LOG_SAMPLE_INTERVAL_MS 20U //日志采样间隔：50Hz
 #define APP_TF_STARTUP_DELAY_MS 100U //启动等待时长
 #define APP_TF_DMA_TIMEOUT_MS 5000U //DMA传输超时
 #define APP_LOG_FLUSH_INTERVAL_MS 1000U //日志刷新间隔

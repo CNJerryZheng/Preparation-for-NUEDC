@@ -27,7 +27,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "sd_config.h"
+#include "linetrack.h"
 #include "sd_log.h"
 #include "wt901.h"
 
@@ -52,10 +52,6 @@
 
 /* USER CODE BEGIN PV */
 
-/* Inspect these variables in the debugger after startup. */
-volatile FRESULT g_sd_result = FR_NOT_READY;
-volatile uint8_t g_sd_test_ok = 0U;
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -66,7 +62,6 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
 /* USER CODE END 0 */
 
 /**
@@ -104,13 +99,9 @@ int main(void)
     MX_FATFS_Init();
     /* USER CODE BEGIN 2 */
 
-    g_sd_result = SD_Log_Start(APP_LOG_FILE_PATH, APP_LOG_STARTUP_MESSAGE);
-    g_sd_test_ok = (g_sd_result == FR_OK) ? 1U : 0U;
-
     WT901_Init();
     WT901_StartReceive();
-
-    uint32_t tick_start = HAL_GetTick();
+    (void)SD_Log_AppStart();
 
     /* USER CODE END 2 */
 
@@ -118,15 +109,9 @@ int main(void)
     /* USER CODE BEGIN WHILE */
     while (1)
     {
-        // HAL_GPIO_TogglePin(LED0_GPIO_Port, LED0_Pin);
-        // HAL_Delay(g_sd_test_ok != 0U ? APP_LED_LOG_OK_DELAY_MS : APP_LED_LOG_ERROR_DELAY_MS);
-
-        WT901_AnalyzeData();
-
-        if (HAL_GetTick() - tick_start >= 500)
-        {
-            tick_start = HAL_GetTick();
-        }
+        LINE_Result_t line = LINE_Process();
+        (void)WT901_AnalyzeData();
+        SD_Log_AppProcess(&line);
 
         /* USER CODE END WHILE */
 

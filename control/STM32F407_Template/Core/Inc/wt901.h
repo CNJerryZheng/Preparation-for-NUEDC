@@ -168,6 +168,11 @@ typedef struct
 } WT901_CircularBuffer;
 
 // 外部变量声明
+extern struct WT901_Accel g_wt901_accel;
+extern struct WT901_Gyro g_wt901_gyro;
+extern struct WT901_Angle g_wt901_angle;
+extern int16_t g_wt901_temperature;
+extern int16_t g_wt901_version;
 extern volatile uint8_t g_wt901_buf[WT901_BUF_SIZE]; // DMA 接收缓冲区
 extern volatile WT901_CircularBuffer g_wt901_cirbuf; //环形缓冲区
 extern volatile uint32_t g_wt901_lose_count, g_wt901_count; //丢包计数和总包数
