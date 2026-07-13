@@ -462,6 +462,7 @@ static HAL_StatusTypeDef WT901_Axis6_Modify(void)
 {
     // 解锁
     WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK));
+    HAL_Delay(200);
 
     // 设置算法
 #ifdef WT901_ALG_6
@@ -471,6 +472,7 @@ static HAL_StatusTypeDef WT901_Axis6_Modify(void)
 #else
 #error WT901 Axis Error!!!
 #endif
+    HAL_Delay(200);
 
     // 保存
     WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_SAVE, (int16_t)(WT901_SAVE_SAVE)));
