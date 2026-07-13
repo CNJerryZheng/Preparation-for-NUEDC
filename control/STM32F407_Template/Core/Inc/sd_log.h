@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 #include "ff.h"
+#include "linetrack.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,6 +44,21 @@ bool SD_Log_IsOpen(void); //判断日志文件是否可用
 FSIZE_t SD_Log_Size(void); //获取日志文件大小，单位：字节
 FRESULT SD_Log_Start(const char* path, const char* startup_message); //
 FRESULT SD_Log_LastError(void);
+
+/**
+ * @brief Start the application log set: SYSTEM.TXT, LINE.TXT and WT901.TXT.
+ * @return FatFs status of the complete startup sequence.
+ */
+FRESULT SD_Log_AppStart(void);
+
+/**
+ * @brief Run the non-blocking LED indication and periodic application logging.
+ * @param line Latest line-tracking result.
+ */
+void SD_Log_AppProcess(const LINE_Result_t* line);
+
+bool SD_Log_AppIsReady(void);
+FRESULT SD_Log_AppLastError(void);
 //返回最后一次错误的结果代码
 /*  
 0  FR_OK             成功

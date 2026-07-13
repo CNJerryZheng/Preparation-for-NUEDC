@@ -28,7 +28,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "linetrack.h"
-#include "sd_config.h"
 #include "sd_log.h"
 #include "wt901.h"
 
@@ -53,13 +52,6 @@
 
 /* USER CODE BEGIN PV */
 
-/* Inspect these variables in the debugger after startup. */
-volatile FRESULT g_sd_result = FR_NOT_READY;
-volatile uint8_t g_sd_test_ok = 0U;
-static SD_LogFile_t s_wt901_log;
-static uint32_t s_log_sample_tick = 0U;
-static uint32_t s_log_flush_tick = 0U;
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -70,7 +62,6 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-LINE_Result_t line;
 /* USER CODE END 0 */
 
 /**
@@ -108,26 +99,9 @@ int main(void)
     MX_FATFS_Init();
     /* USER CODE BEGIN 2 */
 
-    g_sd_result = SD_Log_Start(APP_LOG_FILE_PATH, APP_LOG_STARTUP_MESSAGE);
-    if (g_sd_result == FR_OK)
-    {
-        g_sd_result = SD_Log_FileOpen(&s_wt901_log, APP_WT901_LOG_FILE_PATH);
-    }
-    if ((g_sd_result == FR_OK) && (SD_Log_FilePrintf(&s_wt901_log, "%s", APP_WT901_LOG_STARTUP_MESSAGE) < 0))
-    {
-        g_sd_result = SD_Log_LastError();
-    }
-    if (g_sd_result == FR_OK)
-    {
-        g_sd_result = SD_Log_FileFlush(&s_wt901_log);
-    }
-    g_sd_test_ok = (g_sd_result == FR_OK) ? 1U : 0U;
-
     WT901_Init();
     WT901_StartReceive();
-
-    s_log_sample_tick = HAL_GetTick();
-    s_log_flush_tick = s_log_sample_tick;
+    (void)SD_Log_AppStart();
 
     /* USER CODE END 2 */
 
@@ -135,45 +109,9 @@ int main(void)
     /* USER CODE BEGIN WHILE */
     while (1)
     {
-        // HAL_GPIO_TogglePin(LED0_GPIO_Port, LED0_Pin);
-        // HAL_Delay(g_sd_test_ok != 0U ? APP_LED_LOG_OK_DELAY_MS : APP_LED_LOG_ERROR_DELAY_MS);
-        line = LINE_Process();
-        uint32_t now = HAL_GetTick();
-
+        LINE_Result_t line = LINE_Process();
         (void)WT901_AnalyzeData();
-
-        if ((g_sd_test_ok != 0U) && ((now - s_log_sample_tick) >= APP_LOG_SAMPLE_INTERVAL_MS))
-        {
-            s_log_sample_tick = now;
-
-            if (SD_Log_Printf("raw=0x%02X,count=%u,pos=%.2f,state=%u",
-                              (unsigned int)line.raw,
-                              (unsigned int)line.black_count,
-                              (double)line.position,
-                              (unsigned int)line.state)
-                < 0)
-            {
-                g_sd_result = SD_Log_LastError();
-                g_sd_test_ok = 0U;
-            }
-
-            if ((g_sd_test_ok != 0U) && (SD_Log_FilePrintf(&s_wt901_log, "acc=%.3f,%.3f,%.3f;gyro=%.2f,%.2f,%.2f;angle=%.2f,%.2f,%.2f", (double)g_wt901_accel.x, (double)g_wt901_accel.y, (double)g_wt901_accel.z, (double)g_wt901_gyro.x, (double)g_wt901_gyro.y, (double)g_wt901_gyro.z, (double)g_wt901_angle.roll, (double)g_wt901_angle.pitch, (double)g_wt901_angle.yaw) < 0))
-            {
-                g_sd_result = SD_Log_LastError();
-                g_sd_test_ok = 0U;
-            }
-        }
-
-        if ((g_sd_test_ok != 0U) && ((now - s_log_flush_tick) >= APP_LOG_FLUSH_INTERVAL_MS))
-        {
-            s_log_flush_tick = now;
-            g_sd_result = SD_Log_Flush();
-            if (g_sd_result == FR_OK)
-            {
-                g_sd_result = SD_Log_FileFlush(&s_wt901_log);
-            }
-            g_sd_test_ok = (g_sd_result == FR_OK) ? 1U : 0U;
-        }
+        SD_Log_AppProcess(&line);
 
         /* USER CODE END WHILE */
 
