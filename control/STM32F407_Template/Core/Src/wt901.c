@@ -9,6 +9,22 @@
 
 #include "wt901.h"
 
+/**
+ * @brief 调用 WT901 相关函数，包含错误检查
+ * 
+ * @param Call 调用的函数
+ * @note 若调用的函数未返回 HAL_OK，则会 return 函数的返回值
+ */
+#define WT901_CALL_WITH_CHECK(Call)             \
+    do                                          \
+    {                                           \
+        HAL_StatusTypeDef _ret_status = (Call); \
+        if (_ret_status != HAL_OK)              \
+        {                                       \
+            return _ret_status;                 \
+        }                                       \
+    } while (0)
+
 /* <----------------数据变量----------------> */
 struct WT901_Accel g_wt901_accel = { 0 }; // 加速度
 struct WT901_Gyro g_wt901_gyro = { 0 }; // 角速度
@@ -25,10 +41,10 @@ static uint8_t s_wt901_raw_data[11] = { 0 }; // WT901 原始数据
 /* <-----------------缓冲区-----------------> */
 
 volatile WT901_CircularBuffer g_wt901_cirbuf = { { 0 }, 0, 0 }; // 初始化环形缓冲区
-static volatile uint8_t s_wt901_framebuf[WT901_FRAME_SIZE];
+static volatile uint8_t s_wt901_framebuf[WT901_FRAME_SIZE]; // WT901 数据帧
 static volatile uint16_t s_frame_pos = 0;
 static uint16_t s_wt901_dma_last_pos = 0;
-volatile uint32_t g_wt901_lose_count = 0, g_wt901_count = 0; //丢包计数和总包数
+volatile uint32_t g_wt901_lose_count = 0, g_wt901_count = 0; // 丢包计数和总包数
 
 /* <------------------函数------------------> */
 /**
@@ -45,7 +61,7 @@ static bool CheckSum(const volatile uint8_t* Data, uint32_t Length)
     {
         return false;
     }
-    if (Data[0] != WT901_FRAME_HEADER) //包头不对
+    if (Data[0] != WT901_FRAME_HEADER) // 包头不对
     {
         return false;
     }
@@ -227,88 +243,61 @@ static HAL_StatusTypeDef WT901_WriteReg(WT901_RegTypeDef Reg, int16_t Value)
 
 HAL_StatusTypeDef WT901_Restart(void)
 {
-    HAL_StatusTypeDef status;
-
     // 解锁
-    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK));
 
     // 重启
-    return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_RESTART);
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_RESTART));
+
+    return HAL_OK;
 }
 
 HAL_StatusTypeDef WT901_Reset(void)
 {
-    HAL_StatusTypeDef status;
-
     // 解锁
-    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK));
 
     // 重置
-    return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_RESET);
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_RESET));
+
+    return HAL_OK;
 }
 
 static HAL_StatusTypeDef WT901_Accel_Calibrate(void)
 {
-    HAL_StatusTypeDef status;
-
     // 解锁
-    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK));
     HAL_Delay(200);
 
     // 校准加速度
-    status = WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_ACCEL_CALIB);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_ACCEL_CALIB));
     HAL_Delay(4000);
 
     // 退出校准模式
-    status = WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_NORMAL);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_NORMAL));
     HAL_Delay(100);
 
     // 保存
-    return WT901_WriteReg(WT901_REG_SAVE, (int16_t)WT901_SAVE_SAVE);
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_SAVE, (int16_t)WT901_SAVE_SAVE));
+
+    return HAL_OK;
 }
 
 static HAL_StatusTypeDef WT901_Angle_Calibrate(void)
 {
-    HAL_StatusTypeDef status;
-
     // 解锁
-    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK));
     HAL_Delay(200);
 
     // 设置角度参考
-    status = WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_ANGLE_CALIB);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_ANGLE_CALIB));
+
     HAL_Delay(3000);
 
     // 保存
-    return WT901_WriteReg(WT901_REG_SAVE, (int16_t)WT901_SAVE_SAVE);
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_SAVE, (int16_t)WT901_SAVE_SAVE));
+
+    return HAL_OK;
 }
 
 /**
@@ -318,35 +307,24 @@ static HAL_StatusTypeDef WT901_Angle_Calibrate(void)
  */
 static HAL_StatusTypeDef WT901_YawAxis_Calibrate(void)
 {
-    HAL_StatusTypeDef status;
-
     // 解锁
-    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK));
     HAL_Delay(200);
 
     // 设置航向轴角度参考
-    status = WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_YAW_CALIB);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_CALSW, (int16_t)WT901_CALSW_YAW_CALIB));
     HAL_Delay(3000);
 
-    return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_SAVE);
+    // 保存
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_SAVE));
+
+    return HAL_OK;
 }
 
 static HAL_StatusTypeDef WT901_Output_Modify(void)
 {
     // 解锁
-    HAL_StatusTypeDef status = WT901_WriteReg(WT901_REG_KEY, (int16_t)(WT901_KEY_UNLOCK));
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_KEY, (int16_t)(WT901_KEY_UNLOCK)));
     HAL_Delay(200);
 
     // 拼接写入值
@@ -396,44 +374,32 @@ static HAL_StatusTypeDef WT901_Output_Modify(void)
 #endif
 
     // 设置输出内容
-    status = WT901_WriteReg(WT901_REG_RSW, (int16_t)(val & 0x7FF));
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_RSW, (int16_t)(val & 0x7FF)));
 
     // 保存
-    return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_SAVE);
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_SAVE));
+
+    return HAL_OK;
 }
 
 HAL_StatusTypeDef WT901_Baud_Modify(WT901_BAUDTypeDef Baud)
 {
     // 解锁
-    HAL_StatusTypeDef status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK));
     HAL_Delay(200);
 
     // 设置波特率
-    status = WT901_WriteReg(WT901_REG_BAUD, (int16_t)Baud);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_BAUD, (int16_t)Baud));
     HAL_Delay(200);
 
     // 解锁
-    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK));
     HAL_Delay(200);
 
     // 保存
-    return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_SAVE);
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_SAVE));
+
+    return HAL_OK;
 }
 
 /**
@@ -443,14 +409,8 @@ HAL_StatusTypeDef WT901_Baud_Modify(WT901_BAUDTypeDef Baud)
  */
 static HAL_StatusTypeDef WT901_OutputRate_Modify(void)
 {
-    HAL_StatusTypeDef status;
-
     // 解锁
-    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)(WT901_KEY_UNLOCK));
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_KEY, (int16_t)(WT901_KEY_UNLOCK)));
     HAL_Delay(200);
 
     // 设置写入值
@@ -484,15 +444,13 @@ static HAL_StatusTypeDef WT901_OutputRate_Modify(void)
 #endif
 
     // 写入寄存器
-    status = WT901_WriteReg(WT901_REG_RRATE, (int16_t)val);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_RRATE, (int16_t)val));
     HAL_Delay(200);
 
     // 保存
-    return WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_SAVE);
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_SAVE, WT901_SAVE_SAVE));
+
+    return HAL_OK;
 }
 
 /**
@@ -502,30 +460,24 @@ static HAL_StatusTypeDef WT901_OutputRate_Modify(void)
  */
 static HAL_StatusTypeDef WT901_Axis6_Modify(void)
 {
-    HAL_StatusTypeDef status;
-
     // 解锁
-    status = WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_KEY, (int16_t)WT901_KEY_UNLOCK));
+    HAL_Delay(200);
 
     // 设置算法
 #ifdef WT901_ALG_6
-    status = WT901_WriteReg(WT901_REG_AXIS6, (int16_t)WT901_AXIS6_6);
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_AXIS6, (int16_t)WT901_AXIS6_6));
 #elifdef WT901_ALG_9
-    status = WT901_WriteReg(WT901_REG_AXIS6, WT901_AXIS6_9);
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_AXIS6, WT901_AXIS6_9));
 #else
 #error WT901 Axis Error!!!
 #endif
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    HAL_Delay(200);
 
     // 保存
-    return WT901_WriteReg(WT901_REG_SAVE, (int16_t)(WT901_SAVE_SAVE));
+    WT901_CALL_WITH_CHECK(WT901_WriteReg(WT901_REG_SAVE, (int16_t)(WT901_SAVE_SAVE)));
+
+    return HAL_OK;
 }
 
 HAL_StatusTypeDef WT901_Read(void)
@@ -536,67 +488,45 @@ HAL_StatusTypeDef WT901_Read(void)
 HAL_StatusTypeDef WT901_Init(void)
 {
     // 校准加速度
-    HAL_StatusTypeDef status = WT901_Accel_Calibrate();
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_Accel_Calibrate());
 
     // 修改输出内容
-    status = WT901_Output_Modify();
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_Output_Modify());
 
     // 修改输出速率
-    status = WT901_OutputRate_Modify();
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_OutputRate_Modify());
 
     // 设置波特率
-    status = WT901_Baud_Modify(WT901_BAUD_230400);
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_Baud_Modify(WT901_BAUD_230400));
 
     // 设置算法
-    status = WT901_Axis6_Modify();
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_Axis6_Modify());
 
     // 设置航向轴参考
-    status = WT901_YawAxis_Calibrate();
-    if (status != HAL_OK)
-    {
-        return status;
-    }
+    WT901_CALL_WITH_CHECK(WT901_YawAxis_Calibrate());
 
     // 设置角度参考
-    return WT901_Angle_Calibrate();
+    WT901_CALL_WITH_CHECK(WT901_Angle_Calibrate());
+
+    return HAL_OK;
 }
 
 bool WT901_AnalyzeData(void)
 {
-    if (WT901_CirRead(s_wt901_raw_data, WT901_FRAME_SIZE) != true)
+    if (WT901_CirRead(s_wt901_raw_data, WT901_FRAME_SIZE) != true) // 检验读取是否正确
     {
         return false;
     }
-    else if (s_wt901_raw_data[0] != WT901_FRAME_HEADER)
+    else if (s_wt901_raw_data[0] != WT901_FRAME_HEADER) // 检验包头是否正确
     {
         return false;
     }
-    else if (s_wt901_raw_data[10] != WT901_FRAME_TAILER)
+    else if (s_wt901_raw_data[10] != WT901_FRAME_TAILER) // 检验包尾是否正确
     {
         return false;
     }
 
-    switch (s_wt901_raw_data[1])
+    switch (s_wt901_raw_data[1]) // 进行解析
     {
     case WT901_DATA_ACCEL: // 加速度
         g_wt901_accel.x = (int16_t)(s_wt901_raw_data[2] | (int16_t)(s_wt901_raw_data[3] << 8)) * (9.8f * 16 / 32768);
