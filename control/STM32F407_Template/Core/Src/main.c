@@ -53,7 +53,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-static bool s_system_running;
+static bool s_system_running; // 系统是否在运行
 
 /* USER CODE END PV */
 
@@ -102,10 +102,10 @@ int main(void)
     MX_FATFS_Init();
     /* USER CODE BEGIN 2 */
 
-    BEEP_Init();
-    if (WT901_Init() == HAL_OK)
+    BEEP_Init(); // 初始化蜂鸣器
+    if (WT901_Init() == HAL_OK) // 初始化 IMU
     {
-        BEEP_Once();
+        BEEP_Once(); // 初始化成功则蜂鸣一次
     }
 
     /* USER CODE END 2 */
