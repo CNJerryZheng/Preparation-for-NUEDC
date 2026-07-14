@@ -120,8 +120,7 @@ int main(void)
         {
             if (!s_system_running)
             {
-                if ((SD_Log_AppStart() == FR_OK) &&
-                    (WT901_StartReceive() == HAL_OK))
+                if ((SD_Log_AppStart() == FR_OK) && (WT901_StartReceive() == HAL_OK))
                 {
                     s_system_running = true;
                     (void)SD_Log_AppEvent("Button start: WT901=on; beep=fast-1");
