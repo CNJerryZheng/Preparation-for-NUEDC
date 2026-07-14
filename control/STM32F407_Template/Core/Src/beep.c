@@ -1,12 +1,14 @@
 /**
  * @file        beep.c
  * @author      JerryZheng
- * @brief       Active-low buzzer driver
+ * @brief       蜂鸣器驱动
+ * @warning     蜂鸣器低电平触发
  * @date        2026-07-14
  */
 
 #include "beep.h"
 
+/* <----------------数据变量----------------> */
 typedef enum
 {
     BEEP_STATE_IDLE = 0,
@@ -20,6 +22,7 @@ static uint32_t s_beep_on_ms;
 static uint32_t s_beep_off_ms;
 static uint32_t s_beep_tick;
 
+/* <----------------函数相关----------------> */
 static void BEEP_On(void)
 {
     HAL_GPIO_WritePin(BEEP_GPIO_Port, BEEP_Pin, GPIO_PIN_RESET);
@@ -88,8 +91,7 @@ void BEEP_Update(void)
     }
 
     now = HAL_GetTick();
-    if ((s_beep_state == BEEP_STATE_ON) &&
-        ((now - s_beep_tick) >= s_beep_on_ms))
+    if ((s_beep_state == BEEP_STATE_ON) && ((now - s_beep_tick) >= s_beep_on_ms))
     {
         BEEP_Off();
         if (s_beep_remaining <= 1U)
@@ -104,8 +106,7 @@ void BEEP_Update(void)
             s_beep_tick = now;
         }
     }
-    else if ((s_beep_state == BEEP_STATE_OFF) &&
-             ((now - s_beep_tick) >= s_beep_off_ms))
+    else if ((s_beep_state == BEEP_STATE_OFF) && ((now - s_beep_tick) >= s_beep_off_ms))
     {
         s_beep_state = BEEP_STATE_ON;
         s_beep_tick = now;
