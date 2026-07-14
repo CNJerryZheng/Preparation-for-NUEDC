@@ -183,10 +183,8 @@ extern volatile uint32_t g_wt901_lose_count, g_wt901_count; //丢包计数和总
  *
  * @retval HAL_StatusTypeDef 开启结果
  */
-__STATIC_INLINE HAL_StatusTypeDef WT901_StartReceive(void)
-{
-    return HAL_UARTEx_ReceiveToIdle_DMA(&WT901_UART, (uint8_t*)g_wt901_buf, WT901_BUF_SIZE);
-}
+HAL_StatusTypeDef WT901_StartReceive(void);
+HAL_StatusTypeDef WT901_StopReceive(void);
 
 /**
  * @brief 重启 WT901

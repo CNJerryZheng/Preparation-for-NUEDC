@@ -50,6 +50,8 @@ FRESULT SD_Log_LastError(void);
  * @return FatFs status of the complete startup sequence.
  */
 FRESULT SD_Log_AppStart(void);
+FRESULT SD_Log_AppStop(void);
+int SD_Log_AppEvent(const char* format, ...);
 
 /**
  * @brief Run the non-blocking LED indication and periodic application logging.
