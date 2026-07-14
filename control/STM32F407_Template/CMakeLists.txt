@@ -55,6 +55,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/Core/Src/sd_diskio_dma.c
     ${CMAKE_CURRENT_LIST_DIR}/Core/Src/wt901.c
     ${CMAKE_CURRENT_LIST_DIR}/Core/Src/linetrack.c
+    ${CMAKE_CURRENT_LIST_DIR}/Core/Src/button.c
 )
 
 # Enable floating-point formatting in SD_Log_Printf() with newlib-nano.
