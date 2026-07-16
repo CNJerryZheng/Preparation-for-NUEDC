@@ -27,6 +27,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "beep.h"
+#include "button.h"
 #include "linetrack.h"
 #include "sd_log.h"
 #include "wt901.h"
@@ -51,6 +53,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+static bool s_system_running; // 系统是否在运行
 
 /* USER CODE END PV */
 
@@ -99,9 +102,11 @@ int main(void)
     MX_FATFS_Init();
     /* USER CODE BEGIN 2 */
 
-    WT901_Init();
-    WT901_StartReceive();
-    (void)SD_Log_AppStart();
+    BEEP_Init(); // 初始化蜂鸣器
+    if (WT901_Init() == HAL_OK) // 初始化 IMU
+    {
+        BEEP_Once(); // 初始化成功则蜂鸣一次
+    }
 
     /* USER CODE END 2 */
 
@@ -109,9 +114,46 @@ int main(void)
     /* USER CODE BEGIN WHILE */
     while (1)
     {
-        LINE_Result_t line = LINE_Process();
-        (void)WT901_AnalyzeData();
-        SD_Log_AppProcess(&line);
+        BEEP_Update();
+
+        if (Button_Scan())
+        {
+            if (!s_system_running)
+            {
+                if ((SD_Log_AppStart() == FR_OK) && (WT901_StartReceive() == HAL_OK))
+                {
+                    s_system_running = true;
+                    (void)SD_Log_AppEvent("Button start: WT901=on; beep=fast-1");
+                    BEEP_Fast(1U);
+                }
+                else
+                {
+                    (void)WT901_StopReceive();
+                    (void)SD_Log_AppStop();
+                    BEEP_Slow(2U);
+                }
+            }
+            else
+            {
+                (void)WT901_StopReceive();
+                s_system_running = false;
+                if (SD_Log_AppStop() == FR_OK)
+                {
+                    BEEP_Slow(2U);
+                }
+                else
+                {
+                    BEEP_Slow(3U);
+                }
+            }
+        }
+
+        if (s_system_running)
+        {
+            LINE_Result_t line = LINE_Process();
+            (void)WT901_AnalyzeData();
+            SD_Log_AppProcess(&line);
+        }
 
         /* USER CODE END WHILE */
 

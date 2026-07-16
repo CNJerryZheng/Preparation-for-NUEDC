@@ -482,6 +482,62 @@ FRESULT SD_Log_AppStart(void)
     return SD_Log_SetError(result);
 }
 
+FRESULT SD_Log_AppStop(void)
+{
+    FRESULT result;
+
+    if (!s_app_ready)
+    {
+        return SD_Log_SetError(FR_NOT_READY);
+    }
+
+    if (SD_Log_Printf("Button stop: WT901=off; beep=slow-2") < 0)
+    {
+        result = SD_Log_LastError();
+    }
+    else
+    {
+        result = SD_Log_Flush();
+    }
+    if (result == FR_OK)
+    {
+        result = SD_Log_FileFlush(&s_line_log);
+    }
+    if (result == FR_OK)
+    {
+        result = SD_Log_FileFlush(&s_wt901_log);
+    }
+
+    if (result == FR_OK)
+    {
+        s_app_ready = false;
+    }
+    else
+    {
+        SD_Log_AppSetError(result);
+    }
+
+    return SD_Log_SetError(result);
+}
+
+int SD_Log_AppEvent(const char* format, ...)
+{
+    va_list arguments;
+    int result;
+
+    if ((!s_app_ready) || (format == NULL))
+    {
+        (void)SD_Log_SetError(FR_NOT_READY);
+        return -1;
+    }
+
+    va_start(arguments, format);
+    result = SD_Log_VPrintf(&s_log_file, format, arguments);
+    va_end(arguments);
+
+    return result;
+}
+
 void SD_Log_AppProcess(const LINE_Result_t* line)
 {
     uint32_t now = HAL_GetTick();
