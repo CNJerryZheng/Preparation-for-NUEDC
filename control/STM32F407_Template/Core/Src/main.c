@@ -27,7 +27,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "config.h"
+#include "beep.h"
+#include "button.h"
+#include "linetrack.h"
 #include "sd_log.h"
 #include "wt901.h"
 
@@ -51,10 +53,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
-/* Inspect these variables in the debugger after startup. */
-volatile FRESULT g_sd_result = FR_NOT_READY;
-volatile uint8_t g_sd_test_ok = 0U;
+static bool s_system_running; // 系统是否在运行
 
 /* USER CODE END PV */
 
@@ -66,7 +65,6 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
 /* USER CODE END 0 */
 
 /**
@@ -104,13 +102,11 @@ int main(void)
     MX_FATFS_Init();
     /* USER CODE BEGIN 2 */
 
-    g_sd_result = SD_Log_Start(APP_LOG_FILE_PATH, APP_LOG_STARTUP_MESSAGE);
-    g_sd_test_ok = (g_sd_result == FR_OK) ? 1U : 0U;
-
-    WT901_Init();
-    WT901_StartReceive();
-
-    uint32_t tick_start = HAL_GetTick();
+    BEEP_Init(); // 初始化蜂鸣器
+    if (WT901_Init() == HAL_OK) // 初始化 IMU
+    {
+        BEEP_Once(); // 初始化成功则蜂鸣一次
+    }
 
     /* USER CODE END 2 */
 
@@ -118,14 +114,45 @@ int main(void)
     /* USER CODE BEGIN WHILE */
     while (1)
     {
-        // HAL_GPIO_TogglePin(LED0_GPIO_Port, LED0_Pin);
-        // HAL_Delay(g_sd_test_ok != 0U ? APP_LED_LOG_OK_DELAY_MS : APP_LED_LOG_ERROR_DELAY_MS);
+        BEEP_Update();
 
-        WT901_AnalyzeData();
-
-        if (HAL_GetTick() - tick_start >= 500)
+        if (Button_Scan())
         {
-            tick_start = HAL_GetTick();
+            if (!s_system_running)
+            {
+                if ((SD_Log_AppStart() == FR_OK) && (WT901_StartReceive() == HAL_OK))
+                {
+                    s_system_running = true;
+                    (void)SD_Log_AppEvent("Button start: WT901=on; beep=fast-1");
+                    BEEP_Fast(1U);
+                }
+                else
+                {
+                    (void)WT901_StopReceive();
+                    (void)SD_Log_AppStop();
+                    BEEP_Slow(2U);
+                }
+            }
+            else
+            {
+                (void)WT901_StopReceive();
+                s_system_running = false;
+                if (SD_Log_AppStop() == FR_OK)
+                {
+                    BEEP_Slow(2U);
+                }
+                else
+                {
+                    BEEP_Slow(3U);
+                }
+            }
+        }
+
+        if (s_system_running)
+        {
+            LINE_Result_t line = LINE_Process();
+            (void)WT901_AnalyzeData();
+            SD_Log_AppProcess(&line);
         }
 
         /* USER CODE END WHILE */

@@ -44,6 +44,7 @@ volatile WT901_CircularBuffer g_wt901_cirbuf = { { 0 }, 0, 0 }; // 初始化环�
 static volatile uint8_t s_wt901_framebuf[WT901_FRAME_SIZE]; // WT901 数据帧
 static volatile uint16_t s_frame_pos = 0;
 static uint16_t s_wt901_dma_last_pos = 0;
+static bool s_wt901_receiving = false;
 volatile uint32_t g_wt901_lose_count = 0, g_wt901_count = 0; // 丢包计数和总包数
 
 /* <------------------函数------------------> */
@@ -214,10 +215,50 @@ static void WT901_ProcessDmaRx(uint16_t size)
  */
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef* huart, uint16_t Size)
 {
-    if (huart == &WT901_UART)
+    if ((huart == &WT901_UART) && s_wt901_receiving)
     {
         WT901_ProcessDmaRx(Size);
     }
+}
+
+HAL_StatusTypeDef WT901_StartReceive(void)
+{
+    HAL_StatusTypeDef result;
+
+    if (s_wt901_receiving)
+    {
+        return HAL_OK;
+    }
+
+    g_wt901_cirbuf.head = 0U;
+    g_wt901_cirbuf.tail = 0U;
+    s_frame_pos = 0U;
+    s_wt901_dma_last_pos = 0U;
+
+    result = HAL_UARTEx_ReceiveToIdle_DMA(&WT901_UART,
+                                           (uint8_t*)g_wt901_buf,
+                                           WT901_BUF_SIZE);
+    s_wt901_receiving = (result == HAL_OK);
+    return result;
+}
+
+HAL_StatusTypeDef WT901_StopReceive(void)
+{
+    HAL_StatusTypeDef result;
+
+    if (!s_wt901_receiving)
+    {
+        return HAL_OK;
+    }
+
+    result = HAL_UART_DMAStop(&WT901_UART);
+    s_wt901_receiving = false;
+    g_wt901_cirbuf.head = 0U;
+    g_wt901_cirbuf.tail = 0U;
+    s_frame_pos = 0U;
+    s_wt901_dma_last_pos = 0U;
+
+    return result;
 }
 
 /**
