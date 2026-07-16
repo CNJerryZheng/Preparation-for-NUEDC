@@ -236,8 +236,8 @@ HAL_StatusTypeDef WT901_StartReceive(void)
     s_wt901_dma_last_pos = 0U;
 
     result = HAL_UARTEx_ReceiveToIdle_DMA(&WT901_UART,
-                                           (uint8_t*)g_wt901_buf,
-                                           WT901_BUF_SIZE);
+                                          (uint8_t*)g_wt901_buf,
+                                          WT901_BUF_SIZE);
     s_wt901_receiving = (result == HAL_OK);
     return result;
 }
@@ -555,14 +555,6 @@ HAL_StatusTypeDef WT901_Init(void)
 bool WT901_AnalyzeData(void)
 {
     if (WT901_CirRead(s_wt901_raw_data, WT901_FRAME_SIZE) != true) // 检验读取是否正确
-    {
-        return false;
-    }
-    else if (s_wt901_raw_data[0] != WT901_FRAME_HEADER) // 检验包头是否正确
-    {
-        return false;
-    }
-    else if (s_wt901_raw_data[10] != WT901_FRAME_TAILER) // 检验包尾是否正确
     {
         return false;
     }
