@@ -184,6 +184,12 @@ extern volatile uint32_t g_wt901_lose_count, g_wt901_count; //丢包计数和总
  * @retval HAL_StatusTypeDef 开启结果
  */
 HAL_StatusTypeDef WT901_StartReceive(void);
+
+/**
+ * @brief 关闭对 WT901 的数据接收
+ * 
+ * @return HAL_StatusTypeDef 关闭结果
+ */
 HAL_StatusTypeDef WT901_StopReceive(void);
 
 /**
