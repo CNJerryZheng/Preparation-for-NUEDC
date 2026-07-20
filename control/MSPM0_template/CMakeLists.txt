@@ -31,7 +31,6 @@ set(APP_SOURCES
     Core/Src/startup_mspm0g350x_gcc.c
     Core/Src/ti_msp_dl_config.c
     BSP/Src/board.c
-    BSP/Src/oled.c
 )
 
 # DriverLib 中大多数接口是内联函数；芯片族相关实现只编译 MSPM0G。

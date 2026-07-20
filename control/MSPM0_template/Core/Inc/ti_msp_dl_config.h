@@ -83,12 +83,31 @@ extern "C" {
 
 
 
+/* Port definition for Pin Group BSP */
+#define BSP_PORT                                                         (GPIOA)
+
+/* Defines for KEY: GPIOA.13 with pinCMx 35 on package pin 28 */
+#define BSP_KEY_PIN                                             (DL_GPIO_PIN_13)
+#define BSP_KEY_IOMUX                                            (IOMUX_PINCM35)
+/* Port definition for Pin Group MSP */
+#define MSP_PORT                                                         (GPIOB)
+
+/* Defines for LED_BLUE: GPIOB.2 with pinCMx 15 on package pin 14 */
+#define MSP_LED_BLUE_PIN                                         (DL_GPIO_PIN_2)
+#define MSP_LED_BLUE_IOMUX                                       (IOMUX_PINCM15)
+/* Defines for LED_GREEN: GPIOB.3 with pinCMx 16 on package pin 15 */
+#define MSP_LED_GREEN_PIN                                        (DL_GPIO_PIN_3)
+#define MSP_LED_GREEN_IOMUX                                      (IOMUX_PINCM16)
+
+
+
 /* clang-format on */
 
 void SYSCFG_DL_init(void);
 void SYSCFG_DL_initPower(void);
 void SYSCFG_DL_GPIO_init(void);
 void SYSCFG_DL_SYSCTL_init(void);
+
 void SYSCFG_DL_SYSTICK_init(void);
 
 

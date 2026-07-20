@@ -69,8 +69,7 @@
 #ifndef ti_dl_dl_timer__include
 #define ti_dl_dl_timer__include
 
-#if defined(ti_dl_dl_timera__include) || defined(ti_dl_dl_timerg__include) || \
-    defined(DOXYGEN__INCLUDE)
+#if defined(ti_dl_dl_timera__include) || defined(ti_dl_dl_timerg__include) || defined(DOXYGEN__INCLUDE)
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -1239,7 +1238,8 @@ event
 /* clang-format on */
 
 /*! @enum DL_TIMER_CLOCK */
-typedef enum {
+typedef enum
+{
     /*! Selects BUSCLK as clock source */
     DL_TIMER_CLOCK_BUSCLK = GPTIMER_CLKSEL_BUSCLK_SEL_ENABLE,
     /*! Selects 2X BUSCLK as clock source */
@@ -1253,7 +1253,8 @@ typedef enum {
 } DL_TIMER_CLOCK;
 
 /*! @enum  DL_TIMER_CLOCK_DIVIDE */
-typedef enum {
+typedef enum
+{
     /*! Timer source clock divide ratio set to 1 */
     DL_TIMER_CLOCK_DIVIDE_1 = GPTIMER_CLKDIV_RATIO_DIV_BY_1,
     /*! Timer source clock divide ratio set to 2 */
@@ -1273,7 +1274,8 @@ typedef enum {
 } DL_TIMER_CLOCK_DIVIDE;
 
 /*! @enum  DL_TIMER_CCP_DIS_OUT */
-typedef enum {
+typedef enum
+{
     /*! CCP output source is disabled and driven low before conditional
      * inversion */
     DL_TIMER_CCP_DIS_OUT_LOW = GPTIMER_ODIS_C0CCP0_CCP_OUTPUT_LOW,
@@ -1282,7 +1284,8 @@ typedef enum {
 } DL_TIMER_CCP_DIS_OUT;
 
 /*! @enum  DL_TIMER_CC_INDEX */
-typedef enum {
+typedef enum
+{
     /*! Index associated to Capture Compare 0 */
     DL_TIMER_CC_0_INDEX = 0,
     /*! Index associated to Capture Compare 1 */
@@ -1300,7 +1303,8 @@ typedef enum {
 } DL_TIMER_CC_INDEX;
 
 /*! @enum  DL_TIMER_EXT_TRIG_SEL*/
-typedef enum {
+typedef enum
+{
     /*! External trigger 0 */
     DL_TIMER_EXT_TRIG_SEL_TRIG_0 = GPTIMER_TSEL_ETSEL_TRIG0,
     /*! External trigger 1 */
@@ -1340,7 +1344,8 @@ typedef enum {
 } DL_TIMER_EXT_TRIG_SEL;
 
 /*! @enum  DL_TIMER_TIMER_MODE */
-typedef enum {
+typedef enum
+{
     /*! Configures Timer in one shot mode in DOWN COUNTING mode */
     DL_TIMER_TIMER_MODE_ONE_SHOT =
         (GPTIMER_CTRCTL_CM_DOWN | GPTIMER_CTRCTL_REPEAT_REPEAT_0),
@@ -1362,7 +1367,8 @@ typedef enum {
 } DL_TIMER_TIMER_MODE;
 
 /*! @enum  DL_TIMER_CAPTURE_MODE */
-typedef enum {
+typedef enum
+{
     /*! Configures Timer in edge time capture mode and timer is configured
      *! in down counting mode */
     DL_TIMER_CAPTURE_MODE_EDGE_TIME,
@@ -1384,7 +1390,8 @@ typedef enum {
 } DL_TIMER_CAPTURE_MODE;
 
 /*! @enum  DL_TIMER_CAPTURE_COMBINED_MODE */
-typedef enum {
+typedef enum
+{
     /*! Configures Timer in pulse width and period mode and timer is configured
      *! in down counting mode */
     DL_TIMER_CAPTURE_COMBINED_MODE_PULSE_WIDTH_AND_PERIOD,
@@ -1394,7 +1401,8 @@ typedef enum {
 } DL_TIMER_CAPTURE_COMBINED_MODE;
 
 /*! @enum  DL_TIMER_COMPARE_MODE */
-typedef enum {
+typedef enum
+{
     /*! Configures Timer in edge count mode and timer is configured
      *! in down counting mode */
     DL_TIMER_COMPARE_MODE_EDGE_COUNT,
@@ -1407,7 +1415,8 @@ typedef enum {
 } DL_TIMER_COMPARE_MODE;
 
 /*! @enum  DL_TIMER_COUNT_MODE */
-typedef enum {
+typedef enum
+{
     /*! Timer counts in DOWN mode */
     DL_TIMER_COUNT_MODE_DOWN = GPTIMER_CTRCTL_CM_DOWN,
     /*! Timer counts in UP/DOWN mode */
@@ -1417,7 +1426,8 @@ typedef enum {
 } DL_TIMER_COUNT_MODE;
 
 /*! @enum  DL_TIMER */
-typedef enum {
+typedef enum
+{
     /*! Start running timer */
     DL_TIMER_START = GPTIMER_CTRCTL_EN_ENABLED,
     /*! Don't start running timer */
@@ -1425,8 +1435,8 @@ typedef enum {
 } DL_TIMER;
 
 /*! @enum DL_TIMER_INTERM_INT */
-typedef enum {
-
+typedef enum
+{
     /*! Enables intermediate interrupt in timer mode */
     DL_TIMER_INTERM_INT_ENABLED = GPTIMER_CCCTL_01_COC_COMPARE,
     /*! Disabled intermediate interrupt in timer mode */
@@ -1435,7 +1445,8 @@ typedef enum {
 } DL_TIMER_INTERM_INT;
 
 /*! @enum  DL_TIMER_CAPTURE_EDGE_DETECTION_MODE */
-typedef enum {
+typedef enum
+{
     /*! Selects rising edge detection */
     DL_TIMER_CAPTURE_EDGE_DETECTION_MODE_RISING =
         GPTIMER_CCCTL_01_CCOND_CC_TRIG_RISE,
@@ -1445,7 +1456,8 @@ typedef enum {
 } DL_TIMER_CAPTURE_EDGE_DETECTION_MODE;
 
 /*! @enum  DL_TIMER_COMPARE_EDGE_DETECTION_MODE */
-typedef enum {
+typedef enum
+{
     /*! Selects rising edge detection */
     DL_TIMER_COMPARE_EDGE_DETECTION_MODE_RISING =
         GPTIMER_CCCTL_01_ACOND_CC_TRIG_RISE,
@@ -1458,7 +1470,8 @@ typedef enum {
 } DL_TIMER_COMPARE_EDGE_DETECTION_MODE;
 
 /*! @enum DL_TIMER_PWM_MODE */
-typedef enum {
+typedef enum
+{
     /*! Configured Timer for PWM in edge align mode */
     DL_TIMER_PWM_MODE_EDGE_ALIGN = GPTIMER_CTRCTL_CM_DOWN,
     /*! Configured Timer for PWM in edge align mode */
@@ -1468,7 +1481,8 @@ typedef enum {
 } DL_TIMER_PWM_MODE;
 
 /*! @enum DL_TIMER_DEAD_BAND_MODE */
-typedef enum {
+typedef enum
+{
     /*! Selects dead band insertion mode 0 */
     DL_TIMER_DEAD_BAND_MODE_0 = GPTIMER_DBCTL_M1_ENABLE_DISABLED,
     /*! Selects dead band insertion mode 1 */
@@ -1477,7 +1491,8 @@ typedef enum {
 
 /*! @enum DL_TIMER_FAULT_ENTRY_CCP */
 
-typedef enum {
+typedef enum
+{
     /*! The CCP output value is not affected by the event */
     DL_TIMER_FAULT_ENTRY_CCP_DISABLED = GPTIMER_CCACT_01_FENACT_DISABLED,
     /*! The CCP output value is set high */
@@ -1493,7 +1508,8 @@ typedef enum {
 } DL_TIMER_FAULT_ENTRY_CCP;
 
 /*! @enum DL_TIMER_FAULT_EXIT_CCP */
-typedef enum {
+typedef enum
+{
     /*! The CCP output value is not affected by the event */
     DL_TIMER_FAULT_EXIT_CCP_DISABLED = GPTIMER_CCACT_01_FEXACT_DISABLED,
     /*! The CCP output value is set high */
@@ -1509,7 +1525,8 @@ typedef enum {
 } DL_TIMER_FAULT_EXIT_CCP;
 
 /*! @enum DL_TIMER_FAULT_EXIT_CTR */
-typedef enum {
+typedef enum
+{
     /*! Timer resumes counting upon release of fault condition */
     DL_TIMER_FAULT_EXIT_CTR_RESUME = GPTIMER_CTRCTL_FRB_RESUME,
     /*! Timer resumes operation based on counter value after enable
@@ -1518,7 +1535,8 @@ typedef enum {
 } DL_TIMER_FAULT_EXIT_CTR;
 
 /*! @enum DL_TIMER_FAULT_ENTRY_CTR */
-typedef enum {
+typedef enum
+{
     /*! Timer counter continues running during fault */
     DL_TIMER_FAULT_ENTRY_CTR_CONT_COUNT = GPTIMER_CTRCTL_FB_CONT_COUNT,
     /*! Timer counter continues is suspended during fault */
@@ -1526,7 +1544,8 @@ typedef enum {
 } DL_TIMER_FAULT_ENTRY_CTR;
 
 /*! @enum DL_TIMER_CROSS_TRIG_SRC */
-typedef enum {
+typedef enum
+{
     /*! Use FSUB0 for Event manager */
     DL_TIMER_CROSS_TRIG_SRC_FSUB0 = GPTIMER_CTTRIGCTL_EVTCTTRIGSEL_FSUB0,
     /*! Use FSUB1 for Event manager */
@@ -1555,7 +1574,8 @@ typedef enum {
 } DL_TIMER_CROSS_TRIG_SRC;
 
 /*! @enum DL_TIMER_CROSS_TRIGGER_INPUT */
-typedef enum {
+typedef enum
+{
     /*! Cross Triggering through subscriber ports enabled */
     DL_TIMER_CROSS_TRIGGER_INPUT_ENABLED = GPTIMER_CTTRIGCTL_EVTCTEN_ENABLE,
     /*! Cross Triggering through subscriber ports disabled */
@@ -1563,7 +1583,8 @@ typedef enum {
 } DL_TIMER_CROSS_TRIGGER_INPUT;
 
 /*! @enum DL_TIMER_CROSS_TRIGGER_MODE */
-typedef enum {
+typedef enum
+{
     /*! Cross Triggering Enabled */
     DL_TIMER_CROSS_TRIGGER_MODE_ENABLED = GPTIMER_CTTRIGCTL_CTEN_ENABLE,
     /*! Cross Triggering Disabled */
@@ -1571,7 +1592,8 @@ typedef enum {
 } DL_TIMER_CROSS_TRIGGER_MODE;
 
 /*! @enum DL_TIMER_IIDX */
-typedef enum {
+typedef enum
+{
     /*! Timer interrupt index for zero interrupt */
     DL_TIMER_IIDX_ZERO = GPTIMER_CPU_INT_IIDX_STAT_Z,
     /*! Timer interrupt index for load interrupt */
@@ -1617,7 +1639,8 @@ typedef enum {
 } DL_TIMER_IIDX;
 
 /*! @enum DL_TIMER_PUBLISHER_INDEX */
-typedef enum {
+typedef enum
+{
     /*! TIMER Publisher index 0 */
     DL_TIMER_PUBLISHER_INDEX_0 = 0,
     /*! TIMER Publisher index 1 */
@@ -1625,7 +1648,8 @@ typedef enum {
 } DL_TIMER_PUBLISHER_INDEX;
 
 /*! @enum DL_TIMER_SUBSCRIBER_INDEX */
-typedef enum {
+typedef enum
+{
     /*! TIMER Subscriber index 0 */
     DL_TIMER_SUBSCRIBER_INDEX_0 = 0,
     /*! TIMER Subscriber index 1 */
@@ -1633,7 +1657,8 @@ typedef enum {
 } DL_TIMER_SUBSCRIBER_INDEX;
 
 /*! @enum DL_TIMER_EVENT_ROUTE */
-typedef enum {
+typedef enum
+{
     /*! TIMER event route 1 */
     DL_TIMER_EVENT_ROUTE_1 = 0,
     /*! TIMER event route 2 */
@@ -1641,7 +1666,8 @@ typedef enum {
 } DL_TIMER_EVENT_ROUTE;
 
 /*! @enum DL_TIMER_INPUT_CHAN */
-typedef enum {
+typedef enum
+{
     /*! Selected timer instance channel 0 as input capture channel */
     DL_TIMER_INPUT_CHAN_0,
     /*! Selects timer instance channel 1 as input capture channel */
@@ -1657,7 +1683,8 @@ typedef enum {
 } DL_TIMER_INPUT_CHAN;
 
 /*! @enum  DL_TIMER_DEBUG_RES */
-typedef enum {
+typedef enum
+{
     /*! Resume counting */
     DL_TIMER_DEBUG_RES_RESUME = GPTIMER_CTRCTL_DRB_RESUME,
     /*! Perform the action as specified by the Counter Value After Enable (CVAE)
@@ -1666,7 +1693,8 @@ typedef enum {
 } DL_TIMER_DEBUG_RES;
 
 /*! @enum  DL_TIMER_CZC */
-typedef enum {
+typedef enum
+{
     /*! Zero event is controlled by CCCTL0 Zero condition */
     DL_TIMER_CZC_CCCTL0_ZCOND = GPTIMER_CTRCTL_CZC_CCCTL0_ZCOND,
     /*! Zero event is controlled by CCCTL1 Zero condition */
@@ -1682,7 +1710,8 @@ typedef enum {
 } DL_TIMER_CZC;
 
 /*! @enum  DL_TIMER_CAC */
-typedef enum {
+typedef enum
+{
     /*! Advance event is controlled by CCCTL0 advance condition */
     DL_TIMER_CAC_CCCTL0_ACOND = GPTIMER_CTRCTL_CAC_CCCTL0_ACOND,
     /*! Advance event is controlled by CCCTL1 advance condition */
@@ -1698,7 +1727,8 @@ typedef enum {
 } DL_TIMER_CAC;
 
 /*! @enum  DL_TIMER_CLC */
-typedef enum {
+typedef enum
+{
     /*! Load event is controlled by CCCTL0 load condition */
     DL_TIMER_CLC_CCCTL0_LCOND = GPTIMER_CTRCTL_CLC_CCCTL0_LCOND,
     /*! Load event is controlled by CCCTL1 load condition */
@@ -1714,7 +1744,8 @@ typedef enum {
 } DL_TIMER_CLC;
 
 /*! @enum  DL_TIMER_COUNT_AFTER_EN */
-typedef enum {
+typedef enum
+{
     /*! The counter is set to the LOAD register value */
     DL_TIMER_COUNT_AFTER_EN_LOAD_VAL = GPTIMER_CTRCTL_CVAE_LDVAL,
     /*! The counter value is unchanged from its current value */
@@ -1725,7 +1756,8 @@ typedef enum {
 } DL_TIMER_COUNT_AFTER_EN;
 
 /*! @enum  DL_TIMER_REPEAT_MODE */
-typedef enum {
+typedef enum
+{
     /*! Does not automatically advance following a zero event */
     DL_TIMER_REPEAT_MODE_DISABLED = GPTIMER_CTRCTL_REPEAT_REPEAT_0,
     /*! Continues to advance following a zero event */
@@ -1736,7 +1768,8 @@ typedef enum {
 } DL_TIMER_REPEAT_MODE;
 
 /*! @enum  DL_TIMER_CC_UPDATE_METHOD */
-typedef enum {
+typedef enum
+{
     /*! Value written to the CCACT.SWFRCACT register has immediate effect */
     DL_TIMER_CC_UPDATE_METHOD_IMMEDIATE = (GPTIMER_CCCTL_01_CCUPD_IMMEDIATELY),
     /*! Following a zero event. Writes to the CCx_y register are stored in
@@ -1773,7 +1806,8 @@ typedef enum {
 } DL_TIMER_CC_UPDATE_METHOD;
 
 /*! @enum  DL_TIMER_SEC_COMP_DOWN_EVT */
-typedef enum {
+typedef enum
+{
     /*! Selects Capture Compare down event based on Capture Compare register 0
      *! value */
     DL_TIMER_SEC_COMP_DOWN_EVT_SEL_CC0 = (GPTIMER_CCCTL_01_CC2SELD_SEL_CCD0),
@@ -1795,7 +1829,8 @@ typedef enum {
 } DL_TIMER_SEC_COMP_DOWN_EVT;
 
 /*! @enum  DL_TIMER_SEC_COMP_UP_EVT */
-typedef enum {
+typedef enum
+{
     /*! Selects Capture Compare up event based on Capture Compare register 0
      *! value */
     DL_TIMER_SEC_COMP_UP_EVT_SEL_CC0 = (GPTIMER_CCCTL_01_CC2SELU_SEL_CCU0),
@@ -1817,7 +1852,8 @@ typedef enum {
 } DL_TIMER_SEC_COMP_UP_EVT;
 
 /*! @enum  DL_TIMER_SEC_COMP_UP_ACT_SEL */
-typedef enum {
+typedef enum
+{
     /*! Second comparator output action is disabled. */
     DL_TIMER_SEC_COMP_UP_ACT_SEL_DISABLE = GPTIMER_CCACT_01_CC2UACT_DISABLED,
     /*! Timer channel is set high when the second comparator up counting event
@@ -1832,7 +1868,8 @@ typedef enum {
 } DL_TIMER_SEC_COMP_UP_ACT_SEL;
 
 /*! @enum  DL_TIMER_SEC_COMP_DOWN_ACT_SEL */
-typedef enum {
+typedef enum
+{
     /*! Second comparator output action is disabled. */
     DL_TIMER_SEC_COMP_DOWN_ACT_SEL_DISABLE = GPTIMER_CCACT_01_CC2DACT_DISABLED,
     /*! Timer channel is set high when the second comparator down counting event
@@ -1848,7 +1885,8 @@ typedef enum {
 } DL_TIMER_SEC_COMP_DOWN_ACT_SEL;
 
 /*! @enum  DL_TIMER_SUPP_COMP_EVT_RC */
-typedef enum {
+typedef enum
+{
     /*! Capture compare up and down events are always generated from the counter
      *! when their conditions are genreated */
     DL_TIMER_SUPP_COMP_EVT_RC_DISABLED = (GPTIMER_CCCTL_01_SCERCNEZ_DISABLED),
@@ -1858,7 +1896,8 @@ typedef enum {
 } DL_TIMER_SUPP_COMP_EVT_RC;
 
 /*! @enum  DL_TIMER_FORCE_OUT */
-typedef enum {
+typedef enum
+{
     /*! The CCP output value is unaffected */
     DL_TIMER_FORCE_OUT_DISABLED = (GPTIMER_CCACT_01_SWFRCACT_DISABLED),
     /*! Output value is set high */
@@ -1869,7 +1908,8 @@ typedef enum {
 } DL_TIMER_FORCE_OUT;
 
 /*! @enum  DL_TIMER_FORCE_CMPL_OUT */
-typedef enum {
+typedef enum
+{
     /*! The complementary CCP output value is unaffected */
     DL_TIMER_FORCE_CMPL_OUT_DISABLED =
         (GPTIMER_CCACT_01_SWFRCACT_CMPL_DISABLED),
@@ -1881,7 +1921,8 @@ typedef enum {
 } DL_TIMER_FORCE_CMPL_OUT;
 
 /*! @enum  DL_TIMER_CORE_HALT */
-typedef enum {
+typedef enum
+{
     /*! Timer will halt immediately, even if the resultant state will result in
         corruption if the system is restarted */
     DL_TIMER_CORE_HALT_IMMEDIATE =
@@ -1898,7 +1939,8 @@ typedef enum {
 /*!
  *  @brief  Configuration struct for @ref DL_Timer_setClockConfig.
  */
-typedef struct {
+typedef struct
+{
     /*! Selects timer module clock source @ref DL_TIMER_CLOCK*/
     DL_TIMER_CLOCK clockSel;
     /*! Selects the timer module clock divide ratio
@@ -1911,7 +1953,8 @@ typedef struct {
 /*!
  *  @brief  Configuration struct for @ref DL_Timer_initTimerMode.
  */
-typedef struct {
+typedef struct
+{
     /*! One shot or Periodic mode configuration. One of
      * @ref DL_TIMER_TIMER_MODE */
     DL_TIMER_TIMER_MODE timerMode;
@@ -1932,7 +1975,8 @@ typedef struct {
 /*!
  * @brief Configuration struct for @ref DL_Timer_initCaptureMode.
  */
-typedef struct {
+typedef struct
+{
     /*! Selects capture mode. One of @ref DL_TIMER_CAPTURE_MODE */
     DL_TIMER_CAPTURE_MODE captureMode;
     /*! Specifies the capture period. period_actual=(period +1)T_TIMCLK
@@ -1953,7 +1997,8 @@ typedef struct {
 /*!
  * @brief Configuration struct for @ref DL_Timer_initCaptureTriggerMode.
  */
-typedef struct {
+typedef struct
+{
     /*! Selects capture mode. One of @ref DL_TIMER_CAPTURE_MODE */
     DL_TIMER_CAPTURE_MODE captureMode;
     /*! Specifies the capture period. period_actual=(period +1) * T_TIMCLK
@@ -1966,7 +2011,8 @@ typedef struct {
 /*!
  * @brief Configuration struct for @ref DL_Timer_initCaptureCombinedMode.
  */
-typedef struct {
+typedef struct
+{
     /*! Selects capture mode. One of @ref DL_TIMER_CAPTURE_COMBINED_MODE */
     DL_TIMER_CAPTURE_COMBINED_MODE captureMode;
     /*! Specifies the capture period. period_actual=(period +1)T_TIMCLK
@@ -1984,7 +2030,8 @@ typedef struct {
 /*!
  * @brief Configuration struct for @ref DL_Timer_initCompareMode.
  */
-typedef struct {
+typedef struct
+{
     /*! Selects capture mode. One of @ref DL_TIMER_COMPARE_MODE */
     DL_TIMER_COMPARE_MODE compareMode;
     /*! Specifies the intial count value. In edge count mode this value will
@@ -2007,7 +2054,8 @@ typedef struct {
 /*!
  * @brief Configuration struct for @ref DL_Timer_initCompareTriggerMode.
  */
-typedef struct {
+typedef struct
+{
     /*! Selects capture mode. One of @ref DL_TIMER_COMPARE_MODE */
     DL_TIMER_COMPARE_MODE compareMode;
     /*! Specifies the intial count value. In edge count mode this value will
@@ -2025,7 +2073,8 @@ typedef struct {
 /**
  * @brief Configuration struct for @ref DL_Timer_initPWMMode.
  */
-typedef struct {
+typedef struct
+{
     /*! Specifies the pwm period. The actual value configured to LOAD register
      *  depends on the pwmMode selected. When
      *  pwmMode = DL_TIMER_PWM_MODE_EDGE_ALIGN, LOAD = (period -1). When
@@ -2035,6 +2084,10 @@ typedef struct {
     uint32_t period;
     /*! Specifies the PWM Mode. One of @ref DL_TIMER_PWM_MODE */
     DL_TIMER_PWM_MODE pwmMode;
+    /*! Specifies if this is a counter with four capture compare registers.
+        This field keeps the project DriverLib ABI compatible with the
+        MSPM0 SDK 2.02 SysConfig PWM generator. */
+    bool isTimerWithFourCC;
     /*! Start timer after configuration @ref DL_TIMER */
     DL_TIMER startTimer;
 } DL_Timer_PWMConfig;
@@ -2045,7 +2098,8 @@ typedef struct {
  *        Used by @ref DL_Timer_saveConfiguration and
  *        @ref DL_Timer_restoreConfiguration
  */
-typedef struct {
+typedef struct
+{
     /*! Timer subscriber 0 channel ID. Value between 0 - 15. */
     uint32_t sub0PortConf;
     /*! Timer subscriber 1 channel ID. Value between 0 - 15. */
@@ -2114,19 +2168,19 @@ typedef struct {
 } DL_Timer_backupConfig;
 
 /*! @enum DL_TIMER_QEI_MODE */
-typedef enum {
+typedef enum
+{
     /*! Set QEI to 2 input mode: PHA->CCP0, PHB->CCP1. */
     DL_TIMER_QEI_MODE_2_INPUT =
-        (GPTIMER_CTRCTL_CLC_QEI_2INP | GPTIMER_CTRCTL_CAC_QEI_2INP |
-            GPTIMER_CTRCTL_CZC_QEI_2INP),
+        (GPTIMER_CTRCTL_CLC_QEI_2INP | GPTIMER_CTRCTL_CAC_QEI_2INP | GPTIMER_CTRCTL_CZC_QEI_2INP),
     /*! Set QEI to 3 input mode: PHA->CCP0, PHB->CCP1, Index input signal->IDX. */
     DL_TIMER_QEI_MODE_3_INPUT =
-        (GPTIMER_CTRCTL_CLC_QEI_3INP | GPTIMER_CTRCTL_CAC_QEI_3INP |
-            GPTIMER_CTRCTL_CZC_QEI_3INP),
+        (GPTIMER_CTRCTL_CLC_QEI_3INP | GPTIMER_CTRCTL_CAC_QEI_3INP | GPTIMER_CTRCTL_CZC_QEI_3INP),
 } DL_TIMER_QEI_MODE;
 
 /*! @enum DL_TIMER_QEI_DIRECTION */
-typedef enum {
+typedef enum
+{
     /*! Encoder counter going down */
     DL_TIMER_QEI_DIR_DOWN = GPTIMER_QDIR_DIR_DOWN,
     /*! Encoder counter going up */
@@ -2139,7 +2193,7 @@ typedef enum {
  * @param gptimer              Pointer to the register overlay for the
  *                             peripheral
  */
-__STATIC_INLINE void DL_Timer_enablePower(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_enablePower(GPTIMER_Regs* gptimer)
 {
     gptimer->GPRCM.PWREN =
         (GPTIMER_PWREN_KEY_UNLOCK_W | GPTIMER_PWREN_ENABLE_ENABLE);
@@ -2151,7 +2205,7 @@ __STATIC_INLINE void DL_Timer_enablePower(GPTIMER_Regs *gptimer)
  * @param gptimer              Pointer to the register overlay for the
  *                             peripheral
  */
-__STATIC_INLINE void DL_Timer_disablePower(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_disablePower(GPTIMER_Regs* gptimer)
 {
     gptimer->GPRCM.PWREN =
         (GPTIMER_PWREN_KEY_UNLOCK_W | GPTIMER_PWREN_ENABLE_DISABLE);
@@ -2166,10 +2220,9 @@ __STATIC_INLINE void DL_Timer_disablePower(GPTIMER_Regs *gptimer)
  * @return true if power is enabled
  * @return false if power is disabled
  */
-__STATIC_INLINE bool DL_Timer_isPowerEnabled(GPTIMER_Regs *gptimer)
+__STATIC_INLINE bool DL_Timer_isPowerEnabled(GPTIMER_Regs* gptimer)
 {
-    return ((gptimer->GPRCM.PWREN & GPTIMER_PWREN_ENABLE_MASK) ==
-            GPTIMER_PWREN_ENABLE_ENABLE);
+    return ((gptimer->GPRCM.PWREN & GPTIMER_PWREN_ENABLE_MASK) == GPTIMER_PWREN_ENABLE_ENABLE);
 }
 
 /**
@@ -2178,11 +2231,10 @@ __STATIC_INLINE bool DL_Timer_isPowerEnabled(GPTIMER_Regs *gptimer)
  * @param gptimer              Pointer to the register overlay for the
  *                             peripheral
  */
-__STATIC_INLINE void DL_Timer_reset(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_reset(GPTIMER_Regs* gptimer)
 {
     gptimer->GPRCM.RSTCTL =
-        (GPTIMER_RSTCTL_KEY_UNLOCK_W | GPTIMER_RSTCTL_RESETSTKYCLR_CLR |
-            GPTIMER_RSTCTL_RESETASSERT_ASSERT);
+        (GPTIMER_RSTCTL_KEY_UNLOCK_W | GPTIMER_RSTCTL_RESETSTKYCLR_CLR | GPTIMER_RSTCTL_RESETASSERT_ASSERT);
 }
 
 /**
@@ -2194,10 +2246,9 @@ __STATIC_INLINE void DL_Timer_reset(GPTIMER_Regs *gptimer)
  * @return true if peripheral was reset
  * @return false if peripheral wasn't reset
  */
-__STATIC_INLINE bool DL_Timer_isReset(GPTIMER_Regs *gptimer)
+__STATIC_INLINE bool DL_Timer_isReset(GPTIMER_Regs* gptimer)
 {
-    return ((gptimer->GPRCM.STAT & GPTIMER_STAT_RESETSTKY_MASK) ==
-            GPTIMER_STAT_RESETSTKY_RESET);
+    return ((gptimer->GPRCM.STAT & GPTIMER_STAT_RESETSTKY_MASK) == GPTIMER_STAT_RESETSTKY_RESET);
 }
 
 /**
@@ -2209,7 +2260,8 @@ __STATIC_INLINE bool DL_Timer_isReset(GPTIMER_Regs *gptimer)
  *                             output. Bitwise OR  of @ref DL_TIMER_CCx
  */
 __STATIC_INLINE void DL_Timer_setCCPDirection(
-    GPTIMER_Regs *gptimer, uint32_t ccpConfig)
+    GPTIMER_Regs* gptimer,
+    uint32_t ccpConfig)
 {
     gptimer->COMMONREGS.CCPD = (ccpConfig);
 }
@@ -2222,7 +2274,7 @@ __STATIC_INLINE void DL_Timer_setCCPDirection(
  *
  *  @return     Bitwise OR of CCP Direction configuration @ref DL_TIMER_CCx
  */
-__STATIC_INLINE uint32_t DL_Timer_getCCPDirection(GPTIMER_Regs *gptimer)
+__STATIC_INLINE uint32_t DL_Timer_getCCPDirection(GPTIMER_Regs* gptimer)
 {
     return (gptimer->COMMONREGS.CCPD);
 }
@@ -2244,13 +2296,13 @@ __STATIC_INLINE uint32_t DL_Timer_getCCPDirection(GPTIMER_Regs *gptimer)
  *  @param[in]  ccp1Config     Output Configuration for CCP1. One of @ref
  *                             DL_TIMER_CCP_DIS_OUT
  */
-__STATIC_INLINE void DL_Timer_setCCPOutputDisabled(GPTIMER_Regs *gptimer,
-    DL_TIMER_CCP_DIS_OUT ccp0Config, DL_TIMER_CCP_DIS_OUT ccp1Config)
+__STATIC_INLINE void DL_Timer_setCCPOutputDisabled(GPTIMER_Regs* gptimer,
+                                                   DL_TIMER_CCP_DIS_OUT ccp0Config,
+                                                   DL_TIMER_CCP_DIS_OUT ccp1Config)
 {
     DL_Common_updateReg(&gptimer->COMMONREGS.ODIS,
-        (((uint32_t) ccp0Config) |
-            ((uint32_t) ccp1Config << GPTIMER_ODIS_C0CCP1_OFS)),
-        (GPTIMER_ODIS_C0CCP0_MASK | GPTIMER_ODIS_C0CCP1_MASK));
+                        (((uint32_t)ccp0Config) | ((uint32_t)ccp1Config << GPTIMER_ODIS_C0CCP1_OFS)),
+                        (GPTIMER_ODIS_C0CCP0_MASK | GPTIMER_ODIS_C0CCP1_MASK));
 }
 
 /**
@@ -2271,11 +2323,10 @@ __STATIC_INLINE void DL_Timer_setCCPOutputDisabled(GPTIMER_Regs *gptimer,
  *                             @ref DL_TIMER_CCP3_DIS_OUT_ADV
  */
 __STATIC_INLINE void DL_Timer_setCCPOutputDisabledAdv(
-    GPTIMER_Regs *gptimer, uint32_t ccpOdisConfig)
+    GPTIMER_Regs* gptimer,
+    uint32_t ccpOdisConfig)
 {
-    DL_Common_updateReg(&gptimer->COMMONREGS.ODIS, (ccpOdisConfig),
-        (GPTIMER_ODIS_C0CCP0_MASK | GPTIMER_ODIS_C0CCP1_MASK |
-            GPTIMER_ODIS_C0CCP2_MASK | GPTIMER_ODIS_C0CCP3_MASK));
+    DL_Common_updateReg(&gptimer->COMMONREGS.ODIS, (ccpOdisConfig), (GPTIMER_ODIS_C0CCP0_MASK | GPTIMER_ODIS_C0CCP1_MASK | GPTIMER_ODIS_C0CCP2_MASK | GPTIMER_ODIS_C0CCP3_MASK));
 }
 
 /**
@@ -2286,7 +2337,8 @@ __STATIC_INLINE void DL_Timer_setCCPOutputDisabledAdv(
  *                             @ref DL_Timer_ClockConfig.
  */
 void DL_Timer_setClockConfig(
-    GPTIMER_Regs *gptimer, DL_Timer_ClockConfig *config);
+    GPTIMER_Regs* gptimer,
+    DL_Timer_ClockConfig* config);
 
 /**
  *  @brief      Get  timer source clock configuration
@@ -2296,7 +2348,8 @@ void DL_Timer_setClockConfig(
  *                             @ref DL_Timer_ClockConfig.
  */
 void DL_Timer_getClockConfig(
-    GPTIMER_Regs *gptimer, DL_Timer_ClockConfig *config);
+    GPTIMER_Regs* gptimer,
+    DL_Timer_ClockConfig* config);
 
 /**
  *  @brief      Enable timer clock
@@ -2304,7 +2357,7 @@ void DL_Timer_getClockConfig(
  *                             peripheral
  *
  */
-__STATIC_INLINE void DL_Timer_enableClock(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_enableClock(GPTIMER_Regs* gptimer)
 {
     gptimer->COMMONREGS.CCLKCTL = (GPTIMER_CCLKCTL_CLKEN_ENABLED);
 }
@@ -2315,7 +2368,7 @@ __STATIC_INLINE void DL_Timer_enableClock(GPTIMER_Regs *gptimer)
  *                             peripheral
  *
  */
-__STATIC_INLINE void DL_Timer_disableClock(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_disableClock(GPTIMER_Regs* gptimer)
 {
     gptimer->COMMONREGS.CCLKCTL = (GPTIMER_CCLKCTL_CLKEN_DISABLED);
 }
@@ -2328,10 +2381,9 @@ __STATIC_INLINE void DL_Timer_disableClock(GPTIMER_Regs *gptimer)
  *  @return true if clock is enabled
  *  @return false if clock is disabled
  */
-__STATIC_INLINE bool DL_Timer_isClockEnabled(GPTIMER_Regs *gptimer)
+__STATIC_INLINE bool DL_Timer_isClockEnabled(GPTIMER_Regs* gptimer)
 {
-    return ((gptimer->COMMONREGS.CCLKCTL & GPTIMER_CCLKCTL_CLKEN_MASK) ==
-            GPTIMER_CCLKCTL_CLKEN_ENABLED);
+    return ((gptimer->COMMONREGS.CCLKCTL & GPTIMER_CCLKCTL_CLKEN_MASK) == GPTIMER_CCLKCTL_CLKEN_ENABLED);
 }
 
 /**
@@ -2349,14 +2401,13 @@ __STATIC_INLINE bool DL_Timer_isClockEnabled(GPTIMER_Regs *gptimer)
  *                                @ref DL_TIMER_CROSS_TRIGGER_MODE
  *
  */
-__STATIC_INLINE void DL_Timer_configCrossTrigger(GPTIMER_Regs *gptimer,
-    DL_TIMER_CROSS_TRIG_SRC ctSource,
-    DL_TIMER_CROSS_TRIGGER_INPUT enInTrigCond,
-    DL_TIMER_CROSS_TRIGGER_MODE enCrossTrig)
+__STATIC_INLINE void DL_Timer_configCrossTrigger(GPTIMER_Regs* gptimer,
+                                                 DL_TIMER_CROSS_TRIG_SRC ctSource,
+                                                 DL_TIMER_CROSS_TRIGGER_INPUT enInTrigCond,
+                                                 DL_TIMER_CROSS_TRIGGER_MODE enCrossTrig)
 {
     gptimer->COMMONREGS.CTTRIGCTL =
-        (uint32_t)((uint32_t) ctSource | (uint32_t) enInTrigCond |
-                   (uint32_t) enCrossTrig);
+        (uint32_t)((uint32_t)ctSource | (uint32_t)enInTrigCond | (uint32_t)enCrossTrig);
 }
 
 /**
@@ -2369,10 +2420,10 @@ __STATIC_INLINE void DL_Timer_configCrossTrigger(GPTIMER_Regs *gptimer,
  *
  */
 __STATIC_INLINE void DL_Timer_configCrossTriggerSrc(
-    GPTIMER_Regs *gptimer, DL_TIMER_CROSS_TRIG_SRC ctSource)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CROSS_TRIG_SRC ctSource)
 {
-    DL_Common_updateReg(&gptimer->COMMONREGS.CTTRIGCTL, (uint32_t) ctSource,
-        GPTIMER_CTTRIGCTL_EVTCTTRIGSEL_MASK);
+    DL_Common_updateReg(&gptimer->COMMONREGS.CTTRIGCTL, (uint32_t)ctSource, GPTIMER_CTTRIGCTL_EVTCTTRIGSEL_MASK);
 }
 
 /**
@@ -2387,10 +2438,12 @@ __STATIC_INLINE void DL_Timer_configCrossTriggerSrc(
  *
  */
 __STATIC_INLINE void DL_Timer_configCrossTriggerInputCond(
-    GPTIMER_Regs *gptimer, DL_TIMER_CROSS_TRIGGER_INPUT enInTrigCond)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CROSS_TRIGGER_INPUT enInTrigCond)
 {
     DL_Common_updateReg(&gptimer->COMMONREGS.CTTRIGCTL,
-        (uint32_t) enInTrigCond, GPTIMER_CTTRIGCTL_EVTCTEN_MASK);
+                        (uint32_t)enInTrigCond,
+                        GPTIMER_CTTRIGCTL_EVTCTEN_MASK);
 }
 
 /**
@@ -2403,10 +2456,10 @@ __STATIC_INLINE void DL_Timer_configCrossTriggerInputCond(
  *
  */
 __STATIC_INLINE void DL_Timer_configCrossTriggerEnable(
-    GPTIMER_Regs *gptimer, DL_TIMER_CROSS_TRIGGER_MODE enCrossTrig)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CROSS_TRIGGER_MODE enCrossTrig)
 {
-    DL_Common_updateReg(&gptimer->COMMONREGS.CTTRIGCTL, (uint32_t) enCrossTrig,
-        GPTIMER_CTTRIGCTL_CTEN_MASK);
+    DL_Common_updateReg(&gptimer->COMMONREGS.CTTRIGCTL, (uint32_t)enCrossTrig, GPTIMER_CTTRIGCTL_CTEN_MASK);
 }
 
 /**
@@ -2419,7 +2472,7 @@ __STATIC_INLINE void DL_Timer_configCrossTriggerEnable(
  *          @ref DL_TIMER_CROSS_TRIGGER_INPUT, @ref DL_TIMER_CROSS_TRIGGER_MODE,
  *
  */
-__STATIC_INLINE uint32_t DL_Timer_getCrossTriggerConfig(GPTIMER_Regs *gptimer)
+__STATIC_INLINE uint32_t DL_Timer_getCrossTriggerConfig(GPTIMER_Regs* gptimer)
 {
     return (gptimer->COMMONREGS.CTTRIGCTL);
 }
@@ -2434,7 +2487,7 @@ __STATIC_INLINE uint32_t DL_Timer_getCrossTriggerConfig(GPTIMER_Regs *gptimer)
  *
  */
 __STATIC_INLINE DL_TIMER_CROSS_TRIG_SRC DL_Timer_getCrossTriggerSrc(
-    GPTIMER_Regs *gptimer)
+    GPTIMER_Regs* gptimer)
 {
     uint32_t ctSource =
         gptimer->COMMONREGS.CTTRIGCTL & GPTIMER_CTTRIGCTL_EVTCTTRIGSEL_MASK;
@@ -2452,7 +2505,7 @@ __STATIC_INLINE DL_TIMER_CROSS_TRIG_SRC DL_Timer_getCrossTriggerSrc(
  *
  */
 __STATIC_INLINE DL_TIMER_CROSS_TRIGGER_INPUT DL_Timer_getCrossTriggerInputCond(
-    GPTIMER_Regs *gptimer)
+    GPTIMER_Regs* gptimer)
 {
     uint32_t triggerCondition =
         gptimer->COMMONREGS.CTTRIGCTL & GPTIMER_CTTRIGCTL_EVTCTEN_MASK;
@@ -2470,7 +2523,7 @@ __STATIC_INLINE DL_TIMER_CROSS_TRIGGER_INPUT DL_Timer_getCrossTriggerInputCond(
  *
  */
 __STATIC_INLINE DL_TIMER_CROSS_TRIGGER_MODE DL_Timer_getCrossTriggerEnable(
-    GPTIMER_Regs *gptimer)
+    GPTIMER_Regs* gptimer)
 {
     uint32_t mode =
         gptimer->COMMONREGS.CTTRIGCTL & GPTIMER_CTTRIGCTL_CTEN_MASK;
@@ -2485,7 +2538,7 @@ __STATIC_INLINE DL_TIMER_CROSS_TRIGGER_MODE DL_Timer_getCrossTriggerEnable(
  *  @param[in]  gptimer        Pointer to the register overlay for the
  *                             peripheral
  */
-__STATIC_INLINE void DL_Timer_generateCrossTrigger(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_generateCrossTrigger(GPTIMER_Regs* gptimer)
 {
     gptimer->COMMONREGS.CTTRIG = GPTIMER_CTTRIG_TRIG_GENERATE;
 }
@@ -2500,7 +2553,7 @@ __STATIC_INLINE void DL_Timer_generateCrossTrigger(GPTIMER_Regs *gptimer)
  *  @param[in]  gptimer        Pointer to the register overlay for the
  *                             peripheral
  */
-__STATIC_INLINE void DL_Timer_enableShadowFeatures(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_enableShadowFeatures(GPTIMER_Regs* gptimer)
 {
     gptimer->COMMONREGS.GCTL |= GPTIMER_GCTL_SHDWLDEN_ENABLE;
 }
@@ -2515,7 +2568,7 @@ __STATIC_INLINE void DL_Timer_enableShadowFeatures(GPTIMER_Regs *gptimer)
  *  @param[in]  gptimer        Pointer to the register overlay for the
  *                             peripheral
  */
-__STATIC_INLINE void DL_Timer_disableShadowFeatures(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_disableShadowFeatures(GPTIMER_Regs* gptimer)
 {
     gptimer->COMMONREGS.GCTL &= ~(GPTIMER_GCTL_SHDWLDEN_ENABLE);
 }
@@ -2532,7 +2585,8 @@ __STATIC_INLINE void DL_Timer_disableShadowFeatures(GPTIMER_Regs *gptimer)
  *
  */
 __STATIC_INLINE void DL_Timer_setLoadValue(
-    GPTIMER_Regs *gptimer, uint32_t value)
+    GPTIMER_Regs* gptimer,
+    uint32_t value)
 {
     gptimer->COUNTERREGS.LOAD = value;
 }
@@ -2546,7 +2600,7 @@ __STATIC_INLINE void DL_Timer_setLoadValue(
  *  @return     Returns the timer's LOAD register value.
  *
  */
-__STATIC_INLINE uint32_t DL_Timer_getLoadValue(GPTIMER_Regs *gptimer)
+__STATIC_INLINE uint32_t DL_Timer_getLoadValue(GPTIMER_Regs* gptimer)
 {
     return (gptimer->COUNTERREGS.LOAD & GPTIMER_LOAD_LD_MAXIMUM);
 }
@@ -2559,7 +2613,7 @@ __STATIC_INLINE uint32_t DL_Timer_getLoadValue(GPTIMER_Regs *gptimer)
  *
  *  @return     Returns the timer counter value
  */
-__STATIC_INLINE uint32_t DL_Timer_getTimerCount(GPTIMER_Regs *gptimer)
+__STATIC_INLINE uint32_t DL_Timer_getTimerCount(GPTIMER_Regs* gptimer)
 {
     return (gptimer->COUNTERREGS.CTR & GPTIMER_CTR_CCTR_MASK);
 }
@@ -2582,7 +2636,8 @@ __STATIC_INLINE uint32_t DL_Timer_getTimerCount(GPTIMER_Regs *gptimer)
  *
  */
 __STATIC_INLINE void DL_Timer_setTimerCount(
-    GPTIMER_Regs *gptimer, uint32_t value)
+    GPTIMER_Regs* gptimer,
+    uint32_t value)
 {
     gptimer->COUNTERREGS.CTR = value;
 }
@@ -2598,7 +2653,7 @@ __STATIC_INLINE void DL_Timer_setTimerCount(
  *                              peripheral
  *
  */
-__STATIC_INLINE void DL_Timer_enableLZEventSuppression(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_enableLZEventSuppression(GPTIMER_Regs* gptimer)
 {
     gptimer->COUNTERREGS.CTRCTL |= (GPTIMER_CTRCTL_SLZERCNEZ_ENABLED);
 }
@@ -2614,7 +2669,7 @@ __STATIC_INLINE void DL_Timer_enableLZEventSuppression(GPTIMER_Regs *gptimer)
  *                              peripheral
  *
  */
-__STATIC_INLINE void DL_Timer_disableLZEventSuppression(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_disableLZEventSuppression(GPTIMER_Regs* gptimer)
 {
     gptimer->COUNTERREGS.CTRCTL &= ~(GPTIMER_CTRCTL_SLZERCNEZ_ENABLED);
 }
@@ -2631,10 +2686,9 @@ __STATIC_INLINE void DL_Timer_disableLZEventSuppression(GPTIMER_Regs *gptimer)
  *
  */
 __STATIC_INLINE bool DL_Timer_isLZEventSuppressionEnabled(
-    GPTIMER_Regs *gptimer)
+    GPTIMER_Regs* gptimer)
 {
-    return (GPTIMER_CTRCTL_SLZERCNEZ_ENABLED ==
-            (gptimer->COUNTERREGS.CTRCTL & GPTIMER_CTRCTL_SLZERCNEZ_MASK));
+    return (GPTIMER_CTRCTL_SLZERCNEZ_ENABLED == (gptimer->COUNTERREGS.CTRCTL & GPTIMER_CTRCTL_SLZERCNEZ_MASK));
 }
 
 /**
@@ -2649,10 +2703,10 @@ __STATIC_INLINE bool DL_Timer_isLZEventSuppressionEnabled(
  *
  */
 __STATIC_INLINE void DL_Timer_setDebugReleaseBehavior(
-    GPTIMER_Regs *gptimer, DL_TIMER_DEBUG_RES debResB)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_DEBUG_RES debResB)
 {
-    DL_Common_updateReg(&gptimer->COUNTERREGS.CTRCTL, (uint32_t) debResB,
-        GPTIMER_CTRCTL_DRB_MASK);
+    DL_Common_updateReg(&gptimer->COUNTERREGS.CTRCTL, (uint32_t)debResB, GPTIMER_CTRCTL_DRB_MASK);
 }
 
 /**
@@ -2664,7 +2718,7 @@ __STATIC_INLINE void DL_Timer_setDebugReleaseBehavior(
  *
  */
 __STATIC_INLINE DL_TIMER_DEBUG_RES DL_Timer_getDebugReleaseBehavior(
-    GPTIMER_Regs *gptimer)
+    GPTIMER_Regs* gptimer)
 {
     uint32_t debResB = gptimer->COUNTERREGS.CTRCTL & GPTIMER_CTRCTL_DRB_MASK;
 
@@ -2685,13 +2739,14 @@ __STATIC_INLINE DL_TIMER_DEBUG_RES DL_Timer_getDebugReleaseBehavior(
  *                              with LD register value.
  *                              @ref DL_TIMER_CLC
  */
-__STATIC_INLINE void DL_Timer_setCounterControl(GPTIMER_Regs *gptimer,
-    DL_TIMER_CZC zeroCtl, DL_TIMER_CAC advCtl, DL_TIMER_CLC loadCtl)
+__STATIC_INLINE void DL_Timer_setCounterControl(GPTIMER_Regs* gptimer,
+                                                DL_TIMER_CZC zeroCtl,
+                                                DL_TIMER_CAC advCtl,
+                                                DL_TIMER_CLC loadCtl)
 {
     DL_Common_updateReg(&gptimer->COUNTERREGS.CTRCTL,
-        ((uint32_t) zeroCtl | (uint32_t) advCtl | (uint32_t) loadCtl),
-        (GPTIMER_CTRCTL_CZC_MASK | GPTIMER_CTRCTL_CAC_MASK |
-            GPTIMER_CTRCTL_CLC_MASK));
+                        ((uint32_t)zeroCtl | (uint32_t)advCtl | (uint32_t)loadCtl),
+                        (GPTIMER_CTRCTL_CZC_MASK | GPTIMER_CTRCTL_CAC_MASK | GPTIMER_CTRCTL_CLC_MASK));
 }
 
 /**
@@ -2702,7 +2757,7 @@ __STATIC_INLINE void DL_Timer_setCounterControl(GPTIMER_Regs *gptimer,
  *  @return @ref DL_TIMER_CZC
  */
 __STATIC_INLINE DL_TIMER_CZC DL_Timer_getCounterZeroControl(
-    GPTIMER_Regs *gptimer)
+    GPTIMER_Regs* gptimer)
 {
     uint32_t zeroCtl = gptimer->COUNTERREGS.CTRCTL & GPTIMER_CTRCTL_CZC_MASK;
 
@@ -2717,7 +2772,7 @@ __STATIC_INLINE DL_TIMER_CZC DL_Timer_getCounterZeroControl(
  *  @return @ref DL_TIMER_CAC
  */
 __STATIC_INLINE DL_TIMER_CAC DL_Timer_getCounterAdvanceControl(
-    GPTIMER_Regs *gptimer)
+    GPTIMER_Regs* gptimer)
 {
     uint32_t advCtl = gptimer->COUNTERREGS.CTRCTL & GPTIMER_CTRCTL_CAC_MASK;
 
@@ -2732,7 +2787,7 @@ __STATIC_INLINE DL_TIMER_CAC DL_Timer_getCounterAdvanceControl(
  *  @return @ref DL_TIMER_CLC
  */
 __STATIC_INLINE DL_TIMER_CLC DL_Timer_getCounterLoadControl(
-    GPTIMER_Regs *gptimer)
+    GPTIMER_Regs* gptimer)
 {
     uint32_t loadCtl = gptimer->COUNTERREGS.CTRCTL & GPTIMER_CTRCTL_CLC_MASK;
 
@@ -2748,10 +2803,10 @@ __STATIC_INLINE DL_TIMER_CLC DL_Timer_getCounterLoadControl(
  *                              @ref DL_TIMER_COUNT_MODE
  */
 __STATIC_INLINE void DL_Timer_setCounterMode(
-    GPTIMER_Regs *gptimer, DL_TIMER_COUNT_MODE countMode)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_COUNT_MODE countMode)
 {
-    DL_Common_updateReg(&gptimer->COUNTERREGS.CTRCTL, ((uint32_t) countMode),
-        (GPTIMER_CTRCTL_CM_MASK));
+    DL_Common_updateReg(&gptimer->COUNTERREGS.CTRCTL, ((uint32_t)countMode), (GPTIMER_CTRCTL_CM_MASK));
 }
 
 /**
@@ -2763,10 +2818,10 @@ __STATIC_INLINE void DL_Timer_setCounterMode(
  *  @return @ref DL_TIMER_COUNT_MODE
  */
 __STATIC_INLINE DL_TIMER_COUNT_MODE DL_Timer_getCounterMode(
-    GPTIMER_Regs *gptimer)
+    GPTIMER_Regs* gptimer)
 {
     uint32_t cmMode = (gptimer->COUNTERREGS.CTRCTL & GPTIMER_CTRCTL_CM_MASK);
-    return ((DL_TIMER_COUNT_MODE) cmMode);
+    return ((DL_TIMER_COUNT_MODE)cmMode);
 }
 
 /**
@@ -2779,10 +2834,10 @@ __STATIC_INLINE DL_TIMER_COUNT_MODE DL_Timer_getCounterMode(
  *
  */
 __STATIC_INLINE void DL_Timer_setCounterValueAfterEnable(
-    GPTIMER_Regs *gptimer, DL_TIMER_COUNT_AFTER_EN cvae)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_COUNT_AFTER_EN cvae)
 {
-    DL_Common_updateReg(&gptimer->COUNTERREGS.CTRCTL, (uint32_t) cvae,
-        GPTIMER_CTRCTL_CVAE_MASK);
+    DL_Common_updateReg(&gptimer->COUNTERREGS.CTRCTL, (uint32_t)cvae, GPTIMER_CTRCTL_CVAE_MASK);
 }
 
 /**
@@ -2794,7 +2849,7 @@ __STATIC_INLINE void DL_Timer_setCounterValueAfterEnable(
  *
  */
 __STATIC_INLINE DL_TIMER_COUNT_AFTER_EN DL_Timer_getCounterValueAfterEnable(
-    GPTIMER_Regs *gptimer)
+    GPTIMER_Regs* gptimer)
 {
     uint32_t cvae = gptimer->COUNTERREGS.CTRCTL & GPTIMER_CTRCTL_CVAE_MASK;
 
@@ -2814,10 +2869,10 @@ __STATIC_INLINE DL_TIMER_COUNT_AFTER_EN DL_Timer_getCounterValueAfterEnable(
  *                              @ref DL_TIMER_REPEAT_MODE
  */
 __STATIC_INLINE void DL_Timer_setCounterRepeatMode(
-    GPTIMER_Regs *gptimer, DL_TIMER_REPEAT_MODE repeatMode)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_REPEAT_MODE repeatMode)
 {
-    DL_Common_updateReg(&gptimer->COUNTERREGS.CTRCTL, (uint32_t) repeatMode,
-        GPTIMER_CTRCTL_REPEAT_MASK);
+    DL_Common_updateReg(&gptimer->COUNTERREGS.CTRCTL, (uint32_t)repeatMode, GPTIMER_CTRCTL_REPEAT_MASK);
 }
 
 /**
@@ -2828,7 +2883,7 @@ __STATIC_INLINE void DL_Timer_setCounterRepeatMode(
  *  @return @ref DL_TIMER_REPEAT_MODE
  */
 __STATIC_INLINE DL_TIMER_REPEAT_MODE DL_Timer_getCounterRepeatMode(
-    GPTIMER_Regs *gptimer)
+    GPTIMER_Regs* gptimer)
 {
     uint32_t repeatMode =
         gptimer->COUNTERREGS.CTRCTL & GPTIMER_CTRCTL_REPEAT_MASK;
@@ -2849,7 +2904,8 @@ __STATIC_INLINE DL_TIMER_REPEAT_MODE DL_Timer_getCounterRepeatMode(
  *
  */
 void DL_Timer_initTimerMode(
-    GPTIMER_Regs *gptimer, DL_Timer_TimerConfig *config);
+    GPTIMER_Regs* gptimer,
+    DL_Timer_TimerConfig* config);
 
 /**
  *  @brief      Configure timer in edge count, period capture, edge time or
@@ -2865,7 +2921,8 @@ void DL_Timer_initTimerMode(
  *
  */
 void DL_Timer_initCaptureMode(
-    GPTIMER_Regs *gptimer, DL_Timer_CaptureConfig *config);
+    GPTIMER_Regs* gptimer,
+    DL_Timer_CaptureConfig* config);
 
 /**
  *  @brief      Configure timer in edge count, period capture, edge time or
@@ -2881,7 +2938,8 @@ void DL_Timer_initCaptureMode(
  *
  */
 void DL_Timer_initCaptureTriggerMode(
-    GPTIMER_Regs *gptimer, DL_Timer_CaptureTriggerConfig *config);
+    GPTIMER_Regs* gptimer,
+    DL_Timer_CaptureTriggerConfig* config);
 
 /**
  *  @brief      Configure timer in combined pulse-width and period capture
@@ -2896,7 +2954,8 @@ void DL_Timer_initCaptureTriggerMode(
  *
  */
 void DL_Timer_initCaptureCombinedMode(
-    GPTIMER_Regs *gptimer, DL_Timer_CaptureCombinedConfig *config);
+    GPTIMER_Regs* gptimer,
+    DL_Timer_CaptureCombinedConfig* config);
 
 /**
  *  @brief      Configure timer in edge count compare mode
@@ -2911,7 +2970,8 @@ void DL_Timer_initCaptureCombinedMode(
  *
  */
 void DL_Timer_initCompareMode(
-    GPTIMER_Regs *gptimer, DL_Timer_CompareConfig *config);
+    GPTIMER_Regs* gptimer,
+    DL_Timer_CompareConfig* config);
 
 /**
  *  @brief      Configure timer in edge count compare mode using the trigger as
@@ -2927,7 +2987,8 @@ void DL_Timer_initCompareMode(
  *
  */
 void DL_Timer_initCompareTriggerMode(
-    GPTIMER_Regs *gptimer, DL_Timer_CompareTriggerConfig *config);
+    GPTIMER_Regs* gptimer,
+    DL_Timer_CompareTriggerConfig* config);
 
 /**
  * @brief Configure timer in Pulse Width Modulation Mode
@@ -2940,7 +3001,7 @@ void DL_Timer_initCompareTriggerMode(
  * @param config               Pointer to the mode configuration struct
  *                             @ref DL_Timer_PWMConfig.
  */
-void DL_Timer_initPWMMode(GPTIMER_Regs *gptimer, DL_Timer_PWMConfig *config);
+void DL_Timer_initPWMMode(GPTIMER_Regs* gptimer, DL_Timer_PWMConfig* config);
 
 /**
  *  @brief      Reset register controlling counter operation
@@ -2949,7 +3010,7 @@ void DL_Timer_initPWMMode(GPTIMER_Regs *gptimer, DL_Timer_PWMConfig *config);
  *                             peripheral
  *
  */
-__STATIC_INLINE void DL_Timer_resetCounterMode(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_resetCounterMode(GPTIMER_Regs* gptimer)
 {
     gptimer->COUNTERREGS.CTRCTL = GPTIMER_CTRCTL_EN_DISABLED;
 }
@@ -2965,7 +3026,9 @@ __STATIC_INLINE void DL_Timer_resetCounterMode(GPTIMER_Regs *gptimer)
  *
  */
 void DL_Timer_setCaptureCompareValue(
-    GPTIMER_Regs *gptimer, uint32_t value, DL_TIMER_CC_INDEX ccIndex);
+    GPTIMER_Regs* gptimer,
+    uint32_t value,
+    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief      Get Timer Capture Compare value
@@ -2981,7 +3044,8 @@ void DL_Timer_setCaptureCompareValue(
  *
  */
 uint32_t DL_Timer_getCaptureCompareValue(
-    GPTIMER_Regs *gptimer, DL_TIMER_CC_INDEX ccIndex);
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief Sets Capture Compare Control configuration
@@ -2999,8 +3063,7 @@ uint32_t DL_Timer_getCaptureCompareValue(
  *                             @ref DL_TIMER_CC_INDEX.
  *
  */
-void DL_Timer_setCaptureCompareCtl(GPTIMER_Regs *gptimer, uint32_t ccMode,
-    uint32_t ccCondMask, DL_TIMER_CC_INDEX ccIndex);
+void DL_Timer_setCaptureCompareCtl(GPTIMER_Regs* gptimer, uint32_t ccMode, uint32_t ccCondMask, DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief   Gets Capture Compare Control configuration
@@ -3016,7 +3079,8 @@ void DL_Timer_setCaptureCompareCtl(GPTIMER_Regs *gptimer, uint32_t ccMode,
  *
  */
 uint32_t DL_Timer_getCaptureCompareCtl(
-    GPTIMER_Regs *gptimer, DL_TIMER_CC_INDEX ccIndex);
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief Configures source for second capture compare down event
@@ -3029,8 +3093,9 @@ uint32_t DL_Timer_getCaptureCompareCtl(
  *                           @ref DL_TIMER_CC_INDEX.
  *
  */
-void DL_Timer_setSecondCompSrcDn(GPTIMER_Regs *gptimer,
-    DL_TIMER_SEC_COMP_DOWN_EVT secCompDn, DL_TIMER_CC_INDEX ccIndex);
+void DL_Timer_setSecondCompSrcDn(GPTIMER_Regs* gptimer,
+                                 DL_TIMER_SEC_COMP_DOWN_EVT secCompDn,
+                                 DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief Gets source for second capture compare down event
@@ -3042,7 +3107,8 @@ void DL_Timer_setSecondCompSrcDn(GPTIMER_Regs *gptimer,
  *  @return @ref DL_TIMER_SEC_COMP_DOWN_EVT
  */
 DL_TIMER_SEC_COMP_DOWN_EVT DL_Timer_getSecondCompSrcDn(
-    GPTIMER_Regs *gptimer, DL_TIMER_CC_INDEX ccIndex);
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief Configures source for second capture compare up event
@@ -3055,8 +3121,9 @@ DL_TIMER_SEC_COMP_DOWN_EVT DL_Timer_getSecondCompSrcDn(
  *                           @ref DL_TIMER_CC_INDEX.
  *
  */
-void DL_Timer_setSecondCompSrcUp(GPTIMER_Regs *gptimer,
-    DL_TIMER_SEC_COMP_UP_EVT secCompUp, DL_TIMER_CC_INDEX ccIndex);
+void DL_Timer_setSecondCompSrcUp(GPTIMER_Regs* gptimer,
+                                 DL_TIMER_SEC_COMP_UP_EVT secCompUp,
+                                 DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief Gets source for second capture compare down event
@@ -3068,7 +3135,8 @@ void DL_Timer_setSecondCompSrcUp(GPTIMER_Regs *gptimer,
  *  @return @ref DL_TIMER_SEC_COMP_UP_EVT
  */
 DL_TIMER_SEC_COMP_UP_EVT DL_Timer_getSecondCompSrcUp(
-    GPTIMER_Regs *gptimer, DL_TIMER_CC_INDEX ccIndex);
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief Enables suppression of compare event if repeat counter is not equal to
@@ -3080,7 +3148,8 @@ DL_TIMER_SEC_COMP_UP_EVT DL_Timer_getSecondCompSrcUp(
  *                           @ref DL_TIMER_CC_INDEX.
  */
 void DL_Timer_enableSuppressionOfCompEvent(
-    GPTIMER_Regs *gptimer, DL_TIMER_CC_INDEX ccIndex);
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief Disables suppression of compare event if repeat counter is not equal
@@ -3092,7 +3161,8 @@ void DL_Timer_enableSuppressionOfCompEvent(
  *                           @ref DL_TIMER_CC_INDEX.
  */
 void DL_Timer_disableSuppressionOfCompEvent(
-    GPTIMER_Regs *gptimer, DL_TIMER_CC_INDEX ccIndex);
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief Configures capture compare shadow register update method
@@ -3105,8 +3175,9 @@ void DL_Timer_disableSuppressionOfCompEvent(
  *                             @ref DL_TIMER_CC_INDEX.
  *
  */
-void DL_Timer_setCaptCompUpdateMethod(GPTIMER_Regs *gptimer,
-    DL_TIMER_CC_UPDATE_METHOD ccUpdtMode, DL_TIMER_CC_INDEX ccIndex);
+void DL_Timer_setCaptCompUpdateMethod(GPTIMER_Regs* gptimer,
+                                      DL_TIMER_CC_UPDATE_METHOD ccUpdtMode,
+                                      DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief Gets capture compare shadow register update method
@@ -3118,7 +3189,8 @@ void DL_Timer_setCaptCompUpdateMethod(GPTIMER_Regs *gptimer,
  * @return @ref DL_TIMER_CC_UPDATE_METHOD
  */
 DL_TIMER_CC_UPDATE_METHOD DL_Timer_getCaptCompUpdateMethod(
-    GPTIMER_Regs *gptimer, DL_TIMER_CC_INDEX ccIndex);
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief     Sets Capture Compare Output Control
@@ -3135,8 +3207,7 @@ DL_TIMER_CC_UPDATE_METHOD DL_Timer_getCaptCompUpdateMethod(
  *                             @ref DL_TIMER_CC_INDEX.
  *
  */
-void DL_Timer_setCaptureCompareOutCtl(GPTIMER_Regs *gptimer, uint32_t ccpIV,
-    uint32_t ccpOInv, uint32_t ccpO, DL_TIMER_CC_INDEX ccIndex);
+void DL_Timer_setCaptureCompareOutCtl(GPTIMER_Regs* gptimer, uint32_t ccpIV, uint32_t ccpOInv, uint32_t ccpO, DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief    Gets Capture Compare Output Control
@@ -3151,7 +3222,8 @@ void DL_Timer_setCaptureCompareOutCtl(GPTIMER_Regs *gptimer, uint32_t ccpIV,
  *
  */
 uint32_t DL_Timer_getCaptureCompareOutCtl(
-    GPTIMER_Regs *gptimer, DL_TIMER_CC_INDEX ccIndex);
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief     Sets actions of the signal generator
@@ -3169,7 +3241,9 @@ uint32_t DL_Timer_getCaptureCompareOutCtl(
  *
  */
 void DL_Timer_setCaptureCompareAction(
-    GPTIMER_Regs *gptimer, uint32_t actionsMask, DL_TIMER_CC_INDEX ccIndex);
+    GPTIMER_Regs* gptimer,
+    uint32_t actionsMask,
+    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief    Gets actions of the signal generator
@@ -3187,7 +3261,8 @@ void DL_Timer_setCaptureCompareAction(
  *
  */
 uint32_t DL_Timer_getCaptureCompareAction(
-    GPTIMER_Regs *gptimer, DL_TIMER_CC_INDEX ccIndex);
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief    Set second comparator down counting timer channel output action
@@ -3204,8 +3279,9 @@ uint32_t DL_Timer_getCaptureCompareAction(
  *                             @ref DL_TIMER_CC_INDEX.
  *
  */
-void DL_Timer_setSecondCompActionDn(GPTIMER_Regs *gptimer,
-    DL_TIMER_SEC_COMP_DOWN_ACT_SEL secCompDnAct, DL_TIMER_CC_INDEX ccIndex);
+void DL_Timer_setSecondCompActionDn(GPTIMER_Regs* gptimer,
+                                    DL_TIMER_SEC_COMP_DOWN_ACT_SEL secCompDnAct,
+                                    DL_TIMER_CC_INDEX ccIndex);
 /**
  *  @brief    Gets second comparator down counting timer channel output action
  *
@@ -3218,7 +3294,8 @@ void DL_Timer_setSecondCompActionDn(GPTIMER_Regs *gptimer,
  *
  */
 DL_TIMER_SEC_COMP_DOWN_ACT_SEL DL_Timer_getSecondCompActionDn(
-    GPTIMER_Regs *gptimer, DL_TIMER_CC_INDEX ccIndex);
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief    Sets second comparator up counting timer channel output action
@@ -3235,8 +3312,9 @@ DL_TIMER_SEC_COMP_DOWN_ACT_SEL DL_Timer_getSecondCompActionDn(
  *                             @ref DL_TIMER_CC_INDEX.
  *
  */
-void DL_Timer_setSecondCompActionUp(GPTIMER_Regs *gptimer,
-    DL_TIMER_SEC_COMP_UP_ACT_SEL secCompUpAct, DL_TIMER_CC_INDEX ccIndex);
+void DL_Timer_setSecondCompActionUp(GPTIMER_Regs* gptimer,
+                                    DL_TIMER_SEC_COMP_UP_ACT_SEL secCompUpAct,
+                                    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief    Gets second comparator up counting timer channel output action
@@ -3250,7 +3328,8 @@ void DL_Timer_setSecondCompActionUp(GPTIMER_Regs *gptimer,
  *
  */
 DL_TIMER_SEC_COMP_UP_ACT_SEL DL_Timer_getSecondCompActionUp(
-    GPTIMER_Regs *gptimer, DL_TIMER_CC_INDEX ccIndex);
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief Overrides the timer CCP output
@@ -3267,8 +3346,7 @@ DL_TIMER_SEC_COMP_UP_ACT_SEL DL_Timer_getSecondCompActionUp(
  *  @param[in]  ccIndex       Index associated to capture compare register
  *                            @ref DL_TIMER_CC_INDEX.
  */
-void DL_Timer_overrideCCPOut(GPTIMER_Regs *gptimer, DL_TIMER_FORCE_OUT out,
-    DL_TIMER_FORCE_CMPL_OUT outComp, DL_TIMER_CC_INDEX ccIndex);
+void DL_Timer_overrideCCPOut(GPTIMER_Regs* gptimer, DL_TIMER_FORCE_OUT out, DL_TIMER_FORCE_CMPL_OUT outComp, DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief     Sets Capture Compare Input
@@ -3283,8 +3361,7 @@ void DL_Timer_overrideCCPOut(GPTIMER_Regs *gptimer, DL_TIMER_FORCE_OUT out,
  *                             @ref DL_TIMER_CC_INDEX.
  *
  */
-void DL_Timer_setCaptureCompareInput(GPTIMER_Regs *gptimer, uint32_t inv,
-    uint32_t isel, DL_TIMER_CC_INDEX ccIndex);
+void DL_Timer_setCaptureCompareInput(GPTIMER_Regs* gptimer, uint32_t inv, uint32_t isel, DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief    Gets Capture Compare Input
@@ -3299,7 +3376,8 @@ void DL_Timer_setCaptureCompareInput(GPTIMER_Regs *gptimer, uint32_t inv,
  *
  */
 uint32_t DL_Timer_getCaptureCompareInput(
-    GPTIMER_Regs *gptimer, DL_TIMER_CC_INDEX ccIndex);
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief     Sets Capture Compare Input Filter
@@ -3314,8 +3392,7 @@ uint32_t DL_Timer_getCaptureCompareInput(
  *                             @ref DL_TIMER_CC_INDEX.
  *
  */
-void DL_Timer_setCaptureCompareInputFilter(GPTIMER_Regs *gptimer, uint32_t cpv,
-    uint32_t fp, DL_TIMER_CC_INDEX ccIndex);
+void DL_Timer_setCaptureCompareInputFilter(GPTIMER_Regs* gptimer, uint32_t cpv, uint32_t fp, DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief    Gets Capture Compare Input Filter
@@ -3330,7 +3407,8 @@ void DL_Timer_setCaptureCompareInputFilter(GPTIMER_Regs *gptimer, uint32_t cpv,
  *
  */
 uint32_t DL_Timer_getCaptureCompareInputFilter(
-    GPTIMER_Regs *gptimer, DL_TIMER_CC_INDEX ccIndex);
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief Enables the capture compare input filter
@@ -3341,7 +3419,8 @@ uint32_t DL_Timer_getCaptureCompareInputFilter(
  *                             @ref DL_TIMER_CC_INDEX.
  */
 void DL_Timer_enableCaptureCompareInputFilter(
-    GPTIMER_Regs *gptimer, DL_TIMER_CC_INDEX ccIndex);
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief Disables the capture compare input filter
@@ -3352,7 +3431,8 @@ void DL_Timer_enableCaptureCompareInputFilter(
  *                             @ref DL_TIMER_CC_INDEX.
  */
 void DL_Timer_disableCaptureCompareInputFilter(
-    GPTIMER_Regs *gptimer, DL_TIMER_CC_INDEX ccIndex);
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief Checks if the capture compare input filter is enabled
@@ -3367,7 +3447,8 @@ void DL_Timer_disableCaptureCompareInputFilter(
  *  @retval     false capture compare input filter is disabled
  */
 bool DL_Timer_isCaptureCompareInputFilterEnabled(
-    GPTIMER_Regs *gptimer, DL_TIMER_CC_INDEX ccIndex);
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CC_INDEX ccIndex);
 
 /**
  *  @brief     Sets dead band fall and raise delay
@@ -3384,12 +3465,13 @@ bool DL_Timer_isCaptureCompareInputFilterEnabled(
  *                             @ref DL_TIMER_DEAD_BAND_MODE
  *
  */
-__STATIC_INLINE void DL_Timer_setDeadBand(GPTIMER_Regs *gptimer,
-    uint16_t falldelay, uint16_t risedelay, uint32_t mode)
+__STATIC_INLINE void DL_Timer_setDeadBand(GPTIMER_Regs* gptimer,
+                                          uint16_t falldelay,
+                                          uint16_t risedelay,
+                                          uint32_t mode)
 {
     gptimer->COUNTERREGS.DBCTL =
-        (((uint32_t) falldelay << GPTIMER_DBCTL_FALLDELAY_OFS) |
-            (uint32_t) risedelay | mode);
+        (((uint32_t)falldelay << GPTIMER_DBCTL_FALLDELAY_OFS) | (uint32_t)risedelay | mode);
 }
 
 /**
@@ -3400,13 +3482,12 @@ __STATIC_INLINE void DL_Timer_setDeadBand(GPTIMER_Regs *gptimer,
  *
  *  @return Dead Band Fall delay in TIMCLK
  */
-__STATIC_INLINE uint16_t DL_Timer_getDeadBandFallDelay(GPTIMER_Regs *gptimer)
+__STATIC_INLINE uint16_t DL_Timer_getDeadBandFallDelay(GPTIMER_Regs* gptimer)
 {
     uint32_t temp =
-        (gptimer->COUNTERREGS.DBCTL & GPTIMER_DBCTL_FALLDELAY_MASK) >>
-        GPTIMER_DBCTL_FALLDELAY_OFS;
+        (gptimer->COUNTERREGS.DBCTL & GPTIMER_DBCTL_FALLDELAY_MASK) >> GPTIMER_DBCTL_FALLDELAY_OFS;
 
-    return ((uint16_t) temp);
+    return ((uint16_t)temp);
 }
 
 /**
@@ -3417,10 +3498,9 @@ __STATIC_INLINE uint16_t DL_Timer_getDeadBandFallDelay(GPTIMER_Regs *gptimer)
  *
  *  @return Dead Band Rise delay in TIMCLK
  */
-__STATIC_INLINE uint16_t DL_Timer_getDeadBandRiseDelay(GPTIMER_Regs *gptimer)
+__STATIC_INLINE uint16_t DL_Timer_getDeadBandRiseDelay(GPTIMER_Regs* gptimer)
 {
-    return (uint16_t)(
-        (gptimer->COUNTERREGS.DBCTL) & (GPTIMER_DBCTL_RISEDELAY_MASK));
+    return (uint16_t)((gptimer->COUNTERREGS.DBCTL) & (GPTIMER_DBCTL_RISEDELAY_MASK));
 }
 
 /**
@@ -3433,10 +3513,10 @@ __STATIC_INLINE uint16_t DL_Timer_getDeadBandRiseDelay(GPTIMER_Regs *gptimer)
  *
  */
 __STATIC_INLINE void DL_Timer_setExternalTriggerEvent(
-    GPTIMER_Regs *gptimer, DL_TIMER_EXT_TRIG_SEL trigSel)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_EXT_TRIG_SEL trigSel)
 {
-    DL_Common_updateReg(&gptimer->COUNTERREGS.TSEL, (uint32_t) trigSel,
-        GPTIMER_TSEL_ETSEL_MASK);
+    DL_Common_updateReg(&gptimer->COUNTERREGS.TSEL, (uint32_t)trigSel, GPTIMER_TSEL_ETSEL_MASK);
 }
 
 /**
@@ -3449,7 +3529,7 @@ __STATIC_INLINE void DL_Timer_setExternalTriggerEvent(
  *
  */
 __STATIC_INLINE DL_TIMER_EXT_TRIG_SEL DL_Timer_getExternalTriggerEvent(
-    GPTIMER_Regs *gptimer)
+    GPTIMER_Regs* gptimer)
 {
     uint32_t trigSel = gptimer->COUNTERREGS.TSEL & GPTIMER_TSEL_ETSEL_MASK;
 
@@ -3463,7 +3543,7 @@ __STATIC_INLINE DL_TIMER_EXT_TRIG_SEL DL_Timer_getExternalTriggerEvent(
  *                             peripheral
  *
  */
-__STATIC_INLINE void DL_Timer_enableExternalTrigger(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_enableExternalTrigger(GPTIMER_Regs* gptimer)
 {
     gptimer->COUNTERREGS.TSEL |= (GPTIMER_TSEL_TE_ENABLED);
 }
@@ -3475,7 +3555,7 @@ __STATIC_INLINE void DL_Timer_enableExternalTrigger(GPTIMER_Regs *gptimer)
  *                             peripheral
  *
  */
-__STATIC_INLINE void DL_Timer_disableExternalTrigger(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_disableExternalTrigger(GPTIMER_Regs* gptimer)
 {
     gptimer->COUNTERREGS.TSEL &= ~(GPTIMER_TSEL_TE_ENABLED);
 }
@@ -3491,10 +3571,9 @@ __STATIC_INLINE void DL_Timer_disableExternalTrigger(GPTIMER_Regs *gptimer)
  *  @retval     true  external trigger is enabled
  *  @retval     false external trigger is disabled
  */
-__STATIC_INLINE bool DL_Timer_isExternalTriggerEnabled(GPTIMER_Regs *gptimer)
+__STATIC_INLINE bool DL_Timer_isExternalTriggerEnabled(GPTIMER_Regs* gptimer)
 {
-    return ((gptimer->COUNTERREGS.TSEL & GPTIMER_TSEL_TE_MASK) ==
-            GPTIMER_TSEL_TE_ENABLED);
+    return ((gptimer->COUNTERREGS.TSEL & GPTIMER_TSEL_TE_MASK) == GPTIMER_TSEL_TE_ENABLED);
 }
 
 /**
@@ -3512,7 +3591,8 @@ __STATIC_INLINE bool DL_Timer_isExternalTriggerEnabled(GPTIMER_Regs *gptimer)
  *
  */
 __STATIC_INLINE void DL_Timer_setRepeatCounter(
-    GPTIMER_Regs *gptimer, uint8_t repeatCount)
+    GPTIMER_Regs* gptimer,
+    uint8_t repeatCount)
 {
     gptimer->COUNTERREGS.RCLD = (repeatCount);
 }
@@ -3530,7 +3610,7 @@ __STATIC_INLINE void DL_Timer_setRepeatCounter(
  *  @return Repeat counter value.
  *
  */
-__STATIC_INLINE uint8_t DL_Timer_getRepeatCounter(GPTIMER_Regs *gptimer)
+__STATIC_INLINE uint8_t DL_Timer_getRepeatCounter(GPTIMER_Regs* gptimer)
 {
     return ((uint8_t)(gptimer->COUNTERREGS.RC & GPTIMER_RC_RC_MASK));
 }
@@ -3542,7 +3622,7 @@ __STATIC_INLINE uint8_t DL_Timer_getRepeatCounter(GPTIMER_Regs *gptimer)
  *                              peripheral
  *
  */
-__STATIC_INLINE void DL_Timer_enablePhaseLoad(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_enablePhaseLoad(GPTIMER_Regs* gptimer)
 {
     gptimer->COUNTERREGS.CTRCTL |= (GPTIMER_CTRCTL_PLEN_ENABLED);
 }
@@ -3555,7 +3635,7 @@ __STATIC_INLINE void DL_Timer_enablePhaseLoad(GPTIMER_Regs *gptimer)
  *
  *
  */
-__STATIC_INLINE void DL_Timer_disablePhaseLoad(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_disablePhaseLoad(GPTIMER_Regs* gptimer)
 {
     gptimer->COUNTERREGS.CTRCTL &= ~(GPTIMER_CTRCTL_PLEN_ENABLED);
 }
@@ -3571,10 +3651,9 @@ __STATIC_INLINE void DL_Timer_disablePhaseLoad(GPTIMER_Regs *gptimer)
  *  @retval     false phase load is disabled
  *
  */
-__STATIC_INLINE bool DL_Timer_isPhaseLoadEnabled(GPTIMER_Regs *gptimer)
+__STATIC_INLINE bool DL_Timer_isPhaseLoadEnabled(GPTIMER_Regs* gptimer)
 {
-    return (GPTIMER_CTRCTL_PLEN_ENABLED ==
-            (gptimer->COUNTERREGS.CTRCTL & GPTIMER_CTRCTL_PLEN_MASK));
+    return (GPTIMER_CTRCTL_PLEN_ENABLED == (gptimer->COUNTERREGS.CTRCTL & GPTIMER_CTRCTL_PLEN_MASK));
 }
 
 /**
@@ -3586,7 +3665,8 @@ __STATIC_INLINE bool DL_Timer_isPhaseLoadEnabled(GPTIMER_Regs *gptimer)
  *
  */
 __STATIC_INLINE void DL_Timer_setPhaseLoadValue(
-    GPTIMER_Regs *gptimer, uint32_t value)
+    GPTIMER_Regs* gptimer,
+    uint32_t value)
 {
     gptimer->COUNTERREGS.PL = (value);
 }
@@ -3599,7 +3679,7 @@ __STATIC_INLINE void DL_Timer_setPhaseLoadValue(
  *
  *  @return Phase load value
  */
-__STATIC_INLINE uint32_t DL_Timer_getPhaseLoadValue(GPTIMER_Regs *gptimer)
+__STATIC_INLINE uint32_t DL_Timer_getPhaseLoadValue(GPTIMER_Regs* gptimer)
 {
     return ((uint32_t)(gptimer->COUNTERREGS.PL & GPTIMER_PL_PHASE_MASK));
 }
@@ -3611,7 +3691,7 @@ __STATIC_INLINE uint32_t DL_Timer_getPhaseLoadValue(GPTIMER_Regs *gptimer)
  *                             peripheral
  *
  */
-__STATIC_INLINE void DL_Timer_startCounter(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_startCounter(GPTIMER_Regs* gptimer)
 {
     gptimer->COUNTERREGS.CTRCTL |= (GPTIMER_CTRCTL_EN_ENABLED);
 }
@@ -3623,7 +3703,7 @@ __STATIC_INLINE void DL_Timer_startCounter(GPTIMER_Regs *gptimer)
  *                             peripheral
  *
  */
-__STATIC_INLINE void DL_Timer_stopCounter(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_stopCounter(GPTIMER_Regs* gptimer)
 {
     gptimer->COUNTERREGS.CTRCTL &= ~(GPTIMER_CTRCTL_EN_ENABLED);
 }
@@ -3639,10 +3719,9 @@ __STATIC_INLINE void DL_Timer_stopCounter(GPTIMER_Regs *gptimer)
  *  @retval     true  Timer is running
  *  @retval     false Timer is not running
  */
-__STATIC_INLINE bool DL_Timer_isRunning(GPTIMER_Regs *gptimer)
+__STATIC_INLINE bool DL_Timer_isRunning(GPTIMER_Regs* gptimer)
 {
-    return ((gptimer->COUNTERREGS.CTRCTL & GPTIMER_CTRCTL_EN_MASK) ==
-            GPTIMER_CTRCTL_EN_ENABLED);
+    return ((gptimer->COUNTERREGS.CTRCTL & GPTIMER_CTRCTL_EN_MASK) == GPTIMER_CTRCTL_EN_ENABLED);
 }
 
 /**
@@ -3660,16 +3739,17 @@ __STATIC_INLINE bool DL_Timer_isRunning(GPTIMER_Regs *gptimer)
  *  @param[in]  ccIndex        Index associated to capture compare register
  *                             @ref DL_TIMER_CC_INDEX.
  */
-__STATIC_INLINE void DL_Timer_configQEI(GPTIMER_Regs *gptimer,
-    DL_TIMER_QEI_MODE mode, uint32_t invert, DL_TIMER_CC_INDEX ccIndex)
+__STATIC_INLINE void DL_Timer_configQEI(GPTIMER_Regs* gptimer,
+                                        DL_TIMER_QEI_MODE mode,
+                                        uint32_t invert,
+                                        DL_TIMER_CC_INDEX ccIndex)
 {
     gptimer->COUNTERREGS.CCCTL_01[ccIndex] =
         GPTIMER_CCCTL_01_CCOND_CC_TRIG_RISE | GPTIMER_CCCTL_01_COC_CAPTURE;
     gptimer->COUNTERREGS.IFCTL_01[ccIndex] =
         GPTIMER_IFCTL_01_ISEL_CCPX_INPUT | invert;
     gptimer->COUNTERREGS.CTRCTL =
-        (uint32_t) mode | GPTIMER_CTRCTL_CVAE_NOCHANGE |
-        GPTIMER_CTRCTL_CM_UP_DOWN | GPTIMER_CTRCTL_REPEAT_REPEAT_1;
+        (uint32_t)mode | GPTIMER_CTRCTL_CVAE_NOCHANGE | GPTIMER_CTRCTL_CM_UP_DOWN | GPTIMER_CTRCTL_REPEAT_REPEAT_1;
 }
 
 /**
@@ -3685,7 +3765,7 @@ __STATIC_INLINE void DL_Timer_configQEI(GPTIMER_Regs *gptimer,
  *  @param[in]  gptimer        Pointer to the register overlay for the
  *                             peripheral
  */
-void DL_Timer_configQEIHallInputMode(GPTIMER_Regs *gptimer);
+void DL_Timer_configQEIHallInputMode(GPTIMER_Regs* gptimer);
 
 /**
  *  @brief      Get direction of Quadrature Encoder Interface (QEI) count
@@ -3695,7 +3775,7 @@ void DL_Timer_configQEIHallInputMode(GPTIMER_Regs *gptimer);
  *  @retval     One of @ref DL_TIMER_QEI_DIRECTION values
  */
 __STATIC_INLINE DL_TIMER_QEI_DIRECTION DL_Timer_getQEIDirection(
-    GPTIMER_Regs *gptimer)
+    GPTIMER_Regs* gptimer)
 {
     uint32_t qeiDirection = gptimer->COUNTERREGS.QDIR & GPTIMER_QDIR_DIR_MASK;
 
@@ -3715,11 +3795,10 @@ __STATIC_INLINE DL_TIMER_QEI_DIRECTION DL_Timer_getQEIDirection(
   *
   */
 __STATIC_INLINE void DL_Timer_setFaultConfig(
-    GPTIMER_Regs *gptimer, uint32_t faultConfMask)
+    GPTIMER_Regs* gptimer,
+    uint32_t faultConfMask)
 {
-    DL_Common_updateReg(&gptimer->COUNTERREGS.FCTL, faultConfMask,
-        (GPTIMER_FCTL_TFIM_MASK | GPTIMER_FCTL_FL_MASK | GPTIMER_FCTL_FI_MASK |
-            GPTIMER_FCTL_FIEN_MASK));
+    DL_Common_updateReg(&gptimer->COUNTERREGS.FCTL, faultConfMask, (GPTIMER_FCTL_TFIM_MASK | GPTIMER_FCTL_FL_MASK | GPTIMER_FCTL_FI_MASK | GPTIMER_FCTL_FIEN_MASK));
 }
 
 /**
@@ -3733,11 +3812,9 @@ __STATIC_INLINE void DL_Timer_setFaultConfig(
   *          @ref DL_TIMER_FAULT_CONFIG_FIEN
   *
   */
-__STATIC_INLINE uint32_t DL_Timer_getFaultConfig(GPTIMER_Regs *gptimer)
+__STATIC_INLINE uint32_t DL_Timer_getFaultConfig(GPTIMER_Regs* gptimer)
 {
-    return (gptimer->COUNTERREGS.FCTL &
-            (GPTIMER_FCTL_FIEN_MASK | GPTIMER_FCTL_FI_MASK |
-                GPTIMER_FCTL_FL_MASK | GPTIMER_FCTL_TFIM_MASK));
+    return (gptimer->COUNTERREGS.FCTL & (GPTIMER_FCTL_FIEN_MASK | GPTIMER_FCTL_FI_MASK | GPTIMER_FCTL_FL_MASK | GPTIMER_FCTL_TFIM_MASK));
 }
 
 /**
@@ -3746,7 +3823,7 @@ __STATIC_INLINE uint32_t DL_Timer_getFaultConfig(GPTIMER_Regs *gptimer)
   *  @param[in] gptimer   Pointer to the register overlay for the
   *                       peripheral
   */
-__STATIC_INLINE void DL_Timer_enableFaultInput(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_enableFaultInput(GPTIMER_Regs* gptimer)
 {
     gptimer->COUNTERREGS.FCTL |= (GPTIMER_FCTL_FIEN_ENABLED);
 }
@@ -3757,7 +3834,7 @@ __STATIC_INLINE void DL_Timer_enableFaultInput(GPTIMER_Regs *gptimer)
   *  @param[in] gptimer   Pointer to the register overlay for the
   *                       peripheral
   */
-__STATIC_INLINE void DL_Timer_disableFaultInput(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_disableFaultInput(GPTIMER_Regs* gptimer)
 {
     gptimer->COUNTERREGS.FCTL &= ~(GPTIMER_FCTL_FIEN_ENABLED);
 }
@@ -3770,10 +3847,9 @@ __STATIC_INLINE void DL_Timer_disableFaultInput(GPTIMER_Regs *gptimer)
   *  @return  true  Fault input is enabled
   *  @return  false Fault input is disabled
   */
-__STATIC_INLINE bool DL_Timer_isFaultInputEnabled(GPTIMER_Regs *gptimer)
+__STATIC_INLINE bool DL_Timer_isFaultInputEnabled(GPTIMER_Regs* gptimer)
 {
-    return (GPTIMER_FCTL_FIEN_ENABLED ==
-            (gptimer->COUNTERREGS.FCTL & GPTIMER_FCTL_FIEN_MASK));
+    return (GPTIMER_FCTL_FIEN_ENABLED == (gptimer->COUNTERREGS.FCTL & GPTIMER_FCTL_FIEN_MASK));
 }
 
 /**
@@ -3782,7 +3858,7 @@ __STATIC_INLINE bool DL_Timer_isFaultInputEnabled(GPTIMER_Regs *gptimer)
  *  @param[in] gptimer Pointer to the register overlay for the
  *                     peripheral
  */
-__STATIC_INLINE void DL_Timer_enableClockFaultDetection(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_enableClockFaultDetection(GPTIMER_Regs* gptimer)
 {
     gptimer->COMMONREGS.FSCTL |= (GPTIMER_FSCTL_FCEN_DISABLE);
 }
@@ -3793,7 +3869,7 @@ __STATIC_INLINE void DL_Timer_enableClockFaultDetection(GPTIMER_Regs *gptimer)
  *  @param[in] gptimer Pointer to the register overlay for the
  *                     peripheral
  */
-__STATIC_INLINE void DL_Timer_disableClockFaultDetection(GPTIMER_Regs *gptimer)
+__STATIC_INLINE void DL_Timer_disableClockFaultDetection(GPTIMER_Regs* gptimer)
 {
     gptimer->COMMONREGS.FSCTL &= ~(GPTIMER_FSCTL_FCEN_DISABLE);
 }
@@ -3807,10 +3883,9 @@ __STATIC_INLINE void DL_Timer_disableClockFaultDetection(GPTIMER_Regs *gptimer)
  *  @return false if source clock fault detection is disabled
  */
 __STATIC_INLINE bool DL_Timer_isClockFaultDetectionEnabled(
-    GPTIMER_Regs *gptimer)
+    GPTIMER_Regs* gptimer)
 {
-    return (GPTIMER_FSCTL_FCEN_ENABLE ==
-            (gptimer->COMMONREGS.FSCTL & GPTIMER_FSCTL_FCEN_MASK));
+    return (GPTIMER_FSCTL_FCEN_ENABLE == (gptimer->COMMONREGS.FSCTL & GPTIMER_FSCTL_FCEN_MASK));
 }
 
 /**
@@ -3822,7 +3897,7 @@ __STATIC_INLINE bool DL_Timer_isClockFaultDetectionEnabled(
   *                     @ref DL_TIMER_FAULT_SOURCE.
   *
   */
-void DL_Timer_setFaultSourceConfig(GPTIMER_Regs *gptimer, uint32_t source);
+void DL_Timer_setFaultSourceConfig(GPTIMER_Regs* gptimer, uint32_t source);
 
 /**
   *  @brief
@@ -3832,7 +3907,7 @@ void DL_Timer_setFaultSourceConfig(GPTIMER_Regs *gptimer, uint32_t source);
   *  @return The fault source and and fault input mode. One of
   *          @ref DL_TIMER_FAULT_SOURCE.
   */
-uint32_t DL_Timer_getFaultSourceConfig(GPTIMER_Regs *gptimer);
+uint32_t DL_Timer_getFaultSourceConfig(GPTIMER_Regs* gptimer);
 
 /**
   *  @brief     Set Fault Input Filtering Configuration
@@ -3848,7 +3923,10 @@ uint32_t DL_Timer_getFaultSourceConfig(GPTIMER_Regs *gptimer);
   *
   */
 __STATIC_INLINE void DL_Timer_setFaultInputFilterConfig(
-    GPTIMER_Regs *gptimer, uint32_t filten, uint32_t cpv, uint32_t fp)
+    GPTIMER_Regs* gptimer,
+    uint32_t filten,
+    uint32_t cpv,
+    uint32_t fp)
 {
     gptimer->COUNTERREGS.FIFCTL = (filten | cpv | fp);
 }
@@ -3863,7 +3941,7 @@ __STATIC_INLINE void DL_Timer_setFaultInputFilterConfig(
   *
   */
 __STATIC_INLINE uint32_t DL_Timer_getFaultInputFilterConfig(
-    GPTIMER_Regs *gptimer)
+    GPTIMER_Regs* gptimer)
 {
     return (gptimer->COUNTERREGS.FIFCTL);
 }
@@ -3881,13 +3959,14 @@ __STATIC_INLINE uint32_t DL_Timer_getFaultInputFilterConfig(
  *                              @ref DL_TIMER_CC_INDEX.
  *
  */
-__STATIC_INLINE void DL_Timer_configFaultOutputAction(GPTIMER_Regs *gptimer,
-    DL_TIMER_FAULT_ENTRY_CCP faultEntry, DL_TIMER_FAULT_EXIT_CCP faultExit,
-    DL_TIMER_CC_INDEX ccIndex)
+__STATIC_INLINE void DL_Timer_configFaultOutputAction(GPTIMER_Regs* gptimer,
+                                                      DL_TIMER_FAULT_ENTRY_CCP faultEntry,
+                                                      DL_TIMER_FAULT_EXIT_CCP faultExit,
+                                                      DL_TIMER_CC_INDEX ccIndex)
 {
     DL_Common_updateReg(&gptimer->COUNTERREGS.CCACT_01[ccIndex],
-        ((uint32_t) faultEntry | (uint32_t) faultExit),
-        (GPTIMER_CCACT_01_FEXACT_MASK | GPTIMER_CCACT_01_FENACT_MASK));
+                        ((uint32_t)faultEntry | (uint32_t)faultExit),
+                        (GPTIMER_CCACT_01_FEXACT_MASK | GPTIMER_CCACT_01_FENACT_MASK));
 }
 
 /**
@@ -3901,12 +3980,13 @@ __STATIC_INLINE void DL_Timer_configFaultOutputAction(GPTIMER_Regs *gptimer,
  *                              One of @ref DL_TIMER_FAULT_EXIT_CTR
  *
  */
-__STATIC_INLINE void DL_Timer_configFaultCounter(GPTIMER_Regs *gptimer,
-    DL_TIMER_FAULT_ENTRY_CTR faultEntry, DL_TIMER_FAULT_EXIT_CTR faultExit)
+__STATIC_INLINE void DL_Timer_configFaultCounter(GPTIMER_Regs* gptimer,
+                                                 DL_TIMER_FAULT_ENTRY_CTR faultEntry,
+                                                 DL_TIMER_FAULT_EXIT_CTR faultExit)
 {
     DL_Common_updateReg(&gptimer->COUNTERREGS.CTRCTL,
-        ((uint32_t) faultEntry | (uint32_t) faultExit),
-        (GPTIMER_CTRCTL_FRB_MASK | GPTIMER_CTRCTL_FB_MASK));
+                        ((uint32_t)faultEntry | (uint32_t)faultExit),
+                        (GPTIMER_CTRCTL_FRB_MASK | GPTIMER_CTRCTL_FB_MASK));
 }
 
 /**
@@ -3918,7 +3998,8 @@ __STATIC_INLINE void DL_Timer_configFaultCounter(GPTIMER_Regs *gptimer,
  *                             @ref DL_TIMER_INTERRUPT.
  */
 __STATIC_INLINE void DL_Timer_enableInterrupt(
-    GPTIMER_Regs *gptimer, uint32_t interruptMask)
+    GPTIMER_Regs* gptimer,
+    uint32_t interruptMask)
 {
     gptimer->CPU_INT.IMASK |= interruptMask;
 }
@@ -3932,7 +4013,8 @@ __STATIC_INLINE void DL_Timer_enableInterrupt(
  *                             @ref DL_TIMER_INTERRUPT.
  */
 __STATIC_INLINE void DL_Timer_disableInterrupt(
-    GPTIMER_Regs *gptimer, uint32_t interruptMask)
+    GPTIMER_Regs* gptimer,
+    uint32_t interruptMask)
 {
     gptimer->CPU_INT.IMASK &= ~(interruptMask);
 }
@@ -3950,7 +4032,8 @@ __STATIC_INLINE void DL_Timer_disableInterrupt(
  *  @retval     Bitwise OR of @ref DL_TIMER_INTERRUPT values
  */
 __STATIC_INLINE uint32_t DL_Timer_getEnabledInterrupts(
-    GPTIMER_Regs *gptimer, uint32_t interruptMask)
+    GPTIMER_Regs* gptimer,
+    uint32_t interruptMask)
 {
     return (gptimer->CPU_INT.IMASK & interruptMask);
 }
@@ -3973,7 +4056,8 @@ __STATIC_INLINE uint32_t DL_Timer_getEnabledInterrupts(
  *  @sa         DL_Timer_enableInterrupt
  */
 __STATIC_INLINE uint32_t DL_Timer_getEnabledInterruptStatus(
-    GPTIMER_Regs *gptimer, uint32_t interruptMask)
+    GPTIMER_Regs* gptimer,
+    uint32_t interruptMask)
 {
     return (gptimer->CPU_INT.MIS & interruptMask);
 }
@@ -3994,7 +4078,8 @@ __STATIC_INLINE uint32_t DL_Timer_getEnabledInterruptStatus(
  *  @retval     Bitwise OR of @ref DL_TIMER_INTERRUPT values
  */
 __STATIC_INLINE uint32_t DL_Timer_getRawInterruptStatus(
-    GPTIMER_Regs *gptimer, uint32_t interruptMask)
+    GPTIMER_Regs* gptimer,
+    uint32_t interruptMask)
 {
     return (gptimer->CPU_INT.RIS & interruptMask);
 }
@@ -4012,9 +4097,9 @@ __STATIC_INLINE uint32_t DL_Timer_getRawInterruptStatus(
  *              @ref DL_TIMER_IIDX
  */
 __STATIC_INLINE DL_TIMER_IIDX DL_Timer_getPendingInterrupt(
-    GPTIMER_Regs *gptimer)
+    GPTIMER_Regs* gptimer)
 {
-    return ((DL_TIMER_IIDX) gptimer->CPU_INT.IIDX);
+    return ((DL_TIMER_IIDX)gptimer->CPU_INT.IIDX);
 }
 
 /**
@@ -4026,7 +4111,8 @@ __STATIC_INLINE DL_TIMER_IIDX DL_Timer_getPendingInterrupt(
  *                             @ref DL_TIMER_INTERRUPT.
  */
 __STATIC_INLINE void DL_Timer_clearInterruptStatus(
-    GPTIMER_Regs *gptimer, uint32_t interruptMask)
+    GPTIMER_Regs* gptimer,
+    uint32_t interruptMask)
 {
     gptimer->CPU_INT.ICLR = interruptMask;
 }
@@ -4041,11 +4127,13 @@ __STATIC_INLINE void DL_Timer_clearInterruptStatus(
  *                      publisher is disconnected.
  */
 __STATIC_INLINE void DL_Timer_setPublisherChanID(
-    GPTIMER_Regs *gptimer, DL_TIMER_PUBLISHER_INDEX index, uint8_t chanID)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_PUBLISHER_INDEX index,
+    uint8_t chanID)
 {
-    volatile uint32_t *pReg = &gptimer->FPUB_0;
+    volatile uint32_t* pReg = &gptimer->FPUB_0;
 
-    *(pReg + (uint32_t) index) = (chanID & GPTIMER_FPUB_0_CHANID_MAXIMUM);
+    *(pReg + (uint32_t)index) = (chanID & GPTIMER_FPUB_0_CHANID_MAXIMUM);
 }
 
 /**
@@ -4059,12 +4147,13 @@ __STATIC_INLINE void DL_Timer_setPublisherChanID(
  *
  */
 __STATIC_INLINE uint8_t DL_Timer_getPublisherChanID(
-    GPTIMER_Regs *gptimer, DL_TIMER_PUBLISHER_INDEX index)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_PUBLISHER_INDEX index)
 {
-    volatile uint32_t *pReg = &gptimer->FPUB_0;
+    volatile uint32_t* pReg = &gptimer->FPUB_0;
 
     return (
-        (uint8_t)(*(pReg + (uint32_t) index) & GPTIMER_FPUB_0_CHANID_MASK));
+        (uint8_t)(*(pReg + (uint32_t)index) & GPTIMER_FPUB_0_CHANID_MASK));
 }
 
 /**
@@ -4077,11 +4166,13 @@ __STATIC_INLINE uint8_t DL_Timer_getPublisherChanID(
  *                      subscriber is disconnected.
  */
 __STATIC_INLINE void DL_Timer_setSubscriberChanID(
-    GPTIMER_Regs *gptimer, DL_TIMER_SUBSCRIBER_INDEX index, uint8_t chanID)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_SUBSCRIBER_INDEX index,
+    uint8_t chanID)
 {
-    volatile uint32_t *pReg = &gptimer->FSUB_0;
+    volatile uint32_t* pReg = &gptimer->FSUB_0;
 
-    *(pReg + (uint32_t) index) = (chanID & GPTIMER_FSUB_0_CHANID_MAXIMUM);
+    *(pReg + (uint32_t)index) = (chanID & GPTIMER_FSUB_0_CHANID_MAXIMUM);
 }
 
 /**
@@ -4095,12 +4186,13 @@ __STATIC_INLINE void DL_Timer_setSubscriberChanID(
  *
  */
 __STATIC_INLINE uint8_t DL_Timer_getSubscriberChanID(
-    GPTIMER_Regs *gptimer, DL_TIMER_SUBSCRIBER_INDEX index)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_SUBSCRIBER_INDEX index)
 {
-    volatile uint32_t *pReg = &gptimer->FSUB_0;
+    volatile uint32_t* pReg = &gptimer->FSUB_0;
 
     return (
-        (uint8_t)(*(pReg + (uint32_t) index) & GPTIMER_FSUB_0_CHANID_MASK));
+        (uint8_t)(*(pReg + (uint32_t)index) & GPTIMER_FSUB_0_CHANID_MASK));
 }
 
 /**
@@ -4114,11 +4206,13 @@ __STATIC_INLINE uint8_t DL_Timer_getSubscriberChanID(
  *                             @ref DL_TIMER_EVENT.
  */
 __STATIC_INLINE void DL_Timer_enableEvent(
-    GPTIMER_Regs *gptimer, DL_TIMER_EVENT_ROUTE index, uint32_t eventMask)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_EVENT_ROUTE index,
+    uint32_t eventMask)
 {
-    volatile uint32_t *pReg = (volatile uint32_t *) &gptimer->GEN_EVENT0.IMASK;
+    volatile uint32_t* pReg = (volatile uint32_t*)&gptimer->GEN_EVENT0.IMASK;
 
-    *(pReg + (uint32_t) index) |= (eventMask);
+    *(pReg + (uint32_t)index) |= (eventMask);
 }
 
 /**
@@ -4132,11 +4226,13 @@ __STATIC_INLINE void DL_Timer_enableEvent(
  *                             @ref DL_TIMER_EVENT.
  */
 __STATIC_INLINE void DL_Timer_disableEvent(
-    GPTIMER_Regs *gptimer, DL_TIMER_EVENT_ROUTE index, uint32_t eventMask)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_EVENT_ROUTE index,
+    uint32_t eventMask)
 {
-    volatile uint32_t *pReg = (volatile uint32_t *) &gptimer->GEN_EVENT0.IMASK;
+    volatile uint32_t* pReg = (volatile uint32_t*)&gptimer->GEN_EVENT0.IMASK;
 
-    *(pReg + (uint32_t) index) &= ~(eventMask);
+    *(pReg + (uint32_t)index) &= ~(eventMask);
 }
 
 /**
@@ -4154,11 +4250,13 @@ __STATIC_INLINE void DL_Timer_disableEvent(
  *  @retval     Bitwise OR of @ref DL_TIMER_EVENT values
  */
 __STATIC_INLINE uint32_t DL_Timer_getEnabledEvents(
-    GPTIMER_Regs *gptimer, DL_TIMER_EVENT_ROUTE index, uint32_t eventMask)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_EVENT_ROUTE index,
+    uint32_t eventMask)
 {
-    volatile uint32_t *pReg = (volatile uint32_t *) &gptimer->GEN_EVENT0.IMASK;
+    volatile uint32_t* pReg = (volatile uint32_t*)&gptimer->GEN_EVENT0.IMASK;
 
-    return ((*(pReg + (uint32_t) index) & eventMask));
+    return ((*(pReg + (uint32_t)index) & eventMask));
 }
 
 /**
@@ -4181,12 +4279,14 @@ __STATIC_INLINE uint32_t DL_Timer_getEnabledEvents(
  *  @sa         DL_Timer_enableInterrupt
  */
 __STATIC_INLINE uint32_t DL_Timer_getEnabledEventStatus(
-    GPTIMER_Regs *gptimer, DL_TIMER_EVENT_ROUTE index, uint32_t eventMask)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_EVENT_ROUTE index,
+    uint32_t eventMask)
 {
-    const volatile uint32_t *pReg =
-        (const volatile uint32_t *) &gptimer->GEN_EVENT0.MIS;
+    const volatile uint32_t* pReg =
+        (const volatile uint32_t*)&gptimer->GEN_EVENT0.MIS;
 
-    return ((*(pReg + (uint32_t) index) & eventMask));
+    return ((*(pReg + (uint32_t)index) & eventMask));
 }
 
 /**
@@ -4207,12 +4307,14 @@ __STATIC_INLINE uint32_t DL_Timer_getEnabledEventStatus(
  *  @retval     Bitwise OR of @ref DL_TIMER_EVENT values
  */
 __STATIC_INLINE uint32_t DL_Timer_getRawEventsStatus(
-    GPTIMER_Regs *gptimer, DL_TIMER_EVENT_ROUTE index, uint32_t eventMask)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_EVENT_ROUTE index,
+    uint32_t eventMask)
 {
-    const volatile uint32_t *pReg =
-        (const volatile uint32_t *) &gptimer->GEN_EVENT0.RIS;
+    const volatile uint32_t* pReg =
+        (const volatile uint32_t*)&gptimer->GEN_EVENT0.RIS;
 
-    return ((*(pReg + (uint32_t) index) & eventMask));
+    return ((*(pReg + (uint32_t)index) & eventMask));
 }
 
 /**
@@ -4226,11 +4328,13 @@ __STATIC_INLINE uint32_t DL_Timer_getRawEventsStatus(
  *                             @ref DL_TIMER_EVENT.
  */
 __STATIC_INLINE void DL_Timer_clearEventsStatus(
-    GPTIMER_Regs *gptimer, DL_TIMER_EVENT_ROUTE index, uint32_t eventMask)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_EVENT_ROUTE index,
+    uint32_t eventMask)
 {
-    volatile uint32_t *pReg = (volatile uint32_t *) &gptimer->GEN_EVENT0.ICLR;
+    volatile uint32_t* pReg = (volatile uint32_t*)&gptimer->GEN_EVENT0.ICLR;
 
-    *(pReg + (uint32_t) index) |= (eventMask);
+    *(pReg + (uint32_t)index) |= (eventMask);
 }
 
 /**
@@ -4249,7 +4353,8 @@ __STATIC_INLINE void DL_Timer_clearEventsStatus(
  *
  */
 bool DL_Timer_saveConfiguration(
-    GPTIMER_Regs *gptimer, DL_Timer_backupConfig *ptr);
+    GPTIMER_Regs* gptimer,
+    DL_Timer_backupConfig* ptr);
 
 /**
  *  @brief      Restore Timer configuration after leaving STOP or STANDBY mode.
@@ -4268,7 +4373,9 @@ bool DL_Timer_saveConfiguration(
  *
  */
 bool DL_Timer_restoreConfiguration(
-    GPTIMER_Regs *gptimer, DL_Timer_backupConfig *ptr, bool restoreCounter);
+    GPTIMER_Regs* gptimer,
+    DL_Timer_backupConfig* ptr,
+    bool restoreCounter);
 
 /**
  *  @brief      Configures timer behavior when the core is halted.
@@ -4279,10 +4386,10 @@ bool DL_Timer_restoreConfiguration(
  *
  */
 __STATIC_INLINE void DL_Timer_setCoreHaltBehavior(
-    GPTIMER_Regs *gptimer, DL_TIMER_CORE_HALT haltMode)
+    GPTIMER_Regs* gptimer,
+    DL_TIMER_CORE_HALT haltMode)
 {
-    gptimer->PDBGCTL = ((uint32_t) haltMode & (GPTIMER_PDBGCTL_FREE_MASK |
-                                                  GPTIMER_PDBGCTL_SOFT_MASK));
+    gptimer->PDBGCTL = ((uint32_t)haltMode & (GPTIMER_PDBGCTL_FREE_MASK | GPTIMER_PDBGCTL_SOFT_MASK));
 }
 
 /**
@@ -4295,10 +4402,9 @@ __STATIC_INLINE void DL_Timer_setCoreHaltBehavior(
  *
  */
 __STATIC_INLINE DL_TIMER_CORE_HALT DL_Timer_getCoreHaltBehavior(
-    GPTIMER_Regs *gptimer)
+    GPTIMER_Regs* gptimer)
 {
-    uint32_t haltMode = (gptimer->PDBGCTL & (GPTIMER_PDBGCTL_FREE_MASK |
-                                                GPTIMER_PDBGCTL_SOFT_MASK));
+    uint32_t haltMode = (gptimer->PDBGCTL & (GPTIMER_PDBGCTL_FREE_MASK | GPTIMER_PDBGCTL_SOFT_MASK));
 
     return (DL_TIMER_CORE_HALT)(haltMode);
 }

@@ -78,28 +78,196 @@ extern "C" {
 #define GPIO_HFXIN_IOMUX                                         (IOMUX_PINCM10)
 #define GPIO_HFXOUT_PIN                                            DL_GPIO_PIN_6
 #define GPIO_HFXOUT_IOMUX                                        (IOMUX_PINCM11)
+#define GPIO_LFXT_PORT                                                     GPIOA
+#define GPIO_LFXIN_PIN                                             DL_GPIO_PIN_3
+#define GPIO_LFXIN_IOMUX                                          (IOMUX_PINCM8)
+#define GPIO_LFXOUT_PIN                                            DL_GPIO_PIN_4
+#define GPIO_LFXOUT_IOMUX                                         (IOMUX_PINCM9)
 #define CPUCLK_FREQ                                                     80000000
 
 
 
+/* Defines for PWM_YAW_STEP */
+#define PWM_YAW_STEP_INST                                                  TIMG7
+#define PWM_YAW_STEP_INST_IRQHandler                            TIMG7_IRQHandler
+#define PWM_YAW_STEP_INST_INT_IRQN                              (TIMG7_INT_IRQn)
+#define PWM_YAW_STEP_INST_CLK_FREQ                                      40000000
+/* GPIO defines for channel 0 */
+#define GPIO_PWM_YAW_STEP_C0_PORT                                          GPIOA
+#define GPIO_PWM_YAW_STEP_C0_PIN                                  DL_GPIO_PIN_26
+#define GPIO_PWM_YAW_STEP_C0_IOMUX                               (IOMUX_PINCM59)
+#define GPIO_PWM_YAW_STEP_C0_IOMUX_FUNC              IOMUX_PINCM59_PF_TIMG7_CCP0
+#define GPIO_PWM_YAW_STEP_C0_IDX                             DL_TIMER_CC_0_INDEX
 
-/* Port definition for Pin Group BSP */
-#define BSP_PORT                                                         (GPIOA)
-
-/* Defines for KEY: GPIOA.13 with pinCMx 35 on package pin 28 */
-#define BSP_KEY_PIN                                             (DL_GPIO_PIN_13)
-#define BSP_KEY_IOMUX                                            (IOMUX_PINCM35)
-/* Port definition for Pin Group MSP */
-#define MSP_PORT                                                         (GPIOB)
-
-/* Defines for LED_BLUE: GPIOB.2 with pinCMx 15 on package pin 14 */
-#define MSP_LED_BLUE_PIN                                         (DL_GPIO_PIN_2)
-#define MSP_LED_BLUE_IOMUX                                       (IOMUX_PINCM15)
-/* Defines for LED_GREEN: GPIOB.3 with pinCMx 16 on package pin 15 */
-#define MSP_LED_GREEN_PIN                                        (DL_GPIO_PIN_3)
-#define MSP_LED_GREEN_IOMUX                                      (IOMUX_PINCM16)
+/* Defines for PWM_PITCH_STEP */
+#define PWM_PITCH_STEP_INST                                                TIMG0
+#define PWM_PITCH_STEP_INST_IRQHandler                          TIMG0_IRQHandler
+#define PWM_PITCH_STEP_INST_INT_IRQN                            (TIMG0_INT_IRQn)
+#define PWM_PITCH_STEP_INST_CLK_FREQ                                    40000000
+/* GPIO defines for channel 0 */
+#define GPIO_PWM_PITCH_STEP_C0_PORT                                        GPIOA
+#define GPIO_PWM_PITCH_STEP_C0_PIN                                DL_GPIO_PIN_23
+#define GPIO_PWM_PITCH_STEP_C0_IOMUX                             (IOMUX_PINCM53)
+#define GPIO_PWM_PITCH_STEP_C0_IOMUX_FUNC             IOMUX_PINCM53_PF_TIMG0_CCP0
+#define GPIO_PWM_PITCH_STEP_C0_IDX                           DL_TIMER_CC_0_INDEX
 
 
+
+
+/* Defines for QEI_YAW_ENCODER */
+#define QEI_YAW_ENCODER_INST                                               TIMG8
+#define QEI_YAW_ENCODER_INST_IRQHandler                         TIMG8_IRQHandler
+#define QEI_YAW_ENCODER_INST_INT_IRQN                           (TIMG8_INT_IRQn)
+/* Pin configuration defines for QEI_YAW_ENCODER PHA Pin */
+#define GPIO_QEI_YAW_ENCODER_PHA_PORT                                      GPIOB
+#define GPIO_QEI_YAW_ENCODER_PHA_PIN                               DL_GPIO_PIN_6
+#define GPIO_QEI_YAW_ENCODER_PHA_IOMUX                           (IOMUX_PINCM23)
+#define GPIO_QEI_YAW_ENCODER_PHA_IOMUX_FUNC             IOMUX_PINCM23_PF_TIMG8_CCP0
+/* Pin configuration defines for QEI_YAW_ENCODER PHB Pin */
+#define GPIO_QEI_YAW_ENCODER_PHB_PORT                                      GPIOB
+#define GPIO_QEI_YAW_ENCODER_PHB_PIN                               DL_GPIO_PIN_7
+#define GPIO_QEI_YAW_ENCODER_PHB_IOMUX                           (IOMUX_PINCM24)
+#define GPIO_QEI_YAW_ENCODER_PHB_IOMUX_FUNC             IOMUX_PINCM24_PF_TIMG8_CCP1
+
+
+/* Defines for TIMER_GIMBAL_1MS */
+#define TIMER_GIMBAL_1MS_INST                                            (TIMG6)
+#define TIMER_GIMBAL_1MS_INST_IRQHandler                        TIMG6_IRQHandler
+#define TIMER_GIMBAL_1MS_INST_INT_IRQN                          (TIMG6_INT_IRQn)
+#define TIMER_GIMBAL_1MS_INST_LOAD_VALUE                                (39999U)
+
+
+
+/* Defines for UART0_TO_ESP */
+#define UART0_TO_ESP_INST                                                  UART0
+#define UART0_TO_ESP_INST_FREQUENCY                                     40000000
+#define UART0_TO_ESP_INST_IRQHandler                            UART0_IRQHandler
+#define UART0_TO_ESP_INST_INT_IRQN                                UART0_INT_IRQn
+#define GPIO_UART0_TO_ESP_RX_PORT                                          GPIOA
+#define GPIO_UART0_TO_ESP_TX_PORT                                          GPIOA
+#define GPIO_UART0_TO_ESP_RX_PIN                                  DL_GPIO_PIN_31
+#define GPIO_UART0_TO_ESP_TX_PIN                                  DL_GPIO_PIN_28
+#define GPIO_UART0_TO_ESP_IOMUX_RX                                (IOMUX_PINCM6)
+#define GPIO_UART0_TO_ESP_IOMUX_TX                                (IOMUX_PINCM3)
+#define GPIO_UART0_TO_ESP_IOMUX_RX_FUNC                 IOMUX_PINCM6_PF_UART0_RX
+#define GPIO_UART0_TO_ESP_IOMUX_TX_FUNC                 IOMUX_PINCM3_PF_UART0_TX
+#define UART0_TO_ESP_BAUD_RATE                                          (115200)
+#define UART0_TO_ESP_IBRD_40_MHZ_115200_BAUD                                (21)
+#define UART0_TO_ESP_FBRD_40_MHZ_115200_BAUD                                (45)
+/* Defines for UART1_TO_WT901 */
+#define UART1_TO_WT901_INST                                                UART1
+#define UART1_TO_WT901_INST_FREQUENCY                                   40000000
+#define UART1_TO_WT901_INST_IRQHandler                          UART1_IRQHandler
+#define UART1_TO_WT901_INST_INT_IRQN                              UART1_INT_IRQn
+#define GPIO_UART1_TO_WT901_RX_PORT                                        GPIOA
+#define GPIO_UART1_TO_WT901_TX_PORT                                        GPIOA
+#define GPIO_UART1_TO_WT901_RX_PIN                                 DL_GPIO_PIN_9
+#define GPIO_UART1_TO_WT901_TX_PIN                                 DL_GPIO_PIN_8
+#define GPIO_UART1_TO_WT901_IOMUX_RX                             (IOMUX_PINCM20)
+#define GPIO_UART1_TO_WT901_IOMUX_TX                             (IOMUX_PINCM19)
+#define GPIO_UART1_TO_WT901_IOMUX_RX_FUNC               IOMUX_PINCM20_PF_UART1_RX
+#define GPIO_UART1_TO_WT901_IOMUX_TX_FUNC               IOMUX_PINCM19_PF_UART1_TX
+#define UART1_TO_WT901_BAUD_RATE                                        (115200)
+#define UART1_TO_WT901_IBRD_40_MHZ_115200_BAUD                              (21)
+#define UART1_TO_WT901_FBRD_40_MHZ_115200_BAUD                              (45)
+/* Defines for UART2_TO_MSPA */
+#define UART2_TO_MSPA_INST                                                 UART2
+#define UART2_TO_MSPA_INST_FREQUENCY                                    40000000
+#define UART2_TO_MSPA_INST_IRQHandler                           UART2_IRQHandler
+#define UART2_TO_MSPA_INST_INT_IRQN                               UART2_INT_IRQn
+#define GPIO_UART2_TO_MSPA_RX_PORT                                         GPIOA
+#define GPIO_UART2_TO_MSPA_TX_PORT                                         GPIOA
+#define GPIO_UART2_TO_MSPA_RX_PIN                                 DL_GPIO_PIN_22
+#define GPIO_UART2_TO_MSPA_TX_PIN                                 DL_GPIO_PIN_21
+#define GPIO_UART2_TO_MSPA_IOMUX_RX                              (IOMUX_PINCM47)
+#define GPIO_UART2_TO_MSPA_IOMUX_TX                              (IOMUX_PINCM46)
+#define GPIO_UART2_TO_MSPA_IOMUX_RX_FUNC               IOMUX_PINCM47_PF_UART2_RX
+#define GPIO_UART2_TO_MSPA_IOMUX_TX_FUNC               IOMUX_PINCM46_PF_UART2_TX
+#define UART2_TO_MSPA_BAUD_RATE                                         (115200)
+#define UART2_TO_MSPA_IBRD_40_MHZ_115200_BAUD                               (21)
+#define UART2_TO_MSPA_FBRD_40_MHZ_115200_BAUD                               (45)
+/* Defines for UART3_TO_RPI */
+#define UART3_TO_RPI_INST                                                  UART3
+#define UART3_TO_RPI_INST_FREQUENCY                                     80000000
+#define UART3_TO_RPI_INST_IRQHandler                            UART3_IRQHandler
+#define UART3_TO_RPI_INST_INT_IRQN                                UART3_INT_IRQn
+#define GPIO_UART3_TO_RPI_RX_PORT                                          GPIOB
+#define GPIO_UART3_TO_RPI_TX_PORT                                          GPIOB
+#define GPIO_UART3_TO_RPI_RX_PIN                                   DL_GPIO_PIN_3
+#define GPIO_UART3_TO_RPI_TX_PIN                                   DL_GPIO_PIN_2
+#define GPIO_UART3_TO_RPI_IOMUX_RX                               (IOMUX_PINCM16)
+#define GPIO_UART3_TO_RPI_IOMUX_TX                               (IOMUX_PINCM15)
+#define GPIO_UART3_TO_RPI_IOMUX_RX_FUNC                IOMUX_PINCM16_PF_UART3_RX
+#define GPIO_UART3_TO_RPI_IOMUX_TX_FUNC                IOMUX_PINCM15_PF_UART3_TX
+#define UART3_TO_RPI_BAUD_RATE                                          (115200)
+#define UART3_TO_RPI_IBRD_80_MHZ_115200_BAUD                                (43)
+#define UART3_TO_RPI_FBRD_80_MHZ_115200_BAUD                                (26)
+
+
+
+
+
+/* Defines for YAW_DIR: GPIOA.27 with pinCMx 60 on package pin 47 */
+#define GPIO_YAW_CTRL_YAW_DIR_PORT                                       (GPIOA)
+#define GPIO_YAW_CTRL_YAW_DIR_PIN                               (DL_GPIO_PIN_27)
+#define GPIO_YAW_CTRL_YAW_DIR_IOMUX                              (IOMUX_PINCM60)
+/* Defines for YAW_EN: GPIOB.24 with pinCMx 52 on package pin 42 */
+#define GPIO_YAW_CTRL_YAW_EN_PORT                                        (GPIOB)
+#define GPIO_YAW_CTRL_YAW_EN_PIN                                (DL_GPIO_PIN_24)
+#define GPIO_YAW_CTRL_YAW_EN_IOMUX                               (IOMUX_PINCM52)
+/* Port definition for Pin Group GPIO_YAW_LIMIT */
+#define GPIO_YAW_LIMIT_PORT                                              (GPIOB)
+
+/* Defines for YAW_LIMIT_L: GPIOB.8 with pinCMx 25 on package pin 22 */
+// pins affected by this interrupt request:["YAW_LIMIT_L","YAW_LIMIT_R"]
+#define GPIO_YAW_LIMIT_INT_IRQN                                 (GPIOB_INT_IRQn)
+#define GPIO_YAW_LIMIT_INT_IIDX                 (DL_INTERRUPT_GROUP1_IIDX_GPIOB)
+#define GPIO_YAW_LIMIT_YAW_LIMIT_L_IIDX                      (DL_GPIO_IIDX_DIO8)
+#define GPIO_YAW_LIMIT_YAW_LIMIT_L_PIN                           (DL_GPIO_PIN_8)
+#define GPIO_YAW_LIMIT_YAW_LIMIT_L_IOMUX                         (IOMUX_PINCM25)
+/* Defines for YAW_LIMIT_R: GPIOB.9 with pinCMx 26 on package pin 23 */
+#define GPIO_YAW_LIMIT_YAW_LIMIT_R_IIDX                      (DL_GPIO_IIDX_DIO9)
+#define GPIO_YAW_LIMIT_YAW_LIMIT_R_PIN                           (DL_GPIO_PIN_9)
+#define GPIO_YAW_LIMIT_YAW_LIMIT_R_IOMUX                         (IOMUX_PINCM26)
+/* Port definition for Pin Group GPIO_PITCH_CTRL */
+#define GPIO_PITCH_CTRL_PORT                                             (GPIOA)
+
+/* Defines for PITCH_DIR: GPIOA.24 with pinCMx 54 on package pin 44 */
+#define GPIO_PITCH_CTRL_PITCH_DIR_PIN                           (DL_GPIO_PIN_24)
+#define GPIO_PITCH_CTRL_PITCH_DIR_IOMUX                          (IOMUX_PINCM54)
+/* Defines for PITCH_EN: GPIOA.25 with pinCMx 55 on package pin 45 */
+#define GPIO_PITCH_CTRL_PITCH_EN_PIN                            (DL_GPIO_PIN_25)
+#define GPIO_PITCH_CTRL_PITCH_EN_IOMUX                           (IOMUX_PINCM55)
+/* Defines for LASER_EN: GPIOA.14 with pinCMx 36 on package pin 29 */
+#define GPIO_PITCH_CTRL_LASER_EN_PIN                            (DL_GPIO_PIN_14)
+#define GPIO_PITCH_CTRL_LASER_EN_IOMUX                           (IOMUX_PINCM36)
+/* Port definition for Pin Group GPIO_PITCH_FEEDBACK */
+#define GPIO_PITCH_FEEDBACK_PORT                                         (GPIOA)
+
+/* Defines for PITCH_ENC_A: GPIOA.15 with pinCMx 37 on package pin 30 */
+// pins affected by this interrupt request:["PITCH_ENC_A","PITCH_LIMIT_U","PITCH_LIMIT_D"]
+#define GPIO_PITCH_FEEDBACK_INT_IRQN                            (GPIOA_INT_IRQn)
+#define GPIO_PITCH_FEEDBACK_INT_IIDX            (DL_INTERRUPT_GROUP1_IIDX_GPIOA)
+#define GPIO_PITCH_FEEDBACK_PITCH_ENC_A_IIDX                (DL_GPIO_IIDX_DIO15)
+#define GPIO_PITCH_FEEDBACK_PITCH_ENC_A_PIN                     (DL_GPIO_PIN_15)
+#define GPIO_PITCH_FEEDBACK_PITCH_ENC_A_IOMUX                    (IOMUX_PINCM37)
+/* Defines for PITCH_ENC_B: GPIOA.16 with pinCMx 38 on package pin 31 */
+#define GPIO_PITCH_FEEDBACK_PITCH_ENC_B_PIN                     (DL_GPIO_PIN_16)
+#define GPIO_PITCH_FEEDBACK_PITCH_ENC_B_IOMUX                    (IOMUX_PINCM38)
+/* Defines for PITCH_LIMIT_U: GPIOA.0 with pinCMx 1 on package pin 1 */
+#define GPIO_PITCH_FEEDBACK_PITCH_LIMIT_U_IIDX               (DL_GPIO_IIDX_DIO0)
+#define GPIO_PITCH_FEEDBACK_PITCH_LIMIT_U_PIN                    (DL_GPIO_PIN_0)
+#define GPIO_PITCH_FEEDBACK_PITCH_LIMIT_U_IOMUX                   (IOMUX_PINCM1)
+/* Defines for PITCH_LIMIT_D: GPIOA.1 with pinCMx 2 on package pin 2 */
+#define GPIO_PITCH_FEEDBACK_PITCH_LIMIT_D_IIDX               (DL_GPIO_IIDX_DIO1)
+#define GPIO_PITCH_FEEDBACK_PITCH_LIMIT_D_PIN                    (DL_GPIO_PIN_1)
+#define GPIO_PITCH_FEEDBACK_PITCH_LIMIT_D_IOMUX                   (IOMUX_PINCM2)
+/* Port definition for Pin Group GPIO_USER_INPUT */
+#define GPIO_USER_INPUT_PORT                                             (GPIOA)
+
+/* Defines for USER_KEY: GPIOA.18 with pinCMx 40 on package pin 33 */
+#define GPIO_USER_INPUT_USER_KEY_PIN                            (DL_GPIO_PIN_18)
+#define GPIO_USER_INPUT_USER_KEY_IOMUX                           (IOMUX_PINCM40)
 
 /* clang-format on */
 
@@ -107,9 +275,18 @@ void SYSCFG_DL_init(void);
 void SYSCFG_DL_initPower(void);
 void SYSCFG_DL_GPIO_init(void);
 void SYSCFG_DL_SYSCTL_init(void);
+void SYSCFG_DL_PWM_YAW_STEP_init(void);
+void SYSCFG_DL_PWM_PITCH_STEP_init(void);
+void SYSCFG_DL_QEI_YAW_ENCODER_init(void);
+void SYSCFG_DL_TIMER_GIMBAL_1MS_init(void);
+void SYSCFG_DL_UART0_TO_ESP_init(void);
+void SYSCFG_DL_UART1_TO_WT901_init(void);
+void SYSCFG_DL_UART2_TO_MSPA_init(void);
+void SYSCFG_DL_UART3_TO_RPI_init(void);
 
-void SYSCFG_DL_SYSTICK_init(void);
 
+bool SYSCFG_DL_saveConfiguration(void);
+bool SYSCFG_DL_restoreConfiguration(void);
 
 #ifdef __cplusplus
 }

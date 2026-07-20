@@ -1,6 +1,4 @@
 /**
- * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
- * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
  * @cliArgs --device "MSPM0G350X" --part "Default" --package "LQFP-48(PT)" --product "mspm0_sdk@2.02.00.05"
  * @v2CliArgs --device "MSPM0G3507" --package "LQFP-48(PT)" --product "mspm0_sdk@2.02.00.05"
  * @versions {"tool":"1.21.1+3772"}
@@ -11,80 +9,184 @@ scripting.excludeFromBuild("device.opt");
 scripting.excludeFromBuild("device.cmd.genlibs");
 scripting.excludeFromBuild("device.lds.genlibs");
 
-/**
- * Import the modules used in this configuration.
- */
 const GPIO          = scripting.addModule("/ti/driverlib/GPIO", {}, false);
-const GPIO1         = GPIO.addInstance();
-const GPIO2         = GPIO.addInstance();
+const PWM           = scripting.addModule("/ti/driverlib/PWM", {}, false);
+const QEI           = scripting.addModule("/ti/driverlib/QEI", {}, false);
+const TIMER         = scripting.addModule("/ti/driverlib/TIMER", {}, false);
+const UART          = scripting.addModule("/ti/driverlib/UART", {}, false);
 const SYSCTL        = scripting.addModule("/ti/driverlib/SYSCTL");
-const SYSTICK       = scripting.addModule("/ti/driverlib/SYSTICK");
 const ProjectConfig = scripting.addModule("/ti/project_config/ProjectConfig");
+const Board         = scripting.addModule("/ti/driverlib/Board", {}, false);
 
-/**
- * Write custom configuration values to the imported modules.
- */
+/* 40 MHz HFXT -> 80 MHz CPUCLK. Keep both board crystals and SWD reserved. */
 const divider6       = system.clockTree["PLL_CLK2X_DIV"];
 divider6.divideValue = 4;
-
 const divider9       = system.clockTree["UDIV"];
 divider9.divideValue = 2;
-
 const multiplier2         = system.clockTree["PLL_QDIV"];
 multiplier2.multiplyValue = 4;
-
 const mux4       = system.clockTree["EXHFMUX"];
 mux4.inputSelect = "EXHFMUX_XTAL";
-
 const mux8       = system.clockTree["HSCLKMUX"];
 mux8.inputSelect = "HSCLKMUX_SYSPLL2X";
-
 const mux12       = system.clockTree["SYSPLLMUX"];
 mux12.inputSelect = "zSYSPLLMUX_HFCLK";
 
-const pinFunction4                        = system.clockTree["HFXT"];
-pinFunction4.enable                       = true;
-pinFunction4.inputFreq                    = 40;
-pinFunction4.peripheral.$assign           = "SYSCTL";
-pinFunction4.peripheral.hfxInPin.$assign  = "PA5";
-pinFunction4.peripheral.hfxOutPin.$assign = "PA6";
+const hfxCrystal                        = system.clockTree["HFXT"];
+hfxCrystal.enable                       = true;
+hfxCrystal.inputFreq                    = 40;
+hfxCrystal.peripheral.$assign           = "SYSCTL";
+hfxCrystal.peripheral.hfxInPin.$assign  = "PA5";
+hfxCrystal.peripheral.hfxOutPin.$assign = "PA6";
 
-GPIO1.$name                          = "MSP";
-GPIO1.associatedPins.create(2);
-GPIO1.associatedPins[0].$name        = "LED_BLUE";
-GPIO1.associatedPins[0].assignedPin  = "2";
-GPIO1.associatedPins[0].assignedPort = "PORTB";
-GPIO1.associatedPins[1].$name        = "LED_GREEN";
-GPIO1.associatedPins[1].assignedPort = "PORTB";
-GPIO1.associatedPins[1].assignedPin  = "3";
+const lfxCrystal                        = system.clockTree["LFXT"];
+lfxCrystal.enable                       = true;
+lfxCrystal.inputFreq                    = 32.768;
+lfxCrystal.peripheral.$assign           = "SYSCTL";
+lfxCrystal.peripheral.lfxInPin.$assign  = "PA3";
+lfxCrystal.peripheral.lfxOutPin.$assign = "PA4";
 
-const Board                       = scripting.addModule("/ti/driverlib/Board", {}, false);
 Board.peripheral.$assign          = "DEBUGSS";
 Board.peripheral.swclkPin.$assign = "PA20";
 Board.peripheral.swdioPin.$assign = "PA19";
 
-GPIO2.$name                              = "BSP";
-GPIO2.associatedPins[0].$name            = "KEY";
-GPIO2.associatedPins[0].direction        = "INPUT";
-GPIO2.associatedPins[0].internalResistor = "PULL_DOWN";
-GPIO2.associatedPins[0].assignedPin      = "13";
-GPIO2.associatedPins[0].assignedPort     = "PORTA";
-
 SYSCTL.forceDefaultClkConfig = true;
 SYSCTL.clockTreeEn           = true;
+ProjectConfig.deviceSpin     = "MSPM0G3507";
 
-SYSTICK.periodEnable    = true;
-SYSTICK.systickEnable   = true;
-SYSTICK.interruptEnable = true;
-SYSTICK.period          = 80000;
+function addGPIOGroup(name, pins) {
+    const group = GPIO.addInstance();
+    group.$name = name;
+    group.associatedPins.create(pins.length);
+    pins.forEach((spec, index) => {
+        const pin = group.associatedPins[index];
+        const match = /^P([AB])(\d+)$/.exec(spec.pin);
+        pin.$name = spec.name;
+        pin.direction = spec.direction;
+        pin.internalResistor = spec.resistor || "NONE";
+        pin.invert = "DISABLE";
+        pin.assignedPort = `PORT${match[1]}`;
+        pin.assignedPin = match[2];
+        pin.pin.$suggestSolution = spec.pin;
+        if (spec.direction === "OUTPUT") {
+            pin.initialValue = spec.initialValue || "CLEARED";
+        }
+        if (spec.hysteresis) {
+            pin.hysteresisControl = "ENABLE";
+        }
+        if (spec.interrupt) {
+            pin.interruptEn = true;
+            pin.polarity = spec.interrupt;
+            pin.interruptPriority = "1";
+        }
+    });
+    return group;
+}
 
-ProjectConfig.deviceSpin = "MSPM0G3507";
+function addUART(name, instance, txPin, rxPin) {
+    const uart = UART.addInstance();
+    uart.$name = name;
+    uart.peripheral.$assign = instance;
+    uart.peripheral.txPin.$assign = txPin;
+    uart.peripheral.rxPin.$assign = rxPin;
+    uart.direction = "TX_RX";
+    uart.uartClkSrc = "BUSCLK";
+    uart.uartClkDiv = "1";
+    uart.targetBaudRate = 115200;
+    uart.wordLength = "8_BITS";
+    uart.parity = "NONE";
+    uart.stopBits = "ONE";
+    uart.flowControl = "NONE";
+    uart.enabledInterrupts = [
+        "RX", "OVERRUN_ERROR", "BREAK_ERROR", "PARITY_ERROR",
+        "FRAMING_ERROR", "NOISE_ERROR"
+    ];
+    uart.interruptPriority = "2";
+    return uart;
+}
 
-/**
- * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
- * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
- * re-solve from scratch.
- */
-GPIO1.associatedPins[0].pin.$suggestSolution = "PB2";
-GPIO1.associatedPins[1].pin.$suggestSolution = "PB3";
-GPIO2.associatedPins[0].pin.$suggestSolution = "PA13";
+/* TIMG7 is in PD1 (80 MHz BUSCLK): /2 and 40000 ticks gives 1 kHz. */
+const PWM_YAW_STEP = PWM.addInstance();
+PWM_YAW_STEP.$name = "PWM_YAW_STEP";
+PWM_YAW_STEP.peripheral.$assign = "TIMG7";
+PWM_YAW_STEP.peripheral.ccp0Pin.$assign = "PA26";
+PWM_YAW_STEP.clockSource = "BUSCLK";
+PWM_YAW_STEP.clockDivider = 2;
+PWM_YAW_STEP.clockPrescale = 1;
+PWM_YAW_STEP.timerCount = 40000;
+PWM_YAW_STEP.pwmMode = "EDGE_ALIGN";
+PWM_YAW_STEP.ccIndex = [0];
+PWM_YAW_STEP.dutyArgs = "[0,0,0,0]";
+PWM_YAW_STEP.timerStartTimer = false;
+
+/* TIMG0 is in PD0 (40 MHz BUSCLK): 40000 ticks gives 1 kHz. */
+const PWM_PITCH_STEP = PWM.addInstance();
+PWM_PITCH_STEP.$name = "PWM_PITCH_STEP";
+PWM_PITCH_STEP.peripheral.$assign = "TIMG0";
+PWM_PITCH_STEP.peripheral.ccp0Pin.$assign = "PA23";
+PWM_PITCH_STEP.clockSource = "BUSCLK";
+PWM_PITCH_STEP.clockDivider = 1;
+PWM_PITCH_STEP.clockPrescale = 1;
+PWM_PITCH_STEP.timerCount = 40000;
+PWM_PITCH_STEP.pwmMode = "EDGE_ALIGN";
+PWM_PITCH_STEP.ccIndex = [0];
+PWM_PITCH_STEP.dutyArgs = "[0,0,0,0]";
+PWM_PITCH_STEP.timerStartTimer = false;
+
+/* TIMG8 hardware two-phase quadrature QEI for yaw feedback; no Hall or Index. */
+const QEI_YAW_ENCODER = QEI.addInstance();
+QEI_YAW_ENCODER.$name = "QEI_YAW_ENCODER";
+QEI_YAW_ENCODER.peripheral.$assign = "TIMG8";
+QEI_YAW_ENCODER.peripheral.ccp0Pin.$assign = "PB6";
+QEI_YAW_ENCODER.peripheral.ccp1Pin.$assign = "PB7";
+QEI_YAW_ENCODER.clockSource = "BUSCLK";
+QEI_YAW_ENCODER.clockDivider = 1;
+QEI_YAW_ENCODER.clockPrescale = 1;
+QEI_YAW_ENCODER.enableIndexInput = false;
+QEI_YAW_ENCODER.enableHallInput = false;
+QEI_YAW_ENCODER.loadValue = 0xFFFF;
+QEI_YAW_ENCODER.timerStartTimer = true;
+
+addGPIOGroup("GPIO_YAW_CTRL", [
+    {name: "YAW_DIR", pin: "PA27", direction: "OUTPUT", initialValue: "CLEARED"},
+    {name: "YAW_EN", pin: "PB24", direction: "OUTPUT", initialValue: "CLEARED"}
+]);
+
+addGPIOGroup("GPIO_YAW_LIMIT", [
+    {name: "YAW_LIMIT_L", pin: "PB8", direction: "INPUT", resistor: "PULL_UP", interrupt: "FALL"},
+    {name: "YAW_LIMIT_R", pin: "PB9", direction: "INPUT", resistor: "PULL_UP", interrupt: "FALL"}
+]);
+
+addGPIOGroup("GPIO_PITCH_CTRL", [
+    {name: "PITCH_DIR", pin: "PA24", direction: "OUTPUT", initialValue: "CLEARED"},
+    {name: "PITCH_EN", pin: "PA25", direction: "OUTPUT", initialValue: "CLEARED"},
+    {name: "LASER_EN", pin: "PA14", direction: "OUTPUT", initialValue: "CLEARED"}
+]);
+
+addGPIOGroup("GPIO_PITCH_FEEDBACK", [
+    {name: "PITCH_ENC_A", pin: "PA15", direction: "INPUT", hysteresis: true, interrupt: "RISE"},
+    {name: "PITCH_ENC_B", pin: "PA16", direction: "INPUT"},
+    {name: "PITCH_LIMIT_U", pin: "PA0", direction: "INPUT", interrupt: "FALL"},
+    {name: "PITCH_LIMIT_D", pin: "PA1", direction: "INPUT", interrupt: "FALL"}
+]);
+
+addGPIOGroup("GPIO_USER_INPUT", [
+    {name: "USER_KEY", pin: "PA18", direction: "INPUT"}
+]);
+
+addUART("UART0_TO_ESP", "UART0", "PA28", "PA31");
+addUART("UART1_TO_WT901", "UART1", "PA8", "PA9");
+addUART("UART2_TO_MSPA", "UART2", "PA21", "PA22");
+addUART("UART3_TO_RPI", "UART3", "PB2", "PB3");
+
+const TIMER_GIMBAL_1MS = TIMER.addInstance();
+TIMER_GIMBAL_1MS.$name = "TIMER_GIMBAL_1MS";
+TIMER_GIMBAL_1MS.peripheral.$assign = "TIMG6";
+TIMER_GIMBAL_1MS.timerClkSrc = "BUSCLK";
+TIMER_GIMBAL_1MS.timerClkDiv = 1;
+TIMER_GIMBAL_1MS.timerClkPrescale = 2;
+TIMER_GIMBAL_1MS.timerMode = "PERIODIC";
+TIMER_GIMBAL_1MS.timerPeriod = "1 ms";
+TIMER_GIMBAL_1MS.timerStartTimer = true;
+TIMER_GIMBAL_1MS.interrupts = ["ZERO"];
+TIMER_GIMBAL_1MS.interruptPriority = "1";
