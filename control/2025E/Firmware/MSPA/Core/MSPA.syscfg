@@ -151,9 +151,8 @@ addGPIOGroup("GPIO_USER_INPUT", [
 ]);
 
 addUART("UART2_TO_MSPB", "UART2", "PA21", "PA22");
-addUART("UART3_TO_ESP", "UART3", "PB2", "PB3");
-/* Optional CH340 debug UART: enabled in SysConfig but not required by the chassis. */
-addUART("UART0_CH340_DEBUG", "UART0", "PA10", "PA11");
+/* ESP interface moved to UART0; PA28/PA31 replace the optional CH340 UART. */
+addUART("UART0_TO_ESP", "UART0", "PA28", "PA31");
 
 const TIMER_CHASSIS_10MS = TIMER.addInstance();
 TIMER_CHASSIS_10MS.$name = "TIMER_CHASSIS_10MS";
