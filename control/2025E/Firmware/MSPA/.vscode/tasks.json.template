@@ -1,0 +1,100 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "MSPM0: Build",
+            "type": "process",
+            "command": "ninja",
+            "args": [
+                "-C",
+                "build"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": "$gcc",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "MSPM0: Download",
+            "type": "process",
+            "command": "probe-rs",
+            "args": [
+                "download",
+                "--chip",
+                "MSPM0G3507",
+                "--verify",
+                "${workspaceFolder}/build/MSPA.elf"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "MSPM0: Reset & Run",
+            "type": "process",
+            "command": "probe-rs",
+            "args": [
+                "reset",
+                "--chip",
+                "MSPM0G3507"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "MSPM0: Build, Flash & Run",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "MSPM0: Build",
+                "MSPM0: Download",
+                "MSPM0: Reset & Run"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "MSPM0: Open SysConfig GUI",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile",
+                "-Command",
+                "& '__SYSCONFIG_ROOT__/sysconfig_gui.bat' -s '__MSPM0_SDK_ROOT__/.metadata/product.json' -d 'MSPM0G3507' -p 'LQFP-48(PT)' '${workspaceFolder}/Core/MSPA.syscfg'"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "never"
+            }
+        },
+        {
+            "label": "MSPM0: Generate SysConfig",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}/tools/generate_sysconfig.ps1",
+                "-SysConfigRoot",
+                "__SYSCONFIG_ROOT__",
+                "-Mspm0SdkRoot",
+                "__MSPM0_SDK_ROOT__"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
