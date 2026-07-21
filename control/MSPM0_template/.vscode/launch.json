@@ -1,5 +1,5 @@
 {
-    // 使用 IntelliSense 了解相关属性。 
+    // 使用 IntelliSense 了解相关属性。
     // 悬停以查看现有属性的描述。
     // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
@@ -18,17 +18,21 @@
             "coreConfigs": [
                 {
                     "coreIndex": 0,
-                    "programBinary": "build/empty.elf"
+                    "programBinary": "build/MSPA.elf"
                 }
             ]
         },
         {
             "name": "Cortex-Debug (DAP-Link + MSPM0G3507)",
             "cwd": "${workspaceFolder}",
-            "executable": "${workspaceFolder}/build/empty.elf",
+            "executable": "${workspaceFolder}/build/MSPA.elf",
             "request": "launch",
-			"svdFile": "${workspaceFolder}/svd/mspm0g350x.svd",
+            "svdFile": "${workspaceFolder}/svd/mspm0g350x.svd",
             // "svdFile": "${workspaceFolder}/svd/Cortex-M0plus.svd",
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 4
+            },
             "type": "cortex-debug",
             "servertype": "openocd",
             "serverpath": "${config:ti-embedded-debug.openocdExecutablePath}",

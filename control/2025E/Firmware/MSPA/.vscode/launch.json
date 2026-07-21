@@ -29,6 +29,10 @@
             "request": "launch",
             "svdFile": "${workspaceFolder}/svd/mspm0g350x.svd",
             // "svdFile": "${workspaceFolder}/svd/Cortex-M0plus.svd",
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 4
+            },
             "type": "cortex-debug",
             "servertype": "openocd",
             "serverpath": "${config:ti-embedded-debug.openocdExecutablePath}",

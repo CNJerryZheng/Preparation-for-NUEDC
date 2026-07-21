@@ -18,17 +18,21 @@
             "coreConfigs": [
                 {
                     "coreIndex": 0,
-                    "programBinary": "build/MSPB.elf"
+                    "programBinary": "build/MSPA.elf"
                 }
             ]
         },
         {
             "name": "Cortex-Debug (DAP-Link + MSPM0G3507)",
             "cwd": "${workspaceFolder}",
-            "executable": "${workspaceFolder}/build/MSPB.elf",
+            "executable": "${workspaceFolder}/build/MSPA.elf",
             "request": "launch",
-			"svdFile": "${workspaceFolder}/svd/mspm0g350x.svd",
+            "svdFile": "${workspaceFolder}/svd/mspm0g350x.svd",
             // "svdFile": "${workspaceFolder}/svd/Cortex-M0plus.svd",
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 4
+            },
             "type": "cortex-debug",
             "servertype": "openocd",
             "serverpath": "${config:ti-embedded-debug.openocdExecutablePath}",
