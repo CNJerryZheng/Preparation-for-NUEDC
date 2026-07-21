@@ -1,57 +1,41 @@
-# Firmware layer arrangement
+# MSPA / MSPB 五层架构
 
-The two MSPM0 projects keep the original `Core`, `BSP`, and TI `Driver`
-directories.  The new application code is split by responsibility instead of
-placing board access and vehicle logic in `main.c`.
+两个 MSPM0 工程均保留原有 `Core` 和 TI 原厂 `Driver`。`Driver` 目录只存放
+TI DriverLib、CMSIS 等第三方代码，不再放本工程的功能模块。
 
-```
-Core/main.c
-    -> App                 application startup and main-loop sequencing
-        -> Service         non-blocking vehicle/gimbal tasks
-            -> Control     control decisions without register access
-            -> Driver      device-specific decoding and data handling
-                -> BSP     MSPM0 peripheral and NVIC boundary
-                    -> SysConfig generated configuration / TI DriverLib
-
-Protocol
-    -> byte buffering and future A/B, ESP, and Raspberry Pi frame parsing
+```text
+App       仅负责初始化顺序和主循环调度
+  └─ Service  周期任务、状态处理、通信等业务逻辑
+       └─ Control  PID、循迹/云台控制等纯控制算法
+            └─ Device  WT901、循迹、编码器、电机等物理器件抽象
+                 └─ BSP  GPIO、UART、Timer 等最底层硬件调用
+                      └─ Driver  TI DriverLib（不写项目代码）
 ```
 
-## MSPA chassis controller
+## MSPA 底盘主控
 
-| Layer | Current module | Responsibility |
-| --- | --- | --- |
-| App | `app_mspa` | Starts the chassis services and runs their non-blocking loop. |
-| BSP | `bsp_uart` | Enables the existing MSPA UART2/UART3 NVIC lines; peripheral setup stays in SysConfig. |
-| Driver | `linetrack` | Reads `LINE_1` through `LINE_8` generated GPIO symbols and retains the F407 weighted line-position algorithm. |
-| Control | `chassis_control` | Boundary for line result to chassis/motor command conversion. |
-| Protocol | `ring_buffer` | Reusable ISR/task-safe byte-buffer primitive. |
-| Service | `chassis_task`, `communication_service` | Calls line processing and provides the communication scheduling point. |
+- `BSP/bsp_uart`：使能 UART0（ESP，PA28/PA31）和 UART2（MSPB，PA21/PA22）中断。
+- `BSP/bsp_timer`：使能 TIMG6，并产生 10ms 底盘控制节拍。
+- `Device/linetrack`：八路红外循迹设备。位 0 至位 7 对应 PA27、PA26、PA25、PA24、PA23、PB24、PB20、PA7。
+- `Control/chassis_control`：底盘控制算法接口，不直接访问寄存器或 GPIO。
+- `Service/chassis_task`：在每个 10ms 节拍读取循迹设备并调用控制层。
+- `App/app_mspa`：初始化各层并调度服务。
 
-`LINE_1` through `LINE_8` retain their SysConfig order: PA27, PA26, PA25,
-PA24, PA23, PB24, PB20, and PA7.  Bit 0 through bit 7 of `LINE_ReadRaw()`
-follow exactly that order, so the original F407 weights remain applicable.
+## MSPB 云台主控
 
-## MSPB gimbal controller
+- `BSP/bsp_uart`：UART1 接收中断将 PA9 的 WT901 数据送入设备层；其余通信串口在协议接入前安全取走接收字节。
+- `BSP/bsp_timer`：使能 TIMG6，并产生 1ms 云台控制节拍。
+- `Device/wt901`：保留 F407 工程的 11 字节帧缓存、校验和、加速度/角速度/欧拉角换算。
+- `Control/gimbal_axis`：云台轴控制算法接口，不直接访问步进器寄存器。
+- `Service/gimbal_task`：每 1ms 解析已接收的 WT901 帧并调用控制层。
+- `App/app_mspb`：初始化各层并调度服务。
 
-| Layer | Current module | Responsibility |
-| --- | --- | --- |
-| App | `app_mspb` | Starts gimbal services and runs the non-blocking loop. |
-| BSP | `bsp_uart` | Enables existing UART NVIC lines and forwards UART1 RX bytes to WT901. |
-| Driver | `wt901` | Retains the F407 11-byte frame buffering and acceleration/gyro/angle conversions. |
-| Control | `gimbal_axis` | Boundary for future yaw/pitch control laws. |
-| Protocol | `ring_buffer` | Reusable ISR/task-safe byte-buffer primitive. |
-| Service | `gimbal_task`, `communication_service` | Drains WT901 frames and schedules gimbal control. |
+WT901 仍由 SysConfig 配置为 UART1、PA8/PA9、115200。移植代码不会在上电时
+执行原 F407 工程中“校准、修改输出率、改成 230400 波特率”等命令，避免改变传感器
+现有设置。
 
-WT901 remains on the SysConfig UART1 configuration: PA8 TX, PA9 RX and
-115200 baud.  The port intentionally does **not** execute the F407
-`WT901_Init()` sequence that calibrated the sensor and changed its baud rate
-to 230400.  The MSPM0 `WT901_Init()` only resets parser state; configuration
-commands can be added later as an explicit, operator-triggered service.
+## 注释规范
 
-## Source-code conventions
-
-All newly added C and header files use the existing `@file`, `@author`,
-`@brief`, and `@date` library header style.  Public functions have a brief
-comment immediately before the declaration.  Existing user files and
-SysConfig-generated `ti_msp_dl_config.c/.h` are left untouched.
+新增文件统一采用 `@file`、`@author`、`@brief`、`@date` 文件头；公开函数和
+内部关键函数均在定义前保留中文 Doxygen 注释。SysConfig 自动生成的
+`ti_msp_dl_config.c/.h` 不手动编辑。

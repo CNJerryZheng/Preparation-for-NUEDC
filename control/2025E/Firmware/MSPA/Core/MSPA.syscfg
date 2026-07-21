@@ -34,6 +34,8 @@ mux12.inputSelect = "zSYSPLLMUX_HFCLK";
 const hfxCrystal                        = system.clockTree["HFXT"];
 hfxCrystal.enable                       = true;
 hfxCrystal.inputFreq                    = 40;
+hfxCrystal.HFXTStartup                  = 100;
+hfxCrystal.HFCLKMonitor                 = true;
 hfxCrystal.peripheral.$assign           = "SYSCTL";
 hfxCrystal.peripheral.hfxInPin.$assign  = "PA5";
 hfxCrystal.peripheral.hfxOutPin.$assign = "PA6";
@@ -49,7 +51,8 @@ Board.peripheral.$assign          = "DEBUGSS";
 Board.peripheral.swclkPin.$assign = "PA20";
 Board.peripheral.swdioPin.$assign = "PA19";
 
-SYSCTL.forceDefaultClkConfig = true;
+/* 使用上方配置的 40 MHz HFXT / PLL 时钟树，不回退至默认低速时钟。 */
+SYSCTL.forceDefaultClkConfig = false;
 SYSCTL.clockTreeEn           = true;
 ProjectConfig.deviceSpin     = "MSPM0G3507";
 

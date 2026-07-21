@@ -1,13 +1,13 @@
 /**
  * @file        communication_service.h
  * @author      JerryZheng
- * @brief       Gimbal communication service interface.
- * @date        2026-07-20
+ * @brief       云台通信业务服务接口
+ * @date        2026-07-21
  */
 
 #pragma once
 
-/** @brief Initialize gimbal communication state. */
+/** @brief 初始化云台通信业务状态 */
 void COMMUNICATION_ServiceInit(void);
-/** @brief Process queued gimbal communication data. */
+/** @brief 处理已接收的云台通信业务数据 */
 void COMMUNICATION_ServiceProcess(void);

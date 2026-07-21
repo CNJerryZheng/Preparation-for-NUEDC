@@ -167,9 +167,9 @@ extern "C" {
 #define GPIO_UART1_TO_WT901_IOMUX_TX                             (IOMUX_PINCM19)
 #define GPIO_UART1_TO_WT901_IOMUX_RX_FUNC               IOMUX_PINCM20_PF_UART1_RX
 #define GPIO_UART1_TO_WT901_IOMUX_TX_FUNC               IOMUX_PINCM19_PF_UART1_TX
-#define UART1_TO_WT901_BAUD_RATE                                        (115200)
-#define UART1_TO_WT901_IBRD_40_MHZ_115200_BAUD                              (21)
-#define UART1_TO_WT901_FBRD_40_MHZ_115200_BAUD                              (45)
+#define UART1_TO_WT901_BAUD_RATE                                        (230400)
+#define UART1_TO_WT901_IBRD_40_MHZ_230400_BAUD                              (10)
+#define UART1_TO_WT901_FBRD_40_MHZ_230400_BAUD                              (54)
 /* Defines for UART2_TO_MSPA */
 #define UART2_TO_MSPA_INST                                                 UART2
 #define UART2_TO_MSPA_INST_FREQUENCY                                    40000000

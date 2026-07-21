@@ -131,38 +131,22 @@ extern "C" {
 #define UART2_TO_MSPB_BAUD_RATE                                         (115200)
 #define UART2_TO_MSPB_IBRD_40_MHZ_115200_BAUD                               (21)
 #define UART2_TO_MSPB_FBRD_40_MHZ_115200_BAUD                               (45)
-/* Defines for UART3_TO_ESP */
-#define UART3_TO_ESP_INST                                                  UART3
-#define UART3_TO_ESP_INST_FREQUENCY                                     80000000
-#define UART3_TO_ESP_INST_IRQHandler                            UART3_IRQHandler
-#define UART3_TO_ESP_INST_INT_IRQN                                UART3_INT_IRQn
-#define GPIO_UART3_TO_ESP_RX_PORT                                          GPIOB
-#define GPIO_UART3_TO_ESP_TX_PORT                                          GPIOB
-#define GPIO_UART3_TO_ESP_RX_PIN                                   DL_GPIO_PIN_3
-#define GPIO_UART3_TO_ESP_TX_PIN                                   DL_GPIO_PIN_2
-#define GPIO_UART3_TO_ESP_IOMUX_RX                               (IOMUX_PINCM16)
-#define GPIO_UART3_TO_ESP_IOMUX_TX                               (IOMUX_PINCM15)
-#define GPIO_UART3_TO_ESP_IOMUX_RX_FUNC                IOMUX_PINCM16_PF_UART3_RX
-#define GPIO_UART3_TO_ESP_IOMUX_TX_FUNC                IOMUX_PINCM15_PF_UART3_TX
-#define UART3_TO_ESP_BAUD_RATE                                          (115200)
-#define UART3_TO_ESP_IBRD_80_MHZ_115200_BAUD                                (43)
-#define UART3_TO_ESP_FBRD_80_MHZ_115200_BAUD                                (26)
-/* Defines for UART0_CH340_DEBUG */
-#define UART0_CH340_DEBUG_INST                                             UART0
-#define UART0_CH340_DEBUG_INST_FREQUENCY                                40000000
-#define UART0_CH340_DEBUG_INST_IRQHandler                        UART0_IRQHandler
-#define UART0_CH340_DEBUG_INST_INT_IRQN                           UART0_INT_IRQn
-#define GPIO_UART0_CH340_DEBUG_RX_PORT                                     GPIOA
-#define GPIO_UART0_CH340_DEBUG_TX_PORT                                     GPIOA
-#define GPIO_UART0_CH340_DEBUG_RX_PIN                             DL_GPIO_PIN_11
-#define GPIO_UART0_CH340_DEBUG_TX_PIN                             DL_GPIO_PIN_10
-#define GPIO_UART0_CH340_DEBUG_IOMUX_RX                          (IOMUX_PINCM22)
-#define GPIO_UART0_CH340_DEBUG_IOMUX_TX                          (IOMUX_PINCM21)
-#define GPIO_UART0_CH340_DEBUG_IOMUX_RX_FUNC               IOMUX_PINCM22_PF_UART0_RX
-#define GPIO_UART0_CH340_DEBUG_IOMUX_TX_FUNC               IOMUX_PINCM21_PF_UART0_TX
-#define UART0_CH340_DEBUG_BAUD_RATE                                     (115200)
-#define UART0_CH340_DEBUG_IBRD_40_MHZ_115200_BAUD                           (21)
-#define UART0_CH340_DEBUG_FBRD_40_MHZ_115200_BAUD                           (45)
+/* Defines for UART0_TO_ESP */
+#define UART0_TO_ESP_INST                                                  UART0
+#define UART0_TO_ESP_INST_FREQUENCY                                     40000000
+#define UART0_TO_ESP_INST_IRQHandler                            UART0_IRQHandler
+#define UART0_TO_ESP_INST_INT_IRQN                                UART0_INT_IRQn
+#define GPIO_UART0_TO_ESP_RX_PORT                                          GPIOA
+#define GPIO_UART0_TO_ESP_TX_PORT                                          GPIOA
+#define GPIO_UART0_TO_ESP_RX_PIN                                  DL_GPIO_PIN_31
+#define GPIO_UART0_TO_ESP_TX_PIN                                  DL_GPIO_PIN_28
+#define GPIO_UART0_TO_ESP_IOMUX_RX                                (IOMUX_PINCM6)
+#define GPIO_UART0_TO_ESP_IOMUX_TX                                (IOMUX_PINCM3)
+#define GPIO_UART0_TO_ESP_IOMUX_RX_FUNC                 IOMUX_PINCM6_PF_UART0_RX
+#define GPIO_UART0_TO_ESP_IOMUX_TX_FUNC                 IOMUX_PINCM3_PF_UART0_TX
+#define UART0_TO_ESP_BAUD_RATE                                          (115200)
+#define UART0_TO_ESP_IBRD_40_MHZ_115200_BAUD                                (21)
+#define UART0_TO_ESP_FBRD_40_MHZ_115200_BAUD                                (45)
 
 
 
@@ -257,8 +241,7 @@ void SYSCFG_DL_SYSCTL_init(void);
 void SYSCFG_DL_PWM_MOTOR_init(void);
 void SYSCFG_DL_TIMER_CHASSIS_10MS_init(void);
 void SYSCFG_DL_UART2_TO_MSPB_init(void);
-void SYSCFG_DL_UART3_TO_ESP_init(void);
-void SYSCFG_DL_UART0_CH340_DEBUG_init(void);
+void SYSCFG_DL_UART0_TO_ESP_init(void);
 
 
 bool SYSCFG_DL_saveConfiguration(void);

@@ -35,6 +35,8 @@ mux12.inputSelect = "zSYSPLLMUX_HFCLK";
 const hfxCrystal                        = system.clockTree["HFXT"];
 hfxCrystal.enable                       = true;
 hfxCrystal.inputFreq                    = 40;
+hfxCrystal.HFXTStartup                  = 100;
+hfxCrystal.HFCLKMonitor                 = true;
 hfxCrystal.peripheral.$assign           = "SYSCTL";
 hfxCrystal.peripheral.hfxInPin.$assign  = "PA5";
 hfxCrystal.peripheral.hfxOutPin.$assign = "PA6";
@@ -50,7 +52,8 @@ Board.peripheral.$assign          = "DEBUGSS";
 Board.peripheral.swclkPin.$assign = "PA20";
 Board.peripheral.swdioPin.$assign = "PA19";
 
-SYSCTL.forceDefaultClkConfig = true;
+/* 使用上方配置的 40 MHz HFXT / PLL 时钟树，不回退至默认低速时钟。 */
+SYSCTL.forceDefaultClkConfig = false;
 SYSCTL.clockTreeEn           = true;
 ProjectConfig.deviceSpin     = "MSPM0G3507";
 
@@ -83,7 +86,9 @@ function addGPIOGroup(name, pins) {
     return group;
 }
 
-function addUART(name, instance, txPin, rxPin) {
+const WT901_UART_BAUD_RATE = 230400;
+
+function addUART(name, instance, txPin, rxPin, baudRate = 115200) {
     const uart = UART.addInstance();
     uart.$name = name;
     uart.peripheral.$assign = instance;
@@ -92,7 +97,7 @@ function addUART(name, instance, txPin, rxPin) {
     uart.direction = "TX_RX";
     uart.uartClkSrc = "BUSCLK";
     uart.uartClkDiv = "1";
-    uart.targetBaudRate = 115200;
+    uart.targetBaudRate = baudRate;
     uart.wordLength = "8_BITS";
     uart.parity = "NONE";
     uart.stopBits = "ONE";
@@ -175,7 +180,8 @@ addGPIOGroup("GPIO_USER_INPUT", [
 ]);
 
 addUART("UART0_TO_ESP", "UART0", "PA28", "PA31");
-addUART("UART1_TO_WT901", "UART1", "PA8", "PA9");
+/* 与 Device/Inc/wt901_config.h 的 WT901_UART_BAUD_RATE 保持一致。 */
+addUART("UART1_TO_WT901", "UART1", "PA8", "PA9", WT901_UART_BAUD_RATE);
 addUART("UART2_TO_MSPA", "UART2", "PA21", "PA22");
 addUART("UART3_TO_RPI", "UART3", "PB2", "PB3");
 

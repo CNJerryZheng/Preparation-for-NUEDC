@@ -1,11 +1,11 @@
 /**
  * @file        gimbal_axis.h
  * @author      JerryZheng
- * @brief       Gimbal axis control-layer interface.
- * @date        2026-07-20
+ * @brief       云台轴控制算法层接口
+ * @date        2026-07-21
  */
 
 #pragma once
 
-/** @brief Update gimbal axis controllers from current sensor data. */
+/** @brief 根据当前传感器数据更新云台轴控制算法 */
 void GIMBAL_AxisUpdate(void);

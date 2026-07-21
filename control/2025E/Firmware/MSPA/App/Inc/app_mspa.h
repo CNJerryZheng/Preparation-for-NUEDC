@@ -1,18 +1,18 @@
 /**
  * @file        app_mspa.h
  * @author      JerryZheng
- * @brief       MSPA application entry.
- * @date        2026-07-20
+ * @brief       MSPA 底盘应用调度层接口
+ * @date        2026-07-21
  */
 
 #pragma once
 
 /**
- * @brief Initialize MSPA application services.
+ * @brief 初始化 MSPA 底盘应用服务
  */
 void APP_MSPA_Init(void);
 
 /**
- * @brief Run one non-blocking MSPA application cycle.
+ * @brief 执行一次 MSPA 非阻塞应用调度
  */
 void APP_MSPA_Process(void);

@@ -32,10 +32,10 @@ set(APP_SOURCES
     Core/Src/ti_msp_dl_config.c
     BSP/Src/board.c
     BSP/Src/bsp_uart.c
+    BSP/Src/bsp_timer.c
     App/Src/app_mspb.c
-    Driver/Src/wt901.c
+    Device/Src/wt901.c
     Control/Src/gimbal_axis.c
-    Protocol/Src/ring_buffer.c
     Service/Src/gimbal_task.c
     Service/Src/communication_service.c
 )
@@ -75,9 +75,8 @@ target_include_directories(${PROJECT_TARGET} PRIVATE
     Core/Inc
     App/Inc
     BSP/Inc
-    Driver/Inc
+    Device/Inc
     Control/Inc
-    Protocol/Inc
     Service/Inc
 )
 

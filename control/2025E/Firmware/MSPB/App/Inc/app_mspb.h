@@ -1,13 +1,13 @@
 /**
  * @file        app_mspb.h
  * @author      JerryZheng
- * @brief       MSPB application entry.
- * @date        2026-07-20
+ * @brief       MSPB 云台应用调度层接口
+ * @date        2026-07-21
  */
 
 #pragma once
 
-/** @brief Initialize MSPB application services. */
+/** @brief 初始化 MSPB 云台应用服务 */
 void APP_MSPB_Init(void);
-/** @brief Run one non-blocking MSPB application cycle. */
+/** @brief 执行一次 MSPB 非阻塞应用调度 */
 void APP_MSPB_Process(void);

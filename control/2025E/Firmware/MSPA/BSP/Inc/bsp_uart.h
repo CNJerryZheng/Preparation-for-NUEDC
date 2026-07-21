@@ -1,13 +1,13 @@
 /**
  * @file        bsp_uart.h
  * @author      JerryZheng
- * @brief       MSPA UART board-support interface.
- * @date        2026-07-20
+ * @brief       MSPA 串口 BSP 接口
+ * @date        2026-07-21
  */
 
 #pragma once
 
 /**
- * @brief Enable UART interrupts required by the application layer.
+ * @brief 使能 MSPA 应用需要的串口中断
  */
 void BSP_UART_Init(void);

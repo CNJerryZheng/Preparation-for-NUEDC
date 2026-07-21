@@ -18,14 +18,14 @@
             "coreConfigs": [
                 {
                     "coreIndex": 0,
-                    "programBinary": "build/MSPA.elf"
+                    "programBinary": "build/MSPB.elf"
                 }
             ]
         },
         {
             "name": "Cortex-Debug (DAP-Link + MSPM0G3507)",
             "cwd": "${workspaceFolder}",
-            "executable": "${workspaceFolder}/build/MSPA.elf",
+            "executable": "${workspaceFolder}/build/MSPB.elf",
             "request": "launch",
             "svdFile": "${workspaceFolder}/svd/mspm0g350x.svd",
             // "svdFile": "${workspaceFolder}/svd/Cortex-M0plus.svd",
