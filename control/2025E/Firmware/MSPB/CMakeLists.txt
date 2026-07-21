@@ -31,6 +31,13 @@ set(APP_SOURCES
     Core/Src/startup_mspm0g350x_gcc.c
     Core/Src/ti_msp_dl_config.c
     BSP/Src/board.c
+    BSP/Src/bsp_uart.c
+    App/Src/app_mspb.c
+    Driver/Src/wt901.c
+    Control/Src/gimbal_axis.c
+    Protocol/Src/ring_buffer.c
+    Service/Src/gimbal_task.c
+    Service/Src/communication_service.c
 )
 
 # DriverLib 中大多数接口是内联函数；芯片族相关实现只编译 MSPM0G。
@@ -66,7 +73,12 @@ set_target_properties(${PROJECT_TARGET} PROPERTIES SUFFIX ".elf")
 
 target_include_directories(${PROJECT_TARGET} PRIVATE
     Core/Inc
+    App/Inc
     BSP/Inc
+    Driver/Inc
+    Control/Inc
+    Protocol/Inc
+    Service/Inc
 )
 
 target_include_directories(${PROJECT_TARGET} SYSTEM PRIVATE
