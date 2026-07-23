@@ -10,6 +10,7 @@ scripting.excludeFromBuild("device.cmd.genlibs");
 scripting.excludeFromBuild("device.lds.genlibs");
 
 const GPIO          = scripting.addModule("/ti/driverlib/GPIO", {}, false);
+const CAPTURE       = scripting.addModule("/ti/driverlib/CAPTURE", {}, false);
 const PWM           = scripting.addModule("/ti/driverlib/PWM", {}, false);
 const QEI           = scripting.addModule("/ti/driverlib/QEI", {}, false);
 const TIMER         = scripting.addModule("/ti/driverlib/TIMER", {}, false);
@@ -152,6 +153,38 @@ QEI_YAW_ENCODER.enableHallInput = false;
 QEI_YAW_ENCODER.loadValue = 0xFFFF;
 QEI_YAW_ENCODER.timerStartTimer = true;
 
+/*
+ * MT6816 PWM 一帧约为 1.03ms 或 2.06ms。
+ * TIMA0/TIMA1 以 4MHz 计数，既可分辨 250ns PWM 时钟，又可用 10ms 溢出检测断线。
+ */
+const CAPTURE_YAW_PWM = CAPTURE.addInstance();
+CAPTURE_YAW_PWM.$name = "CAPTURE_YAW_PWM";
+CAPTURE_YAW_PWM.ccIndex = 2;
+CAPTURE_YAW_PWM.peripheral.$assign = "TIMA0";
+CAPTURE_YAW_PWM.peripheral.ccp2Pin.$assign = "PA7";
+CAPTURE_YAW_PWM.captMode = "COMBINED";
+CAPTURE_YAW_PWM.timerClkSrc = "BUSCLK";
+CAPTURE_YAW_PWM.timerClkDiv = 1;
+CAPTURE_YAW_PWM.timerClkPrescale = 20;
+CAPTURE_YAW_PWM.timerPeriod = "10 ms";
+CAPTURE_YAW_PWM.timerStartTimer = true;
+CAPTURE_YAW_PWM.interrupts = ["CC3_DN", "ZERO"];
+CAPTURE_YAW_PWM.interruptPriority = "1";
+
+const CAPTURE_PITCH_PWM = CAPTURE.addInstance();
+CAPTURE_PITCH_PWM.$name = "CAPTURE_PITCH_PWM";
+CAPTURE_PITCH_PWM.peripheral.$assign = "TIMA1";
+CAPTURE_PITCH_PWM.peripheral.ccp0Pin.$assign = "PA17";
+CAPTURE_PITCH_PWM.ccIndex = 0;
+CAPTURE_PITCH_PWM.captMode = "COMBINED";
+CAPTURE_PITCH_PWM.timerClkSrc = "BUSCLK";
+CAPTURE_PITCH_PWM.timerClkDiv = 1;
+CAPTURE_PITCH_PWM.timerClkPrescale = 20;
+CAPTURE_PITCH_PWM.timerPeriod = "10 ms";
+CAPTURE_PITCH_PWM.timerStartTimer = true;
+CAPTURE_PITCH_PWM.interrupts = ["CC1_DN", "ZERO"];
+CAPTURE_PITCH_PWM.interruptPriority = "1";
+
 addGPIOGroup("GPIO_YAW_CTRL", [
     {name: "YAW_DIR", pin: "PA27", direction: "OUTPUT", initialValue: "CLEARED"},
     {name: "YAW_EN", pin: "PB24", direction: "OUTPUT", initialValue: "CLEARED"}
@@ -173,7 +206,9 @@ addGPIOGroup("GPIO_PITCH_FEEDBACK", [
     {name: "PITCH_ENC_A", pin: "PA15", direction: "INPUT", interrupt: "RISE_FALL"},
     {name: "PITCH_ENC_B", pin: "PA16", direction: "INPUT", interrupt: "RISE_FALL"},
     {name: "PITCH_LIMIT_U", pin: "PA0", direction: "INPUT", interrupt: "FALL"},
-    {name: "PITCH_LIMIT_D", pin: "PA1", direction: "INPUT", interrupt: "FALL"}
+    {name: "PITCH_LIMIT_D", pin: "PA1", direction: "INPUT", interrupt: "FALL"},
+    {name: "YAW_ENC_Z", pin: "PA12", direction: "INPUT", interrupt: "RISE"},
+    {name: "PITCH_ENC_Z", pin: "PA13", direction: "INPUT", interrupt: "RISE"}
 ]);
 
 addGPIOGroup("GPIO_USER_INPUT", [

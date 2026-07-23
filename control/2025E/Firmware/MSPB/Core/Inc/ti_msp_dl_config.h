@@ -130,6 +130,32 @@ extern "C" {
 #define GPIO_QEI_YAW_ENCODER_PHB_IOMUX_FUNC             IOMUX_PINCM24_PF_TIMG8_CCP1
 
 
+/* Defines for CAPTURE_YAW_PWM */
+#define CAPTURE_YAW_PWM_INST                                             (TIMA0)
+#define CAPTURE_YAW_PWM_INST_IRQHandler                         TIMA0_IRQHandler
+#define CAPTURE_YAW_PWM_INST_INT_IRQN                           (TIMA0_INT_IRQn)
+#define CAPTURE_YAW_PWM_INST_LOAD_VALUE                                 (39999U)
+/* GPIO defines for channel 2 */
+#define GPIO_CAPTURE_YAW_PWM_C2_PORT                                       GPIOA
+#define GPIO_CAPTURE_YAW_PWM_C2_PIN                                DL_GPIO_PIN_7
+#define GPIO_CAPTURE_YAW_PWM_C2_IOMUX                            (IOMUX_PINCM14)
+#define GPIO_CAPTURE_YAW_PWM_C2_IOMUX_FUNC             IOMUX_PINCM14_PF_TIMA0_CCP2
+
+/* Defines for CAPTURE_PITCH_PWM */
+#define CAPTURE_PITCH_PWM_INST                                           (TIMA1)
+#define CAPTURE_PITCH_PWM_INST_IRQHandler                        TIMA1_IRQHandler
+#define CAPTURE_PITCH_PWM_INST_INT_IRQN                         (TIMA1_INT_IRQn)
+#define CAPTURE_PITCH_PWM_INST_LOAD_VALUE                                (39999U)
+/* GPIO defines for channel 0 */
+#define GPIO_CAPTURE_PITCH_PWM_C0_PORT                                     GPIOA
+#define GPIO_CAPTURE_PITCH_PWM_C0_PIN                             DL_GPIO_PIN_17
+#define GPIO_CAPTURE_PITCH_PWM_C0_IOMUX                          (IOMUX_PINCM39)
+#define GPIO_CAPTURE_PITCH_PWM_C0_IOMUX_FUNC             IOMUX_PINCM39_PF_TIMA1_CCP0
+
+
+
+
+
 /* Defines for TIMER_GIMBAL_1MS */
 #define TIMER_GIMBAL_1MS_INST                                            (TIMG6)
 #define TIMER_GIMBAL_1MS_INST_IRQHandler                        TIMG6_IRQHandler
@@ -245,7 +271,7 @@ extern "C" {
 #define GPIO_PITCH_FEEDBACK_PORT                                         (GPIOA)
 
 /* Defines for PITCH_ENC_A: GPIOA.15 with pinCMx 37 on package pin 30 */
-// pins affected by this interrupt request:["PITCH_ENC_A","PITCH_ENC_B","PITCH_LIMIT_U","PITCH_LIMIT_D"]
+// pins affected by this interrupt request:["PITCH_ENC_A","PITCH_ENC_B","PITCH_LIMIT_U","PITCH_LIMIT_D","YAW_ENC_Z","PITCH_ENC_Z"]
 #define GPIO_PITCH_FEEDBACK_INT_IRQN                            (GPIOA_INT_IRQn)
 #define GPIO_PITCH_FEEDBACK_INT_IIDX            (DL_INTERRUPT_GROUP1_IIDX_GPIOA)
 #define GPIO_PITCH_FEEDBACK_PITCH_ENC_A_IIDX                (DL_GPIO_IIDX_DIO15)
@@ -263,6 +289,14 @@ extern "C" {
 #define GPIO_PITCH_FEEDBACK_PITCH_LIMIT_D_IIDX               (DL_GPIO_IIDX_DIO1)
 #define GPIO_PITCH_FEEDBACK_PITCH_LIMIT_D_PIN                    (DL_GPIO_PIN_1)
 #define GPIO_PITCH_FEEDBACK_PITCH_LIMIT_D_IOMUX                   (IOMUX_PINCM2)
+/* Defines for YAW_ENC_Z: GPIOA.12 with pinCMx 34 on package pin 27 */
+#define GPIO_PITCH_FEEDBACK_YAW_ENC_Z_IIDX                  (DL_GPIO_IIDX_DIO12)
+#define GPIO_PITCH_FEEDBACK_YAW_ENC_Z_PIN                       (DL_GPIO_PIN_12)
+#define GPIO_PITCH_FEEDBACK_YAW_ENC_Z_IOMUX                      (IOMUX_PINCM34)
+/* Defines for PITCH_ENC_Z: GPIOA.13 with pinCMx 35 on package pin 28 */
+#define GPIO_PITCH_FEEDBACK_PITCH_ENC_Z_IIDX                (DL_GPIO_IIDX_DIO13)
+#define GPIO_PITCH_FEEDBACK_PITCH_ENC_Z_PIN                     (DL_GPIO_PIN_13)
+#define GPIO_PITCH_FEEDBACK_PITCH_ENC_Z_IOMUX                    (IOMUX_PINCM35)
 /* Port definition for Pin Group GPIO_USER_INPUT */
 #define GPIO_USER_INPUT_PORT                                             (GPIOA)
 
@@ -279,6 +313,8 @@ void SYSCFG_DL_SYSCTL_init(void);
 void SYSCFG_DL_PWM_YAW_STEP_init(void);
 void SYSCFG_DL_PWM_PITCH_STEP_init(void);
 void SYSCFG_DL_QEI_YAW_ENCODER_init(void);
+void SYSCFG_DL_CAPTURE_YAW_PWM_init(void);
+void SYSCFG_DL_CAPTURE_PITCH_PWM_init(void);
 void SYSCFG_DL_TIMER_GIMBAL_1MS_init(void);
 void SYSCFG_DL_UART0_TO_ESP_init(void);
 void SYSCFG_DL_UART1_TO_WT901_init(void);

@@ -179,6 +179,8 @@ extern int16_t g_wt901_version;
 extern volatile uint8_t g_wt901_buf[WT901_BUF_SIZE]; // DMA 接收缓冲区
 extern volatile WT901_CircularBuffer g_wt901_cirbuf; //环形缓冲区
 extern volatile uint32_t g_wt901_lose_count, g_wt901_count; //丢包计数和总包数
+/** @brief 已成功解析的 WT901 角度帧数量，供上层判断角度数据是否更新。 */
+extern volatile uint32_t g_wt901_angle_update_count;
 
 /* <---------------------函数相关---------------------> */
 /**
@@ -268,4 +270,3 @@ bool WT901_AnalyzeData(void);
 #ifdef __cplusplus
 }
 #endif
-

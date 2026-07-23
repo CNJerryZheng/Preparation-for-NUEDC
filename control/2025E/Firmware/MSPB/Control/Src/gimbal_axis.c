@@ -36,6 +36,14 @@ static GIMBAL_AxisState_t s_pitch;
 static bool s_vision_valid = false;
 /** @brief 距离最近有效视觉帧的时间。 */
 static uint32_t s_vision_age_ms = GIMBAL_VISION_TIMEOUT_MS;
+/** @brief 两轴 MT6816 是否已经完成上电绝对位置同步。 */
+static bool s_feedback_ready = false;
+/** @brief 姿态跟随开始时的 Yaw 编码器位置。 */
+static float s_follow_yaw_origin = 0.0f;
+/** @brief 姿态跟随开始时的 Pitch 编码器位置。 */
+static float s_follow_pitch_origin = 0.0f;
+/** @brief 是否已经建立姿态跟随编码器零点。 */
+static bool s_follow_origin_valid = false;
 
 /**
  * @brief 将浮点数限制在指定范围
@@ -191,8 +199,14 @@ void GIMBAL_AxisInit(void)
         GIMBAL_PITCH_MAX_POSITION_COUNTS
     };
 
-    GIMBAL_DeviceSetEnabled(GIMBAL_DEVICE_AXIS_YAW, true);
-    GIMBAL_DeviceSetEnabled(GIMBAL_DEVICE_AXIS_PITCH, true);
+    /*
+     * 上电后先保持驱动器失能，收到两路 MT6816 PWM 绝对角度并完成
+     * A/B 初值对齐后，才允许闭环发出 STEP 脉冲。
+     */
+    GIMBAL_DeviceSetEnabled(GIMBAL_DEVICE_AXIS_YAW, false);
+    GIMBAL_DeviceSetEnabled(GIMBAL_DEVICE_AXIS_PITCH, false);
+    s_feedback_ready = false;
+    s_follow_origin_valid = false;
     s_vision_valid = false;
     s_vision_age_ms = GIMBAL_VISION_TIMEOUT_MS;
 }
@@ -223,12 +237,97 @@ void GIMBAL_AxisSetVisionTarget(
     s_vision_age_ms = 0U;
 }
 
+/** @copydoc GIMBAL_AxisBeginAngleFollow */
+bool GIMBAL_AxisBeginAngleFollow(void)
+{
+    if (!s_feedback_ready)
+    {
+        return false;
+    }
+
+    s_follow_yaw_origin = (float)s_yaw.position;
+    s_follow_pitch_origin = (float)s_pitch.position;
+    s_yaw.target = s_follow_yaw_origin;
+    s_pitch.target = s_follow_pitch_origin;
+    s_yaw.integral = 0.0f;
+    s_pitch.integral = 0.0f;
+    s_vision_valid = false;
+    s_follow_origin_valid = true;
+    return true;
+}
+
+/** @copydoc GIMBAL_AxisSetRelativeAngleTarget */
+void GIMBAL_AxisSetRelativeAngleTarget(
+    float yaw_delta_deg, float pitch_delta_deg)
+{
+    if (!s_feedback_ready || !s_follow_origin_valid)
+    {
+        return;
+    }
+
+    s_yaw.target = GIMBAL_Clamp(
+        s_follow_yaw_origin +
+            (yaw_delta_deg * GIMBAL_ENCODER_COUNTS_PER_DEGREE),
+        s_yaw.minimum_position, s_yaw.maximum_position);
+    s_pitch.target = GIMBAL_Clamp(
+        s_follow_pitch_origin +
+            (pitch_delta_deg * GIMBAL_ENCODER_COUNTS_PER_DEGREE),
+        s_pitch.minimum_position, s_pitch.maximum_position);
+    s_vision_valid = false;
+}
+
+/** @copydoc GIMBAL_AxisHoldCurrentPosition */
+void GIMBAL_AxisHoldCurrentPosition(void)
+{
+    s_yaw.target = (float)s_yaw.position;
+    s_pitch.target = (float)s_pitch.position;
+    s_yaw.integral = 0.0f;
+    s_pitch.integral = 0.0f;
+    s_follow_origin_valid = false;
+    s_vision_valid = false;
+}
+
+/** @copydoc GIMBAL_AxisIsReady */
+bool GIMBAL_AxisIsReady(void)
+{
+    return s_feedback_ready;
+}
+
 /** @copydoc GIMBAL_AxisUpdate */
 void GIMBAL_AxisUpdate(uint32_t elapsed_ms)
 {
     if (elapsed_ms == 0U)
     {
         return;
+    }
+
+    GIMBAL_DeviceUpdate();
+    if (!s_feedback_ready)
+    {
+        if (!GIMBAL_DeviceIsFeedbackReady())
+        {
+            GIMBAL_DeviceStop(GIMBAL_DEVICE_AXIS_YAW);
+            GIMBAL_DeviceStop(GIMBAL_DEVICE_AXIS_PITCH);
+            return;
+        }
+
+        s_yaw.position =
+            GIMBAL_DeviceGetEncoderCount(GIMBAL_DEVICE_AXIS_YAW);
+        s_pitch.position =
+            GIMBAL_DeviceGetEncoderCount(GIMBAL_DEVICE_AXIS_PITCH);
+        s_yaw.last_position = s_yaw.position;
+        s_pitch.last_position = s_pitch.position;
+        s_yaw.target = (float)s_yaw.position;
+        s_pitch.target = (float)s_pitch.position;
+        s_yaw.velocity_cps = 0.0f;
+        s_pitch.velocity_cps = 0.0f;
+        s_yaw.integral = 0.0f;
+        s_pitch.integral = 0.0f;
+        s_yaw.command_step_hz = 0.0f;
+        s_pitch.command_step_hz = 0.0f;
+        GIMBAL_DeviceSetEnabled(GIMBAL_DEVICE_AXIS_YAW, true);
+        GIMBAL_DeviceSetEnabled(GIMBAL_DEVICE_AXIS_PITCH, true);
+        s_feedback_ready = true;
     }
 
     if (s_vision_age_ms <= (UINT32_MAX - elapsed_ms))

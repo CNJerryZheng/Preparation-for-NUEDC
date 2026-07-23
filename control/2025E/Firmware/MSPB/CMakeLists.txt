@@ -36,9 +36,11 @@ set(APP_SOURCES
     BSP/Src/bsp_gimbal.c
     App/Src/app_mspb.c
     Device/Src/wt901.c
+    Device/Src/mt6816.c
     Device/Src/gimbal_device.c
     Control/Src/gimbal_axis.c
     Service/Src/gimbal_task.c
+    Service/Src/imu_follow_service.c
     Service/Src/communication_service.c
 )
 

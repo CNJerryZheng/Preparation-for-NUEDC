@@ -24,6 +24,8 @@ volatile uint32_t g_wt901_count = 0U;
 volatile uint32_t g_wt901_rx_byte_count = 0U;
 volatile uint32_t g_wt901_checksum_error_count = 0U;
 volatile uint32_t g_wt901_parse_count = 0U;
+/** @brief 已成功解析的角度帧数量。 */
+volatile uint32_t g_wt901_angle_update_count = 0U;
 volatile uint32_t g_wt901_unknown_frame_count = 0U;
 volatile uint8_t g_wt901_last_rx_byte = 0U;
 volatile uint8_t g_wt901_last_frame_type = 0U;
@@ -245,6 +247,7 @@ WT901_StatusTypeDef WT901_Init(void)
     g_wt901_rx_byte_count = 0U;
     g_wt901_checksum_error_count = 0U;
     g_wt901_parse_count = 0U;
+    g_wt901_angle_update_count = 0U;
     g_wt901_unknown_frame_count = 0U;
     g_wt901_last_rx_byte = 0U;
     g_wt901_last_frame_type = 0U;
@@ -552,6 +555,7 @@ bool WT901_AnalyzeData(void)
         g_wt901_angle.roll = (float)WT901_ReadS16(&s_wt901_raw_data[2]) * (180.0f / 32768.0f);
         g_wt901_angle.pitch = (float)WT901_ReadS16(&s_wt901_raw_data[4]) * (180.0f / 32768.0f);
         g_wt901_angle.yaw = (float)WT901_ReadS16(&s_wt901_raw_data[6]) * (180.0f / 32768.0f);
+        g_wt901_angle_update_count++;
         if (!s_wt901_version_obtained)
         {
             g_wt901_version = WT901_ReadS16(&s_wt901_raw_data[8]);

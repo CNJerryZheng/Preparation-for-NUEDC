@@ -17,6 +17,34 @@ static uint16_t s_yaw_encoder_last_raw = 0U;
 static volatile int32_t s_pitch_encoder_count = 0;
 /** @brief Pitch软件四倍频上一AB状态。 */
 static volatile uint8_t s_pitch_encoder_last_state = 0U;
+/** @brief Yaw PWM 捕获是否已经越过首个同步周期。 */
+static volatile bool s_yaw_pwm_synced = false;
+/** @brief Pitch PWM 捕获是否已经越过首个同步周期。 */
+static volatile bool s_pitch_pwm_synced = false;
+/** @brief Yaw PWM 最近一次高电平宽度。 */
+static volatile uint32_t s_yaw_pwm_high_ticks = 0U;
+/** @brief Yaw PWM 最近一次完整周期。 */
+static volatile uint32_t s_yaw_pwm_period_ticks = 0U;
+/** @brief Yaw PWM 有效捕获序号。 */
+static volatile uint32_t s_yaw_pwm_sequence = 0U;
+/** @brief Yaw PWM 当前有效标志。 */
+static volatile bool s_yaw_pwm_valid = false;
+/** @brief Pitch PWM 最近一次高电平宽度。 */
+static volatile uint32_t s_pitch_pwm_high_ticks = 0U;
+/** @brief Pitch PWM 最近一次完整周期。 */
+static volatile uint32_t s_pitch_pwm_period_ticks = 0U;
+/** @brief Pitch PWM 有效捕获序号。 */
+static volatile uint32_t s_pitch_pwm_sequence = 0U;
+/** @brief Pitch PWM 当前有效标志。 */
+static volatile bool s_pitch_pwm_valid = false;
+/** @brief Yaw Z 相脉冲累计序号。 */
+static volatile uint32_t s_yaw_index_sequence = 0U;
+/** @brief Pitch Z 相脉冲累计序号。 */
+static volatile uint32_t s_pitch_index_sequence = 0U;
+/** @brief Yaw Z 上升沿到来时的 A/B 累计计数。 */
+static volatile int32_t s_yaw_index_encoder_count = 0;
+/** @brief Pitch Z 上升沿到来时的 A/B 累计计数。 */
+static volatile int32_t s_pitch_index_encoder_count = 0;
 
 /** @brief 正交编码器合法状态转移查表。 */
 static const int8_t s_quadrature_transition[16] = {
@@ -63,6 +91,17 @@ static void BSP_GimbalUpdateYawEncoder(void)
 }
 
 /**
+ * @brief 获取 Yaw 经方向修正后的 A/B 累计计数
+ * @return int32_t Yaw 四倍频累计计数
+ */
+static int32_t BSP_GimbalGetYawEncoderCount(void)
+{
+    BSP_GimbalUpdateYawEncoder();
+    return (int32_t)s_yaw_encoder_extended *
+        BSP_GIMBAL_YAW_ENCODER_SIGN;
+}
+
+/**
  * @brief 返回指定轴STEP定时器时钟频率
  * @param axis 云台轴
  * @return uint32_t 定时器计数时钟，单位Hz
@@ -104,9 +143,30 @@ void BSP_GimbalInit(void)
         (uint16_t)DL_TimerG_getTimerCount(QEI_YAW_ENCODER_INST);
     s_pitch_encoder_count = 0;
     s_pitch_encoder_last_state = BSP_GimbalReadPitchEncoderState();
+    s_yaw_pwm_synced = false;
+    s_pitch_pwm_synced = false;
+    s_yaw_pwm_valid = false;
+    s_pitch_pwm_valid = false;
+    s_yaw_pwm_sequence = 0U;
+    s_pitch_pwm_sequence = 0U;
+    s_yaw_index_sequence = 0U;
+    s_pitch_index_sequence = 0U;
+
+    /**
+     * @brief 修正 SDK 2.02 对 TIMA 输入通道 2 的输入源配置
+     * @note SysConfig 选择 PA7/TIMA0_CCP2 后，通用驱动仍会把 CC2
+     *       错误连接到 CCP0，导致周期捕获正常而高电平宽度恒为零。
+     *       此处只修正运行时寄存器，不修改自动生成文件。
+     */
+    DL_TimerA_setCaptureCompareInput(CAPTURE_YAW_PWM_INST,
+        DL_TIMER_CC_INPUT_INV_NOINVERT,
+        DL_TIMER_CC_IN_SEL_CCPX,
+        DL_TIMER_CC_2_INDEX);
 
     NVIC_EnableIRQ(GPIO_PITCH_FEEDBACK_INT_IRQN);
     NVIC_EnableIRQ(GPIO_YAW_LIMIT_INT_IRQN);
+    NVIC_EnableIRQ(CAPTURE_YAW_PWM_INST_INT_IRQN);
+    NVIC_EnableIRQ(CAPTURE_PITCH_PWM_INST_INT_IRQN);
 }
 
 /** @copydoc BSP_GimbalSetEnabled */
@@ -192,9 +252,7 @@ int32_t BSP_GimbalGetEncoderCount(BSP_GimbalAxis_t axis)
 {
     if (axis == BSP_GIMBAL_AXIS_YAW)
     {
-        BSP_GimbalUpdateYawEncoder();
-        return (int32_t)s_yaw_encoder_extended *
-            BSP_GIMBAL_YAW_ENCODER_SIGN;
+        return BSP_GimbalGetYawEncoderCount();
     }
     return s_pitch_encoder_count * BSP_GIMBAL_PITCH_ENCODER_SIGN;
 }
@@ -213,6 +271,71 @@ void BSP_GimbalResetEncoder(BSP_GimbalAxis_t axis)
         s_pitch_encoder_count = 0;
         s_pitch_encoder_last_state = BSP_GimbalReadPitchEncoderState();
     }
+}
+
+/** @copydoc BSP_GimbalGetPwmCapture */
+bool BSP_GimbalGetPwmCapture(
+    BSP_GimbalAxis_t axis, BSP_GimbalPwmCapture_t *capture)
+{
+    uint32_t sequence_before;
+    uint32_t sequence_after;
+
+    if (capture == 0)
+    {
+        return false;
+    }
+
+    do
+    {
+        if (axis == BSP_GIMBAL_AXIS_YAW)
+        {
+            sequence_before = s_yaw_pwm_sequence;
+            capture->high_ticks = s_yaw_pwm_high_ticks;
+            capture->period_ticks = s_yaw_pwm_period_ticks;
+            capture->valid = s_yaw_pwm_valid;
+            sequence_after = s_yaw_pwm_sequence;
+        }
+        else
+        {
+            sequence_before = s_pitch_pwm_sequence;
+            capture->high_ticks = s_pitch_pwm_high_ticks;
+            capture->period_ticks = s_pitch_pwm_period_ticks;
+            capture->valid = s_pitch_pwm_valid;
+            sequence_after = s_pitch_pwm_sequence;
+        }
+    } while (sequence_before != sequence_after);
+
+    capture->sequence = sequence_after;
+    return capture->valid;
+}
+
+/** @copydoc BSP_GimbalGetIndexEvent */
+bool BSP_GimbalGetIndexEvent(BSP_GimbalAxis_t axis,
+    uint32_t *sequence, int32_t *encoder_count)
+{
+    uint32_t current_sequence;
+    int32_t current_count;
+
+    if (axis == BSP_GIMBAL_AXIS_YAW)
+    {
+        current_sequence = s_yaw_index_sequence;
+        current_count = s_yaw_index_encoder_count;
+    }
+    else
+    {
+        current_sequence = s_pitch_index_sequence;
+        current_count = s_pitch_index_encoder_count;
+    }
+
+    if (sequence != 0)
+    {
+        *sequence = current_sequence;
+    }
+    if (encoder_count != 0)
+    {
+        *encoder_count = current_count;
+    }
+    return current_sequence != 0U;
 }
 
 /** @copydoc BSP_GimbalIsYawLimitLeftActive */
@@ -262,7 +385,9 @@ void GROUP1_IRQHandler(void)
             GPIO_PITCH_FEEDBACK_PITCH_ENC_A_PIN |
             GPIO_PITCH_FEEDBACK_PITCH_ENC_B_PIN |
             GPIO_PITCH_FEEDBACK_PITCH_LIMIT_U_PIN |
-            GPIO_PITCH_FEEDBACK_PITCH_LIMIT_D_PIN;
+            GPIO_PITCH_FEEDBACK_PITCH_LIMIT_D_PIN |
+            GPIO_PITCH_FEEDBACK_YAW_ENC_Z_PIN |
+            GPIO_PITCH_FEEDBACK_PITCH_ENC_Z_PIN;
         const uint32_t pending = DL_GPIO_getEnabledInterruptStatus(
             GPIO_PITCH_FEEDBACK_PORT, monitored_pins);
 
@@ -282,6 +407,18 @@ void GROUP1_IRQHandler(void)
         {
             BSP_GimbalStop(BSP_GIMBAL_AXIS_PITCH);
         }
+        if ((pending & GPIO_PITCH_FEEDBACK_YAW_ENC_Z_PIN) != 0U)
+        {
+            s_yaw_index_encoder_count =
+                BSP_GimbalGetYawEncoderCount();
+            s_yaw_index_sequence++;
+        }
+        if ((pending & GPIO_PITCH_FEEDBACK_PITCH_ENC_Z_PIN) != 0U)
+        {
+            s_pitch_index_encoder_count =
+                s_pitch_encoder_count * BSP_GIMBAL_PITCH_ENCODER_SIGN;
+            s_pitch_index_sequence++;
+        }
         DL_GPIO_clearInterruptStatus(GPIO_PITCH_FEEDBACK_PORT, pending);
         break;
     }
@@ -298,6 +435,98 @@ void GROUP1_IRQHandler(void)
         DL_GPIO_clearInterruptStatus(GPIO_YAW_LIMIT_PORT, pending);
         break;
     }
+
+    default:
+        break;
+    }
+}
+
+/**
+ * @brief Yaw MT6816 PWM 捕获中断
+ * @note TIMA0 的 C2 保存高电平宽度，C3 保存完整周期；首帧仅用于同步。
+ */
+void CAPTURE_YAW_PWM_INST_IRQHandler(void)
+{
+    switch (DL_TimerA_getPendingInterrupt(CAPTURE_YAW_PWM_INST))
+    {
+    case DL_TIMERA_IIDX_CC3_DN:
+        if (s_yaw_pwm_synced)
+        {
+            const uint32_t load =
+                DL_TimerA_getLoadValue(CAPTURE_YAW_PWM_INST);
+            const uint32_t high_capture =
+                DL_TimerA_getCaptureCompareValue(
+                    CAPTURE_YAW_PWM_INST, DL_TIMER_CC_2_INDEX);
+            const uint32_t period_capture =
+                DL_TimerA_getCaptureCompareValue(
+                    CAPTURE_YAW_PWM_INST, DL_TIMER_CC_3_INDEX);
+
+            s_yaw_pwm_high_ticks = load - high_capture;
+            s_yaw_pwm_period_ticks = load - period_capture;
+            s_yaw_pwm_valid =
+                (s_yaw_pwm_period_ticks > s_yaw_pwm_high_ticks) &&
+                (s_yaw_pwm_high_ticks > 0U);
+            s_yaw_pwm_sequence++;
+        }
+        else
+        {
+            s_yaw_pwm_synced = true;
+        }
+        DL_TimerA_setTimerCount(CAPTURE_YAW_PWM_INST,
+            DL_TimerA_getLoadValue(CAPTURE_YAW_PWM_INST));
+        break;
+
+    case DL_TIMERA_IIDX_ZERO:
+        s_yaw_pwm_synced = false;
+        s_yaw_pwm_valid = false;
+        s_yaw_pwm_sequence++;
+        break;
+
+    default:
+        break;
+    }
+}
+
+/**
+ * @brief Pitch MT6816 PWM 捕获中断
+ * @note TIMA1 的 C0 保存高电平宽度，C1 保存完整周期；首帧仅用于同步。
+ */
+void CAPTURE_PITCH_PWM_INST_IRQHandler(void)
+{
+    switch (DL_TimerA_getPendingInterrupt(CAPTURE_PITCH_PWM_INST))
+    {
+    case DL_TIMERA_IIDX_CC1_DN:
+        if (s_pitch_pwm_synced)
+        {
+            const uint32_t load =
+                DL_TimerA_getLoadValue(CAPTURE_PITCH_PWM_INST);
+            const uint32_t high_capture =
+                DL_TimerA_getCaptureCompareValue(
+                    CAPTURE_PITCH_PWM_INST, DL_TIMER_CC_0_INDEX);
+            const uint32_t period_capture =
+                DL_TimerA_getCaptureCompareValue(
+                    CAPTURE_PITCH_PWM_INST, DL_TIMER_CC_1_INDEX);
+
+            s_pitch_pwm_high_ticks = load - high_capture;
+            s_pitch_pwm_period_ticks = load - period_capture;
+            s_pitch_pwm_valid =
+                (s_pitch_pwm_period_ticks > s_pitch_pwm_high_ticks) &&
+                (s_pitch_pwm_high_ticks > 0U);
+            s_pitch_pwm_sequence++;
+        }
+        else
+        {
+            s_pitch_pwm_synced = true;
+        }
+        DL_TimerA_setTimerCount(CAPTURE_PITCH_PWM_INST,
+            DL_TimerA_getLoadValue(CAPTURE_PITCH_PWM_INST));
+        break;
+
+    case DL_TIMERA_IIDX_ZERO:
+        s_pitch_pwm_synced = false;
+        s_pitch_pwm_valid = false;
+        s_pitch_pwm_sequence++;
+        break;
 
     default:
         break;

@@ -37,6 +37,33 @@ void GIMBAL_AxisSetVisionTarget(
     bool valid, int16_t laser_x, int16_t laser_y);
 
 /**
+ * @brief 以当前编码器位置建立姿态跟随零点
+ * @return true 云台反馈已就绪并成功建立零点
+ * @return false 编码器尚未完成上电同步
+ */
+bool GIMBAL_AxisBeginAngleFollow(void);
+
+/**
+ * @brief 设置相对跟随零点的两轴角度目标
+ * @param yaw_delta_deg Yaw 相对角度，单位°
+ * @param pitch_delta_deg Pitch 相对角度，单位°
+ */
+void GIMBAL_AxisSetRelativeAngleTarget(
+    float yaw_delta_deg, float pitch_delta_deg);
+
+/**
+ * @brief 立即将两轴目标设置为当前编码器位置
+ */
+void GIMBAL_AxisHoldCurrentPosition(void);
+
+/**
+ * @brief 判断两轴编码器反馈是否已完成上电同步
+ * @return true 可以执行位置闭环
+ * @return false 仍在等待 MT6816 PWM 绝对角度
+ */
+bool GIMBAL_AxisIsReady(void);
+
+/**
  * @brief 根据当前编码器、限位和目标值更新云台闭环
  * @param elapsed_ms 距离上次控制更新实际经过的毫秒数
  */

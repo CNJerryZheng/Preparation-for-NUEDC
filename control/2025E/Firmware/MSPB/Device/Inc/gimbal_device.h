@@ -26,6 +26,12 @@ typedef enum
 void GIMBAL_DeviceInit(void);
 
 /**
+ * @brief 更新两轴 MT6816 六线融合状态
+ * @note 由控制周期调用，完成 PWM 上电对齐和 Z 相整圈校准。
+ */
+void GIMBAL_DeviceUpdate(void);
+
+/**
  * @brief 设置指定轴D36A使能状态
  * @param axis 云台设备轴
  * @param enable true使能驱动器，false失能驱动器
@@ -62,6 +68,13 @@ int32_t GIMBAL_DeviceGetEncoderCount(GIMBAL_DeviceAxis_t axis);
 void GIMBAL_DeviceResetEncoder(GIMBAL_DeviceAxis_t axis);
 
 /**
+ * @brief 判断两轴编码器是否已经具备闭环反馈条件
+ * @return true 两轴均完成 PWM 绝对位置同步
+ * @return false 至少一轴尚未收到有效 PWM
+ */
+bool GIMBAL_DeviceIsFeedbackReady(void);
+
+/**
  * @brief 判断指定运动方向是否被当前限位开关禁止
  * @param axis 云台设备轴
  * @param positive true准备正向运动，false准备负向运动
@@ -70,4 +83,3 @@ void GIMBAL_DeviceResetEncoder(GIMBAL_DeviceAxis_t axis);
  */
 bool GIMBAL_DeviceIsDirectionBlocked(
     GIMBAL_DeviceAxis_t axis, bool positive);
-

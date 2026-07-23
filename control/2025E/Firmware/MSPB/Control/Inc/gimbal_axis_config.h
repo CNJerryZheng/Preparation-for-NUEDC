@@ -10,6 +10,10 @@
 /** @brief MT6816 AB正交四倍频后的单圈计数。 */
 #define GIMBAL_ENCODER_COUNTS_PER_REV (4000.0f)
 
+/** @brief 云台输出轴每旋转一度对应的编码器计数。 */
+#define GIMBAL_ENCODER_COUNTS_PER_DEGREE \
+    (GIMBAL_ENCODER_COUNTS_PER_REV / 360.0f)
+
 /** @brief Yaw每个图像像素对应的编码器计数，需按相机视场角实测标定。 */
 #define GIMBAL_YAW_COUNTS_PER_PIXEL (1.0f)
 
