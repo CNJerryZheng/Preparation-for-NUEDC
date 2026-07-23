@@ -22,14 +22,19 @@ static float s_last_error = 0.0f;
  */
 static float LINE_ControlClamp(float speed_cps)
 {
+    // 判断 speed_cps > LINE_CONTROL_MAX_SPEED_CPS 是否成立，并选择对应处理分支。
     if (speed_cps > LINE_CONTROL_MAX_SPEED_CPS)
     {
+        // 返回本次计算或查询得到的结果。
         return LINE_CONTROL_MAX_SPEED_CPS;
     }
+    // 判断 speed_cps < -LINE_CONTROL_MAX_SPEED_CPS 是否成立，并选择对应处理分支。
     if (speed_cps < -LINE_CONTROL_MAX_SPEED_CPS)
     {
+        // 返回本次计算或查询得到的结果。
         return -LINE_CONTROL_MAX_SPEED_CPS;
     }
+    // 返回本次计算或查询得到的结果。
     return speed_cps;
 }
 
@@ -40,6 +45,7 @@ static float LINE_ControlClamp(float speed_cps)
  */
 static float LINE_ControlAbs(float value)
 {
+    // 返回本次计算或查询得到的结果。
     return (value < 0.0f) ? -value : value;
 }
 
@@ -50,10 +56,13 @@ static float LINE_ControlAbs(float value)
  */
 static float LINE_ControlKeepForward(float speed_cps)
 {
+    // 判断 speed_cps < LINE_CONTROL_MIN_FORWARD_SPEED_CPS 是否成立，并选择对应处理分支。
     if (speed_cps < LINE_CONTROL_MIN_FORWARD_SPEED_CPS)
     {
+        // 返回本次计算或查询得到的结果。
         return LINE_CONTROL_MIN_FORWARD_SPEED_CPS;
     }
+    // 返回本次计算或查询得到的结果。
     return speed_cps;
 }
 
@@ -71,12 +80,14 @@ static void LINE_ControlCalculatePd(float error,
         (LINE_ControlAbs(error) * LINE_CONTROL_TURN_SLOWDOWN_CPS);
     // 比例项决定转向强度，微分项抑制误差快速变化造成的过冲。
     const float derivative = error - s_last_error;
+    // 更新 correction 对应的本步骤的运行数据。
     const float correction = (LINE_CONTROL_KP_CPS * error) +
         (LINE_CONTROL_KD_CPS * derivative);
 
     // 正常循迹阶段不允许基础速度低于最低前进速度。
     if (base_speed < LINE_CONTROL_MIN_FORWARD_SPEED_CPS)
     {
+        // 更新 base_speed 对应的速度状态。
         base_speed = LINE_CONTROL_MIN_FORWARD_SPEED_CPS;
     }
 
@@ -85,6 +96,7 @@ static void LINE_ControlCalculatePd(float error,
         LINE_ControlClamp(base_speed + correction));
     *right_cps = LINE_ControlKeepForward(
         LINE_ControlClamp(base_speed - correction));
+    // 更新 s_last_error 对应的本步骤的运行数据。
     s_last_error = error;
 }
 
@@ -98,17 +110,23 @@ static void LINE_ControlCalculatePd(float error,
 static float LINE_ControlSlew(float current_cps,
     float target_cps, uint32_t elapsed_ticks)
 {
+    // 更新 maximum_step 对应的本步骤的运行数据。
     const float maximum_step = LINE_CONTROL_SPEED_STEP_CPS_PER_10MS *
         (float)elapsed_ticks;
 
+    // 判断 target_cps > current_cps + maximum_step 是否成立，并选择对应处理分支。
     if (target_cps > current_cps + maximum_step)
     {
+        // 返回本次计算或查询得到的结果。
         return current_cps + maximum_step;
     }
+    // 判断 target_cps < current_cps - maximum_step 是否成立，并选择对应处理分支。
     if (target_cps < current_cps - maximum_step)
     {
+        // 返回本次计算或查询得到的结果。
         return current_cps - maximum_step;
     }
+    // 返回本次计算或查询得到的结果。
     return target_cps;
 }
 
@@ -117,8 +135,11 @@ static float LINE_ControlSlew(float current_cps,
  */
 void LINE_ControlReset(void)
 {
+    // 更新 s_last_left_cps 对应的本步骤的运行数据。
     s_last_left_cps = 0.0f;
+    // 更新 s_last_right_cps 对应的本步骤的运行数据。
     s_last_right_cps = 0.0f;
+    // 更新 s_last_error 对应的本步骤的运行数据。
     s_last_error = 0.0f;
 }
 
@@ -132,36 +153,47 @@ void LINE_ControlReset(void)
 void LINE_ControlCalculate(const LINE_Result_t *line, uint32_t elapsed_ticks,
     float *left_cps, float *right_cps)
 {
+    // 更新 target_left 对应的目标值。
     float target_left = LINE_CONTROL_BASE_SPEED_CPS;
+    // 更新 target_right 对应的目标值。
     float target_right = LINE_CONTROL_BASE_SPEED_CPS;
 
     // 输出地址无效或没有控制节拍时保持调用方原值。
     if ((left_cps == 0) || (right_cps == 0) || (elapsed_ticks == 0U))
     {
+        // 返回本次计算或查询得到的结果。
         return;
     }
 
     // 正常识别黑线时按连续位置误差执行PD差速。
     if ((line != 0) && (line->state == State_OK))
     {
+        // 更新 position 对应的位置状态。
         float position = line->position;
 #if LINE_CONTROL_X1_ON_LEFT == 0U
+        // 更新 position 对应的位置状态。
         position = -position;
 #endif
+        // 调用 LINE_ControlCalculatePd，更新并处理对应业务数据。
         LINE_ControlCalculatePd(position, &target_left, &target_right);
     }
+    // 前一条件不成立时继续判断当前条件。
     else if ((line != 0) && (line->state == State_Lose_Left))
     {
         // 从左侧丢线时按最后方向原地搜索，外侧轮保持较高速度。
         target_left = LINE_CONTROL_LOST_INNER_SPEED_CPS;
+        // 更新 target_right 对应的目标值。
         target_right = LINE_CONTROL_LOST_OUTER_SPEED_CPS;
     }
+    // 前一条件不成立时继续判断当前条件。
     else if ((line != 0) && (line->state == State_Lose_Right))
     {
         // 从右侧丢线时采用与左侧丢线镜像的搜索动作。
         target_left = LINE_CONTROL_LOST_OUTER_SPEED_CPS;
+        // 更新 target_right 对应的目标值。
         target_right = LINE_CONTROL_LOST_INNER_SPEED_CPS;
     }
+    // 前一条件不成立时继续判断当前条件。
     else if ((line != 0) && ((line->state == State_Discontinuous) ||
         (line->state == State_Lose_Unknown) ||
         (line->state == State_Unknown)))
@@ -172,9 +204,12 @@ void LINE_ControlCalculate(const LINE_Result_t *line, uint32_t elapsed_ticks,
 
     // 最终目标先做绝对限幅，再按控制周期执行速度斜坡。
     target_left = LINE_ControlClamp(target_left);
+    // 调用 LINE_ControlClamp，完成当前步骤的业务处理。
     target_right = LINE_ControlClamp(target_right);
+    // 调用 LINE_ControlSlew，完成当前步骤的业务处理。
     s_last_left_cps = LINE_ControlSlew(
         s_last_left_cps, target_left, elapsed_ticks);
+    // 调用 LINE_ControlSlew，完成当前步骤的业务处理。
     s_last_right_cps = LINE_ControlSlew(
         s_last_right_cps, target_right, elapsed_ticks);
     *left_cps = s_last_left_cps;
