@@ -56,6 +56,11 @@ uint8_t LINE_ReadRaw(void);
  * @param channel 引脚 值为 0U->7U 对应 X1->X8
  */
 uint8_t LINE_ReadChannel(uint8_t raw, uint8_t channel);
+
+/**
+ * @brief 读取八路循迹传感器并计算黑线位置与状态
+ * @return LINE_Result_t 当前原始数据、位置、黑线数量和循迹状态
+ */
 LINE_Result_t LINE_Process(void);
 #endif
 

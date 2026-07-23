@@ -169,8 +169,9 @@ addGPIOGroup("GPIO_PITCH_CTRL", [
 ]);
 
 addGPIOGroup("GPIO_PITCH_FEEDBACK", [
-    {name: "PITCH_ENC_A", pin: "PA15", direction: "INPUT", hysteresis: true, interrupt: "RISE"},
-    {name: "PITCH_ENC_B", pin: "PA16", direction: "INPUT"},
+    /* PA15/PA16没有可用QEI复用或硬件滞回，两相以双边沿中断完成软件四倍频。 */
+    {name: "PITCH_ENC_A", pin: "PA15", direction: "INPUT", interrupt: "RISE_FALL"},
+    {name: "PITCH_ENC_B", pin: "PA16", direction: "INPUT", interrupt: "RISE_FALL"},
     {name: "PITCH_LIMIT_U", pin: "PA0", direction: "INPUT", interrupt: "FALL"},
     {name: "PITCH_LIMIT_D", pin: "PA1", direction: "INPUT", interrupt: "FALL"}
 ]);

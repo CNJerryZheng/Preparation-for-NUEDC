@@ -41,7 +41,9 @@
 #include "ti_msp_dl_config.h"
 
 DL_TimerA_backupConfig gPWM_MOTORBackup;
+DL_TimerG_backupConfig gQEI_LEFT_HALLBackup;
 DL_TimerG_backupConfig gTIMER_CHASSIS_10MSBackup;
+DL_UART_Main_backupConfig gUART3_TO_VOFABackup;
 
 /*
  *  ======== SYSCFG_DL_init ========
@@ -54,13 +56,16 @@ SYSCONFIG_WEAK void SYSCFG_DL_init(void)
     /* Module-Specific Initializations*/
     SYSCFG_DL_SYSCTL_init();
     SYSCFG_DL_PWM_MOTOR_init();
+    SYSCFG_DL_QEI_LEFT_HALL_init();
     SYSCFG_DL_TIMER_CHASSIS_10MS_init();
     SYSCFG_DL_UART2_TO_MSPB_init();
     SYSCFG_DL_UART0_TO_ESP_init();
+    SYSCFG_DL_UART3_TO_VOFA_init();
     /* Ensure backup structures have no valid state */
 	gPWM_MOTORBackup.backupRdy 	= false;
+	gQEI_LEFT_HALLBackup.backupRdy 	= false;
 	gTIMER_CHASSIS_10MSBackup.backupRdy 	= false;
-
+	gUART3_TO_VOFABackup.backupRdy 	= false;
 
 }
 /*
@@ -72,7 +77,9 @@ SYSCONFIG_WEAK bool SYSCFG_DL_saveConfiguration(void)
     bool retStatus = true;
 
 	retStatus &= DL_TimerA_saveConfiguration(PWM_MOTOR_INST, &gPWM_MOTORBackup);
+	retStatus &= DL_TimerG_saveConfiguration(QEI_LEFT_HALL_INST, &gQEI_LEFT_HALLBackup);
 	retStatus &= DL_TimerG_saveConfiguration(TIMER_CHASSIS_10MS_INST, &gTIMER_CHASSIS_10MSBackup);
+	retStatus &= DL_UART_Main_saveConfiguration(UART3_TO_VOFA_INST, &gUART3_TO_VOFABackup);
 
     return retStatus;
 }
@@ -83,7 +90,9 @@ SYSCONFIG_WEAK bool SYSCFG_DL_restoreConfiguration(void)
     bool retStatus = true;
 
 	retStatus &= DL_TimerA_restoreConfiguration(PWM_MOTOR_INST, &gPWM_MOTORBackup, false);
+	retStatus &= DL_TimerG_restoreConfiguration(QEI_LEFT_HALL_INST, &gQEI_LEFT_HALLBackup, false);
 	retStatus &= DL_TimerG_restoreConfiguration(TIMER_CHASSIS_10MS_INST, &gTIMER_CHASSIS_10MSBackup, false);
+	retStatus &= DL_UART_Main_restoreConfiguration(UART3_TO_VOFA_INST, &gUART3_TO_VOFABackup);
 
     return retStatus;
 }
@@ -93,16 +102,20 @@ SYSCONFIG_WEAK void SYSCFG_DL_initPower(void)
     DL_GPIO_reset(GPIOA);
     DL_GPIO_reset(GPIOB);
     DL_TimerA_reset(PWM_MOTOR_INST);
+    DL_TimerG_reset(QEI_LEFT_HALL_INST);
     DL_TimerG_reset(TIMER_CHASSIS_10MS_INST);
     DL_UART_Main_reset(UART2_TO_MSPB_INST);
     DL_UART_Main_reset(UART0_TO_ESP_INST);
+    DL_UART_Main_reset(UART3_TO_VOFA_INST);
 
     DL_GPIO_enablePower(GPIOA);
     DL_GPIO_enablePower(GPIOB);
     DL_TimerA_enablePower(PWM_MOTOR_INST);
+    DL_TimerG_enablePower(QEI_LEFT_HALL_INST);
     DL_TimerG_enablePower(TIMER_CHASSIS_10MS_INST);
     DL_UART_Main_enablePower(UART2_TO_MSPB_INST);
     DL_UART_Main_enablePower(UART0_TO_ESP_INST);
+    DL_UART_Main_enablePower(UART3_TO_VOFA_INST);
     delay_cycles(POWER_STARTUP_DELAY);
 }
 
@@ -119,6 +132,9 @@ SYSCONFIG_WEAK void SYSCFG_DL_GPIO_init(void)
     DL_GPIO_initPeripheralOutputFunction(GPIO_PWM_MOTOR_C1_IOMUX,GPIO_PWM_MOTOR_C1_IOMUX_FUNC);
     DL_GPIO_enableOutput(GPIO_PWM_MOTOR_C1_PORT, GPIO_PWM_MOTOR_C1_PIN);
 
+    DL_GPIO_initPeripheralInputFunction(GPIO_QEI_LEFT_HALL_PHA_IOMUX,GPIO_QEI_LEFT_HALL_PHA_IOMUX_FUNC);
+    DL_GPIO_initPeripheralInputFunction(GPIO_QEI_LEFT_HALL_PHB_IOMUX,GPIO_QEI_LEFT_HALL_PHB_IOMUX_FUNC);
+
     DL_GPIO_initPeripheralOutputFunction(
         GPIO_UART2_TO_MSPB_IOMUX_TX, GPIO_UART2_TO_MSPB_IOMUX_TX_FUNC);
     DL_GPIO_initPeripheralInputFunction(
@@ -127,6 +143,10 @@ SYSCONFIG_WEAK void SYSCFG_DL_GPIO_init(void)
         GPIO_UART0_TO_ESP_IOMUX_TX, GPIO_UART0_TO_ESP_IOMUX_TX_FUNC);
     DL_GPIO_initPeripheralInputFunction(
         GPIO_UART0_TO_ESP_IOMUX_RX, GPIO_UART0_TO_ESP_IOMUX_RX_FUNC);
+    DL_GPIO_initPeripheralOutputFunction(
+        GPIO_UART3_TO_VOFA_IOMUX_TX, GPIO_UART3_TO_VOFA_IOMUX_TX_FUNC);
+    DL_GPIO_initPeripheralInputFunction(
+        GPIO_UART3_TO_VOFA_IOMUX_RX, GPIO_UART3_TO_VOFA_IOMUX_RX_FUNC);
 
     DL_GPIO_initDigitalOutput(GPIO_MOTOR_CTRL_TB6612_STBY_IOMUX);
 
@@ -139,14 +159,6 @@ SYSCONFIG_WEAK void SYSCFG_DL_GPIO_init(void)
     DL_GPIO_initDigitalOutput(GPIO_MOTOR_CTRL_RIGHT_MOTOR_IN2_IOMUX);
 
     DL_GPIO_initDigitalOutput(GPIO_MOTOR_CTRL_BUZZER_N_IOMUX);
-
-    DL_GPIO_initDigitalInputFeatures(GPIO_HALL_ENCODER_LEFT_HALL_A_IOMUX,
-		 DL_GPIO_INVERSION_DISABLE, DL_GPIO_RESISTOR_NONE,
-		 DL_GPIO_HYSTERESIS_DISABLE, DL_GPIO_WAKEUP_DISABLE);
-
-    DL_GPIO_initDigitalInputFeatures(GPIO_HALL_ENCODER_LEFT_HALL_B_IOMUX,
-		 DL_GPIO_INVERSION_DISABLE, DL_GPIO_RESISTOR_NONE,
-		 DL_GPIO_HYSTERESIS_DISABLE, DL_GPIO_WAKEUP_DISABLE);
 
     DL_GPIO_initDigitalInputFeatures(GPIO_HALL_ENCODER_RIGHT_HALL_A_IOMUX,
 		 DL_GPIO_INVERSION_DISABLE, DL_GPIO_RESISTOR_NONE,
@@ -204,12 +216,9 @@ SYSCONFIG_WEAK void SYSCFG_DL_GPIO_init(void)
 		GPIO_MOTOR_CTRL_RIGHT_MOTOR_IN1_PIN |
 		GPIO_MOTOR_CTRL_RIGHT_MOTOR_IN2_PIN |
 		GPIO_MOTOR_CTRL_BUZZER_N_PIN);
-    DL_GPIO_setLowerPinsPolarity(GPIOB, DL_GPIO_PIN_6_EDGE_RISE |
-		DL_GPIO_PIN_8_EDGE_RISE);
-    DL_GPIO_clearInterruptStatus(GPIOB, GPIO_HALL_ENCODER_LEFT_HALL_A_PIN |
-		GPIO_HALL_ENCODER_RIGHT_HALL_A_PIN);
-    DL_GPIO_enableInterrupt(GPIOB, GPIO_HALL_ENCODER_LEFT_HALL_A_PIN |
-		GPIO_HALL_ENCODER_RIGHT_HALL_A_PIN);
+    DL_GPIO_setLowerPinsPolarity(GPIOB, DL_GPIO_PIN_8_EDGE_RISE);
+    DL_GPIO_clearInterruptStatus(GPIOB, GPIO_HALL_ENCODER_RIGHT_HALL_A_PIN);
+    DL_GPIO_enableInterrupt(GPIOB, GPIO_HALL_ENCODER_RIGHT_HALL_A_PIN);
 
 }
 
@@ -298,6 +307,28 @@ SYSCONFIG_WEAK void SYSCFG_DL_PWM_MOTOR_init(void) {
     DL_TimerA_setCCPDirection(PWM_MOTOR_INST , DL_TIMER_CC0_OUTPUT | DL_TIMER_CC1_OUTPUT );
 
 
+}
+
+
+static const DL_TimerG_ClockConfig gQEI_LEFT_HALLClockConfig = {
+    .clockSel = DL_TIMER_CLOCK_BUSCLK,
+    .divideRatio = DL_TIMER_CLOCK_DIVIDE_1,
+    .prescale = 0U
+};
+
+
+SYSCONFIG_WEAK void SYSCFG_DL_QEI_LEFT_HALL_init(void) {
+
+    DL_TimerG_setClockConfig(
+        QEI_LEFT_HALL_INST, (DL_TimerG_ClockConfig *) &gQEI_LEFT_HALLClockConfig);
+
+    DL_TimerG_configQEI(QEI_LEFT_HALL_INST, DL_TIMER_QEI_MODE_2_INPUT,
+        DL_TIMER_CC_INPUT_INV_NOINVERT, DL_TIMER_CC_0_INDEX);
+    DL_TimerG_configQEI(QEI_LEFT_HALL_INST, DL_TIMER_QEI_MODE_2_INPUT,
+        DL_TIMER_CC_INPUT_INV_NOINVERT, DL_TIMER_CC_1_INDEX);
+    DL_TimerG_setLoadValue(QEI_LEFT_HALL_INST, 65535);
+    DL_TimerG_enableClock(QEI_LEFT_HALL_INST);
+    DL_TimerG_startCounter(QEI_LEFT_HALL_INST);
 }
 
 
@@ -426,5 +457,48 @@ SYSCONFIG_WEAK void SYSCFG_DL_UART0_TO_ESP_init(void)
 
 
     DL_UART_Main_enable(UART0_TO_ESP_INST);
+}
+
+static const DL_UART_Main_ClockConfig gUART3_TO_VOFAClockConfig = {
+    .clockSel    = DL_UART_MAIN_CLOCK_BUSCLK,
+    .divideRatio = DL_UART_MAIN_CLOCK_DIVIDE_RATIO_1
+};
+
+static const DL_UART_Main_Config gUART3_TO_VOFAConfig = {
+    .mode        = DL_UART_MAIN_MODE_NORMAL,
+    .direction   = DL_UART_MAIN_DIRECTION_TX_RX,
+    .flowControl = DL_UART_MAIN_FLOW_CONTROL_NONE,
+    .parity      = DL_UART_MAIN_PARITY_NONE,
+    .wordLength  = DL_UART_MAIN_WORD_LENGTH_8_BITS,
+    .stopBits    = DL_UART_MAIN_STOP_BITS_ONE
+};
+
+SYSCONFIG_WEAK void SYSCFG_DL_UART3_TO_VOFA_init(void)
+{
+    DL_UART_Main_setClockConfig(UART3_TO_VOFA_INST, (DL_UART_Main_ClockConfig *) &gUART3_TO_VOFAClockConfig);
+
+    DL_UART_Main_init(UART3_TO_VOFA_INST, (DL_UART_Main_Config *) &gUART3_TO_VOFAConfig);
+    /*
+     * Configure baud rate by setting oversampling and baud rate divisors.
+     *  Target baud rate: 115200
+     *  Actual baud rate: 115190.78
+     */
+    DL_UART_Main_setOversampling(UART3_TO_VOFA_INST, DL_UART_OVERSAMPLING_RATE_16X);
+    DL_UART_Main_setBaudRateDivisor(UART3_TO_VOFA_INST, UART3_TO_VOFA_IBRD_80_MHZ_115200_BAUD, UART3_TO_VOFA_FBRD_80_MHZ_115200_BAUD);
+
+
+    /* Configure Interrupts */
+    DL_UART_Main_enableInterrupt(UART3_TO_VOFA_INST,
+                                 DL_UART_MAIN_INTERRUPT_BREAK_ERROR |
+                                 DL_UART_MAIN_INTERRUPT_FRAMING_ERROR |
+                                 DL_UART_MAIN_INTERRUPT_NOISE_ERROR |
+                                 DL_UART_MAIN_INTERRUPT_OVERRUN_ERROR |
+                                 DL_UART_MAIN_INTERRUPT_PARITY_ERROR |
+                                 DL_UART_MAIN_INTERRUPT_RX);
+    /* Setting the Interrupt Priority */
+    NVIC_SetPriority(UART3_TO_VOFA_INST_INT_IRQN, 2);
+
+
+    DL_UART_Main_enable(UART3_TO_VOFA_INST);
 }
 

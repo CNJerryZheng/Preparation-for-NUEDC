@@ -33,11 +33,19 @@ set(APP_SOURCES
     BSP/Src/board.c
     BSP/Src/bsp_uart.c
     BSP/Src/bsp_timer.c
+    BSP/Src/bsp_gpio.c
+    BSP/Src/bsp_motor.c
     App/Src/app_mspa.c
     Device/Src/linetrack.c
+    Device/Src/mg513x.c
+    Control/Src/pid.c
+    Control/Src/line_control.c
+    Control/Src/wheel_speed_control.c
     Control/Src/chassis_control.c
     Service/Src/chassis_task.c
     Service/Src/communication_service.c
+    Service/Src/trajectory_progress_service.c
+    Service/Src/vofa_service.c
 )
 
 # DriverLib 中大多数接口是内联函数；芯片族相关实现只编译 MSPM0G。
@@ -105,6 +113,11 @@ target_compile_options(${PROJECT_TARGET} PRIVATE
 # DriverLib 按芯片裁剪后会留下少量未使用形参，不让它们淹没应用层告警。
 set_source_files_properties(${DRIVER_SOURCES} PROPERTIES
     COMPILE_OPTIONS "-Wno-unused-parameter"
+)
+
+# SysConfig 在启用外部低速晶振时仍生成未引用的备份常量，只屏蔽该生成文件的告警。
+set_source_files_properties(Core/Src/ti_msp_dl_config.c PROPERTIES
+    COMPILE_OPTIONS "-Wno-unused-const-variable"
 )
 
 target_link_options(${PROJECT_TARGET} PRIVATE

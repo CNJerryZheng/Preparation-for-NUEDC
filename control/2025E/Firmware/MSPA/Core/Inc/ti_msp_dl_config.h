@@ -107,6 +107,23 @@ extern "C" {
 
 
 
+
+/* Defines for QEI_LEFT_HALL */
+#define QEI_LEFT_HALL_INST                                                 TIMG8
+#define QEI_LEFT_HALL_INST_IRQHandler                           TIMG8_IRQHandler
+#define QEI_LEFT_HALL_INST_INT_IRQN                             (TIMG8_INT_IRQn)
+/* Pin configuration defines for QEI_LEFT_HALL PHA Pin */
+#define GPIO_QEI_LEFT_HALL_PHA_PORT                                        GPIOB
+#define GPIO_QEI_LEFT_HALL_PHA_PIN                                 DL_GPIO_PIN_6
+#define GPIO_QEI_LEFT_HALL_PHA_IOMUX                             (IOMUX_PINCM23)
+#define GPIO_QEI_LEFT_HALL_PHA_IOMUX_FUNC             IOMUX_PINCM23_PF_TIMG8_CCP0
+/* Pin configuration defines for QEI_LEFT_HALL PHB Pin */
+#define GPIO_QEI_LEFT_HALL_PHB_PORT                                        GPIOB
+#define GPIO_QEI_LEFT_HALL_PHB_PIN                                 DL_GPIO_PIN_7
+#define GPIO_QEI_LEFT_HALL_PHB_IOMUX                             (IOMUX_PINCM24)
+#define GPIO_QEI_LEFT_HALL_PHB_IOMUX_FUNC             IOMUX_PINCM24_PF_TIMG8_CCP1
+
+
 /* Defines for TIMER_CHASSIS_10MS */
 #define TIMER_CHASSIS_10MS_INST                                          (TIMG6)
 #define TIMER_CHASSIS_10MS_INST_IRQHandler                        TIMG6_IRQHandler
@@ -147,6 +164,22 @@ extern "C" {
 #define UART0_TO_ESP_BAUD_RATE                                          (115200)
 #define UART0_TO_ESP_IBRD_40_MHZ_115200_BAUD                                (21)
 #define UART0_TO_ESP_FBRD_40_MHZ_115200_BAUD                                (45)
+/* Defines for UART3_TO_VOFA */
+#define UART3_TO_VOFA_INST                                                 UART3
+#define UART3_TO_VOFA_INST_FREQUENCY                                    80000000
+#define UART3_TO_VOFA_INST_IRQHandler                           UART3_IRQHandler
+#define UART3_TO_VOFA_INST_INT_IRQN                               UART3_INT_IRQn
+#define GPIO_UART3_TO_VOFA_RX_PORT                                         GPIOB
+#define GPIO_UART3_TO_VOFA_TX_PORT                                         GPIOB
+#define GPIO_UART3_TO_VOFA_RX_PIN                                  DL_GPIO_PIN_3
+#define GPIO_UART3_TO_VOFA_TX_PIN                                  DL_GPIO_PIN_2
+#define GPIO_UART3_TO_VOFA_IOMUX_RX                              (IOMUX_PINCM16)
+#define GPIO_UART3_TO_VOFA_IOMUX_TX                              (IOMUX_PINCM15)
+#define GPIO_UART3_TO_VOFA_IOMUX_RX_FUNC               IOMUX_PINCM16_PF_UART3_RX
+#define GPIO_UART3_TO_VOFA_IOMUX_TX_FUNC               IOMUX_PINCM15_PF_UART3_TX
+#define UART3_TO_VOFA_BAUD_RATE                                         (115200)
+#define UART3_TO_VOFA_IBRD_80_MHZ_115200_BAUD                               (43)
+#define UART3_TO_VOFA_FBRD_80_MHZ_115200_BAUD                               (26)
 
 
 
@@ -176,17 +209,10 @@ extern "C" {
 /* Port definition for Pin Group GPIO_HALL_ENCODER */
 #define GPIO_HALL_ENCODER_PORT                                           (GPIOB)
 
-/* Defines for LEFT_HALL_A: GPIOB.6 with pinCMx 23 on package pin 20 */
-// pins affected by this interrupt request:["LEFT_HALL_A","RIGHT_HALL_A"]
+/* Defines for RIGHT_HALL_A: GPIOB.8 with pinCMx 25 on package pin 22 */
+// pins affected by this interrupt request:["RIGHT_HALL_A"]
 #define GPIO_HALL_ENCODER_INT_IRQN                              (GPIOB_INT_IRQn)
 #define GPIO_HALL_ENCODER_INT_IIDX              (DL_INTERRUPT_GROUP1_IIDX_GPIOB)
-#define GPIO_HALL_ENCODER_LEFT_HALL_A_IIDX                   (DL_GPIO_IIDX_DIO6)
-#define GPIO_HALL_ENCODER_LEFT_HALL_A_PIN                        (DL_GPIO_PIN_6)
-#define GPIO_HALL_ENCODER_LEFT_HALL_A_IOMUX                      (IOMUX_PINCM23)
-/* Defines for LEFT_HALL_B: GPIOB.7 with pinCMx 24 on package pin 21 */
-#define GPIO_HALL_ENCODER_LEFT_HALL_B_PIN                        (DL_GPIO_PIN_7)
-#define GPIO_HALL_ENCODER_LEFT_HALL_B_IOMUX                      (IOMUX_PINCM24)
-/* Defines for RIGHT_HALL_A: GPIOB.8 with pinCMx 25 on package pin 22 */
 #define GPIO_HALL_ENCODER_RIGHT_HALL_A_IIDX                  (DL_GPIO_IIDX_DIO8)
 #define GPIO_HALL_ENCODER_RIGHT_HALL_A_PIN                       (DL_GPIO_PIN_8)
 #define GPIO_HALL_ENCODER_RIGHT_HALL_A_IOMUX                     (IOMUX_PINCM25)
@@ -239,9 +265,11 @@ void SYSCFG_DL_initPower(void);
 void SYSCFG_DL_GPIO_init(void);
 void SYSCFG_DL_SYSCTL_init(void);
 void SYSCFG_DL_PWM_MOTOR_init(void);
+void SYSCFG_DL_QEI_LEFT_HALL_init(void);
 void SYSCFG_DL_TIMER_CHASSIS_10MS_init(void);
 void SYSCFG_DL_UART2_TO_MSPB_init(void);
 void SYSCFG_DL_UART0_TO_ESP_init(void);
+void SYSCFG_DL_UART3_TO_VOFA_init(void);
 
 
 bool SYSCFG_DL_saveConfiguration(void);

@@ -15,6 +15,8 @@
  */
 void GIMBAL_TaskInit(void)
 {
+    GIMBAL_AxisInit();
+
     if (WT901_Init() == WT901_OK)
     {
         (void)WT901_StartReceive();
@@ -26,13 +28,15 @@ void GIMBAL_TaskInit(void)
  */
 void GIMBAL_TaskProcess(void)
 {
+    const uint32_t elapsed_ticks = BSP_Timer_TakeGimbalTicks();
+
     while (WT901_AnalyzeData())
     {
     }
 
-    if (!BSP_Timer_TakeGimbalTick())
+    if (elapsed_ticks == 0U)
     {
         return;
     }
-    GIMBAL_AxisUpdate();
+    GIMBAL_AxisUpdate(elapsed_ticks);
 }

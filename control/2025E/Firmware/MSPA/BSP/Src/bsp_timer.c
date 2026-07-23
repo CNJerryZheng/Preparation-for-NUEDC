@@ -8,7 +8,10 @@
 #include "bsp_timer.h"
 #include "ti_msp_dl_config.h"
 
-static volatile bool s_chassis_tick = false;
+/** @brief TIMG6 产生的 10ms 节拍累计值。 */
+static volatile uint32_t s_chassis_tick_count = 0U;
+/** @brief 主循环上次读取到的节拍累计值。 */
+static uint32_t s_chassis_last_taken_count = 0U;
 
 /**
  * @brief 使能 TIMG6 的 10ms 控制节拍中断
@@ -19,14 +22,16 @@ void BSP_Timer_Init(void)
 }
 
 /**
- * @brief 取走一次待处理的 10ms 节拍
- * @retval bool 是否有新的 10ms 节拍
+ * @brief 读取距离上次调用累计经过的 10ms 节拍数
+ * @return uint32_t 累计节拍数，0 表示没有新节拍
  */
-bool BSP_Timer_TakeChassisTick(void)
+uint32_t BSP_Timer_TakeChassisTicks(void)
 {
-    bool tick = s_chassis_tick;
-    s_chassis_tick = false;
-    return tick;
+    const uint32_t current_count = s_chassis_tick_count;
+    const uint32_t elapsed_ticks = current_count - s_chassis_last_taken_count;
+
+    s_chassis_last_taken_count = current_count;
+    return elapsed_ticks;
 }
 
 /**
@@ -37,6 +42,6 @@ void TIMG6_IRQHandler(void)
     if (DL_Timer_getPendingInterrupt(TIMER_CHASSIS_10MS_INST) == DL_TIMER_IIDX_ZERO)
     {
         DL_Timer_clearInterruptStatus(TIMER_CHASSIS_10MS_INST, DL_TIMER_INTERRUPT_ZERO_EVENT);
-        s_chassis_tick = true;
+        ++s_chassis_tick_count;
     }
 }

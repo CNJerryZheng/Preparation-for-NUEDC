@@ -6,8 +6,8 @@
  */
 
 #include "app_mspa.h"
-#include "bsp_uart.h"
 #include "bsp_timer.h"
+#include "bsp_uart.h"
 #include "chassis_task.h"
 #include "communication_service.h"
 
@@ -27,6 +27,6 @@ void APP_MSPA_Init(void)
  */
 void APP_MSPA_Process(void)
 {
-    COMMUNICATION_ServiceProcess();
     CHASSIS_TaskProcess();
+    COMMUNICATION_ServiceProcess();
 }

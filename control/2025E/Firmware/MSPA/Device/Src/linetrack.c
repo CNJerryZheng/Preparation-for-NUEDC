@@ -10,9 +10,12 @@
 
 /* <----------------数据变量----------------> */
 #ifdef LINETRACK_USE_IO
-static int8_t s_last_direction = 0; // 最后一次方向 -1为左，1为右
-static float s_last_position = 0.0f; // 最后一次位置
-static const float weight[8] = { // 每个传感器的权重
+/** @brief 最后一次检测到黑线时的方向，-1 为左，1 为右。 */
+static int8_t s_last_direction = 0;
+/** @brief 最后一次检测到黑线时的位置。 */
+static float s_last_position = 0.0f;
+/** @brief X1 至 X8 的位置权重。 */
+static const float weight[8] = {
     -3.5f,
     -2.5f,
     -1.5f,
@@ -23,6 +26,12 @@ static const float weight[8] = { // 每个传感器的权重
     3.5f
 };
 
+/**
+ * @brief 读取一个循迹输入引脚的逻辑电平
+ * @param port GPIO 端口寄存器
+ * @param pin GPIO 引脚掩码
+ * @return uint8_t 当前黑白状态
+ */
 static uint8_t LINE_ReadPin(GPIO_Regs *port, uint32_t pin)
 {
     return ((DL_GPIO_readPins(port, pin) & pin) != 0U) ? LINETRACK_WHITE : LINETRACK_BLACK;
@@ -36,6 +45,10 @@ static uint8_t LINE_ReadPin(GPIO_Regs *port, uint32_t pin)
 /* <------------------函数------------------> */
 #ifdef LINETRACK_USE_IO
 
+/**
+ * @brief 读取八路循迹模块的原始位图
+ * @return uint8_t bit0 至 bit7 分别对应 X1 至 X8
+ */
 uint8_t LINE_ReadRaw(void)
 {
     uint8_t raw = 0U;
@@ -51,6 +64,12 @@ uint8_t LINE_ReadRaw(void)
     return raw;
 }
 
+/**
+ * @brief 从原始位图中取得指定通道的状态
+ * @param raw 八路循迹原始位图
+ * @param channel 通道编号，0 至 7 分别对应 X1 至 X8
+ * @return uint8_t 指定通道的黑白状态
+ */
 uint8_t LINE_ReadChannel(uint8_t raw, uint8_t channel)
 {
     if (channel > 7U)
@@ -60,6 +79,10 @@ uint8_t LINE_ReadChannel(uint8_t raw, uint8_t channel)
     return (uint8_t)((raw >> channel) & 0x01U);
 }
 
+/**
+ * @brief 读取八路循迹传感器并计算黑线位置与状态
+ * @return LINE_Result_t 当前循迹计算结果
+ */
 LINE_Result_t LINE_Process(void)
 {
     uint8_t raw = LINE_ReadRaw();
@@ -78,7 +101,7 @@ LINE_Result_t LINE_Process(void)
             result.state = State_Lose_Left;
             return result;
         }
-        if (s_last_position > 0.0f)
+        if (s_last_direction > 0)
         {
             result.state = State_Lose_Right;
             return result;
@@ -87,7 +110,7 @@ LINE_Result_t LINE_Process(void)
         return result;
     }
 
-    /* 八路全黑，可能为停止线、十字路口或黑色区域 */
+    /* 八路全黑，可能为十字路口或黑色区域。 */
     if (raw == 0x00U)
     {
         result.black_count = 8U;

@@ -8,14 +8,19 @@
 #pragma once
 
 /* <----------------接受方式----------------> */
-//#define LINETRACK_USE_UART//使用串口
-#define LINETRACK_USE_IO //使用IO
+/** @brief 使用串口模式读取循迹模块。 */
+//#define LINETRACK_USE_UART
+/** @brief 使用 GPIO 模式读取八路循迹模块。 */
+#define LINETRACK_USE_IO
 
 /* <---------------IO内设置----------------> */
 #ifdef LINETRACK_USE_IO
-#define LINETRACK_BLACK 0U //黑色电压
-#define LINETRACK_WHITE 1U //白色电压
-#define LINETRACK_MAX_BLACK 6U //多少传感器黑视为全黑
+/** @brief 模块检测到黑线时的 GPIO 电平。 */
+#define LINETRACK_BLACK 0U
+/** @brief 模块检测到白底时的 GPIO 电平。 */
+#define LINETRACK_WHITE 1U
+/** @brief 同时检测到该数量及以上黑线时判定为全黑区域。 */
+#define LINETRACK_MAX_BLACK 6U
 #endif
 
 /* <----------------串口设置----------------> */

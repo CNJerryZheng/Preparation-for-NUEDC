@@ -33,8 +33,10 @@ set(APP_SOURCES
     BSP/Src/board.c
     BSP/Src/bsp_uart.c
     BSP/Src/bsp_timer.c
+    BSP/Src/bsp_gimbal.c
     App/Src/app_mspb.c
     Device/Src/wt901.c
+    Device/Src/gimbal_device.c
     Control/Src/gimbal_axis.c
     Service/Src/gimbal_task.c
     Service/Src/communication_service.c
@@ -105,6 +107,11 @@ target_compile_options(${PROJECT_TARGET} PRIVATE
 # DriverLib 按芯片裁剪后会留下少量未使用形参，不让它们淹没应用层告警。
 set_source_files_properties(${DRIVER_SOURCES} PROPERTIES
     COMPILE_OPTIONS "-Wno-unused-parameter"
+)
+
+# SysConfig在启用外部低速晶振时仍生成未引用的备份常量，只屏蔽该生成文件的告警。
+set_source_files_properties(Core/Src/ti_msp_dl_config.c PROPERTIES
+    COMPILE_OPTIONS "-Wno-unused-const-variable"
 )
 
 target_link_options(${PROJECT_TARGET} PRIVATE

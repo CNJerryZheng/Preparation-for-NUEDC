@@ -245,13 +245,14 @@ extern "C" {
 #define GPIO_PITCH_FEEDBACK_PORT                                         (GPIOA)
 
 /* Defines for PITCH_ENC_A: GPIOA.15 with pinCMx 37 on package pin 30 */
-// pins affected by this interrupt request:["PITCH_ENC_A","PITCH_LIMIT_U","PITCH_LIMIT_D"]
+// pins affected by this interrupt request:["PITCH_ENC_A","PITCH_ENC_B","PITCH_LIMIT_U","PITCH_LIMIT_D"]
 #define GPIO_PITCH_FEEDBACK_INT_IRQN                            (GPIOA_INT_IRQn)
 #define GPIO_PITCH_FEEDBACK_INT_IIDX            (DL_INTERRUPT_GROUP1_IIDX_GPIOA)
 #define GPIO_PITCH_FEEDBACK_PITCH_ENC_A_IIDX                (DL_GPIO_IIDX_DIO15)
 #define GPIO_PITCH_FEEDBACK_PITCH_ENC_A_PIN                     (DL_GPIO_PIN_15)
 #define GPIO_PITCH_FEEDBACK_PITCH_ENC_A_IOMUX                    (IOMUX_PINCM37)
 /* Defines for PITCH_ENC_B: GPIOA.16 with pinCMx 38 on package pin 31 */
+#define GPIO_PITCH_FEEDBACK_PITCH_ENC_B_IIDX                (DL_GPIO_IIDX_DIO16)
 #define GPIO_PITCH_FEEDBACK_PITCH_ENC_B_PIN                     (DL_GPIO_PIN_16)
 #define GPIO_PITCH_FEEDBACK_PITCH_ENC_B_IOMUX                    (IOMUX_PINCM38)
 /* Defines for PITCH_LIMIT_U: GPIOA.0 with pinCMx 1 on package pin 1 */

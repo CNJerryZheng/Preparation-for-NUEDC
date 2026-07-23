@@ -30,6 +30,5 @@ int main(void)
     while (1)
     {
         APP_MSPB_Process();
-        //g_mspb_loop_count++;
     }
 }

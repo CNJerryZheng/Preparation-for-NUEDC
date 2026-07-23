@@ -11,6 +11,7 @@ scripting.excludeFromBuild("device.lds.genlibs");
 
 const GPIO          = scripting.addModule("/ti/driverlib/GPIO", {}, false);
 const PWM           = scripting.addModule("/ti/driverlib/PWM", {}, false);
+const QEI           = scripting.addModule("/ti/driverlib/QEI", {}, false);
 const TIMER         = scripting.addModule("/ti/driverlib/TIMER", {}, false);
 const UART          = scripting.addModule("/ti/driverlib/UART", {}, false);
 const SYSCTL        = scripting.addModule("/ti/driverlib/SYSCTL");
@@ -131,9 +132,22 @@ addGPIOGroup("GPIO_MOTOR_CTRL", [
     {name: "BUZZER_N", pin: "PA16", direction: "OUTPUT", initialValue: "SET"}
 ]);
 
+/* 左轮 PB6/PB7 使用 TIMG8 硬件两相正交解码，不启用 Hall 和 Index 模式。 */
+const QEI_LEFT_HALL = QEI.addInstance();
+QEI_LEFT_HALL.$name = "QEI_LEFT_HALL";
+QEI_LEFT_HALL.peripheral.$assign = "TIMG8";
+QEI_LEFT_HALL.peripheral.ccp0Pin.$assign = "PB6";
+QEI_LEFT_HALL.peripheral.ccp1Pin.$assign = "PB7";
+QEI_LEFT_HALL.clockSource = "BUSCLK";
+QEI_LEFT_HALL.clockDivider = 1;
+QEI_LEFT_HALL.clockPrescale = 1;
+QEI_LEFT_HALL.enableIndexInput = false;
+QEI_LEFT_HALL.enableHallInput = false;
+QEI_LEFT_HALL.loadValue = 0xFFFF;
+QEI_LEFT_HALL.timerStartTimer = true;
+
+/* 右轮 PB8/PB9 只能复用 TIMA0，因 TIMA0 已用于电机 PWM，保留软件 x1 解码。 */
 addGPIOGroup("GPIO_HALL_ENCODER", [
-    {name: "LEFT_HALL_A", pin: "PB6", direction: "INPUT", hysteresis: true, interrupt: "RISE"},
-    {name: "LEFT_HALL_B", pin: "PB7", direction: "INPUT", hysteresis: true},
     {name: "RIGHT_HALL_A", pin: "PB8", direction: "INPUT", hysteresis: true, interrupt: "RISE"},
     {name: "RIGHT_HALL_B", pin: "PB9", direction: "INPUT", hysteresis: true}
 ]);
@@ -156,6 +170,8 @@ addGPIOGroup("GPIO_USER_INPUT", [
 addUART("UART2_TO_MSPB", "UART2", "PA21", "PA22");
 /* ESP interface moved to UART0; PA28/PA31 replace the optional CH340 UART. */
 addUART("UART0_TO_ESP", "UART0", "PA28", "PA31");
+/* VOFA+ 调参串口：PB2 发送，PB3 接收，连接独立 USB-TTL。 */
+addUART("UART3_TO_VOFA", "UART3", "PB2", "PB3");
 
 const TIMER_CHASSIS_10MS = TIMER.addInstance();
 TIMER_CHASSIS_10MS.$name = "TIMER_CHASSIS_10MS";

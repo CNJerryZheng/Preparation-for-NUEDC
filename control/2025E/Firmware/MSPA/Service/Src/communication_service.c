@@ -6,12 +6,22 @@
  */
 
 #include "communication_service.h"
+#include "communication_service_config.h"
+#include "trajectory_progress_service.h"
+
+#if COMMUNICATION_VOFA_DEBUG_ENABLE
+#include "vofa_service.h"
+#endif
 
 /**
  * @brief 初始化底盘通信业务状态
  */
 void COMMUNICATION_ServiceInit(void)
 {
+    TRAJECTORY_ProgressServiceInit();
+#if COMMUNICATION_VOFA_DEBUG_ENABLE
+    VOFA_ServiceInit();
+#endif
 }
 
 /**
@@ -19,4 +29,8 @@ void COMMUNICATION_ServiceInit(void)
  */
 void COMMUNICATION_ServiceProcess(void)
 {
+    TRAJECTORY_ProgressServiceProcess();
+#if COMMUNICATION_VOFA_DEBUG_ENABLE
+    VOFA_ServiceProcess();
+#endif
 }

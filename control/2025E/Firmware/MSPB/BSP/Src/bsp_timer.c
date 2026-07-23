@@ -8,7 +8,9 @@
 #include "bsp_timer.h"
 #include "ti_msp_dl_config.h"
 
-static volatile bool s_gimbal_tick = false;
+/** @brief 主循环上次读取到的1ms节拍累计值。 */
+static uint32_t s_gimbal_last_taken_count = 0U;
+/** @brief TIMG6产生的1ms节拍累计值，供Live Watch诊断。 */
 volatile uint32_t g_gimbal_tick_count = 0U;
 
 /**
@@ -20,14 +22,17 @@ void BSP_Timer_Init(void)
 }
 
 /**
- * @brief 取走一次待处理的 1ms 节拍
- * @retval bool 是否有新的 1ms 节拍
+ * @brief 读取距离上次调用累计经过的1ms节拍数
+ * @return uint32_t 累计节拍数，0表示没有新节拍
  */
-bool BSP_Timer_TakeGimbalTick(void)
+uint32_t BSP_Timer_TakeGimbalTicks(void)
 {
-    bool tick = s_gimbal_tick;
-    s_gimbal_tick = false;
-    return tick;
+    const uint32_t current_count = g_gimbal_tick_count;
+    const uint32_t elapsed_ticks =
+        current_count - s_gimbal_last_taken_count;
+
+    s_gimbal_last_taken_count = current_count;
+    return elapsed_ticks;
 }
 
 /**
@@ -38,7 +43,6 @@ void TIMG6_IRQHandler(void)
     if (DL_Timer_getPendingInterrupt(TIMER_GIMBAL_1MS_INST) == DL_TIMER_IIDX_ZERO)
     {
         DL_Timer_clearInterruptStatus(TIMER_GIMBAL_1MS_INST, DL_TIMER_INTERRUPT_ZERO_EVENT);
-        s_gimbal_tick = true;
-        g_gimbal_tick_count++;
+        ++g_gimbal_tick_count;
     }
 }

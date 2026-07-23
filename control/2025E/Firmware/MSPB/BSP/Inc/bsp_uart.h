@@ -22,6 +22,31 @@ void BSP_UART_Init(void);
 bool BSP_UART_WT901_Transmit(const uint8_t *data, uint32_t length);
 
 /**
- * @brief 处理 GPIOA/GPIOB 共用中断组中的限位输入中断
+ * @brief 通过UART3向树莓派发送数据
+ * @param data 待发送数据地址
+ * @param length 数据长度
  */
-void GROUP1_IRQHandler(void);
+void BSP_UART_RpiWrite(const uint8_t *data, uint16_t length);
+
+/**
+ * @brief 从UART3树莓派接收缓冲区读取一个字节
+ * @param data 接收字节输出地址
+ * @retval true 成功读取
+ * @retval false 当前没有数据
+ */
+bool BSP_UART_RpiReadByte(uint8_t *data);
+
+/**
+ * @brief 通过UART2向MSPA发送数据
+ * @param data 待发送数据地址
+ * @param length 数据长度
+ */
+void BSP_UART_MspaWrite(const uint8_t *data, uint16_t length);
+
+/**
+ * @brief 从UART2的MSPA接收缓冲区读取一个字节
+ * @param data 接收字节输出地址
+ * @retval true 成功读取
+ * @retval false 当前没有数据
+ */
+bool BSP_UART_MspaReadByte(uint8_t *data);
