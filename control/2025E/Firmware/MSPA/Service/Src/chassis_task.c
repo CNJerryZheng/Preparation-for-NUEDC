@@ -31,6 +31,7 @@ static void CHASSIS_TaskProcessButton(void)
 {
     const bool pressed = BSP_GPIO_IsUserButtonPressed();
 
+    // 原始电平变化后重新开始连续稳定计数。
     if (pressed != s_button_candidate)
     {
         s_button_candidate = pressed;
@@ -38,18 +39,21 @@ static void CHASSIS_TaskProcessButton(void)
         return;
     }
 
+    // 候选状态尚未稳定到设定节拍数时暂不改变业务状态。
     if (s_button_stable_ticks < CHASSIS_BUTTON_DEBOUNCE_TICKS)
     {
         ++s_button_stable_ticks;
         return;
     }
 
+    // 稳定状态未发生变化时无需重复切换循迹使能。
     if (s_button_stable == s_button_candidate)
     {
         return;
     }
 
     s_button_stable = s_button_candidate;
+    // 仅在稳定按下沿切换一次，松开动作只更新消抖状态。
     if (s_button_stable)
     {
         g_line_follow_enabled = !g_line_follow_enabled;
@@ -63,6 +67,7 @@ static void CHASSIS_TaskProcessButton(void)
  */
 void CHASSIS_TaskInit(void)
 {
+    // 上电默认进入循迹模式，按键可在运行中切换启停。
     CHASSIS_ControlInit();
     g_line_follow_enabled = true;
     CHASSIS_SetLineFollowEnabled(true);
@@ -81,14 +86,17 @@ void CHASSIS_TaskProcess(void)
     int16_t left_percent;
     int16_t right_percent;
 
+    // 没有新的10ms控制节拍时不重复读取和计算。
     if (elapsed_ticks == 0U)
     {
         return;
     }
+    // 先获取传感器结果和按键状态，再执行本周期底盘控制。
     LINE_Result_t line = LINE_Process();
     CHASSIS_TaskProcessButton();
     CHASSIS_ControlUpdate(&line, elapsed_ticks);
 
+    // 将本周期关键状态镜像到全局变量供 Live Watch 观察。
     g_line_raw = line.raw;
     g_line_position = line.position;
     g_line_state = line.state;

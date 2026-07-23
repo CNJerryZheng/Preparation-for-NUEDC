@@ -105,20 +105,24 @@ float PID_PositionCalculate(PID_Position_t *pid,
     float output;
     const float error = target - feedback;
 
+    // 控制器地址或采样周期无效时输出安全零值。
     if ((pid == 0) || (pid->sample_time_s <= 0.0f))
     {
         return 0.0f;
     }
 
+    // 第一拍没有历史误差，因此微分项保持为零以避免启动冲击。
     if (pid->initialized)
     {
         derivative = (error - pid->last_error) / pid->sample_time_s;
     }
 
+    // 先计算候选积分并限幅，防止长时间误差造成积分数值失控。
     candidate_integral = pid->integral + (error * pid->sample_time_s);
     candidate_integral = PID_Clamp(candidate_integral,
         -pid->integral_limit, pid->integral_limit);
 
+    // 输出继续朝饱和方向增长时暂停积分，实现条件式抗积分饱和。
     output = (pid->kp * error) + (pid->ki * candidate_integral) +
         (pid->kd * derivative);
     if (!(((output > pid->output_max) && (error > 0.0f)) ||
@@ -127,6 +131,7 @@ float PID_PositionCalculate(PID_Position_t *pid,
         pid->integral = candidate_integral;
     }
 
+    // 使用最终积分状态重新计算并限制控制器输出。
     output = (pid->kp * error) + (pid->ki * pid->integral) +
         (pid->kd * derivative);
     output = PID_Clamp(output, pid->output_min, pid->output_max);

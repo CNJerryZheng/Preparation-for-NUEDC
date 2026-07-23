@@ -111,12 +111,14 @@ static float WHEEL_CalculateOutput(float target_cps,
 {
     float output;
 
+    // 零速目标直接清除PID历史，避免下次启动继承旧积分。
     if (target_cps == 0.0f)
     {
         PID_PositionReset(pid);
         return 0.0f;
     }
 
+    // 前馈承担主要稳态占空比，PID只修正模型和负载误差。
     output = WHEEL_CalculateFeedforward(target_cps) +
         PID_PositionCalculate(pid, target_cps, feedback_cps);
     if (output > WHEEL_SPEED_PID_OUTPUT_MAX)
@@ -176,6 +178,7 @@ void WHEEL_SpeedControlInit(void)
  */
 void WHEEL_SpeedControlSetEnabled(bool enable)
 {
+    // 每次切换使能都清空输出、PID和测速窗口，避免历史状态突变。
     s_telemetry.enabled = enable;
     s_telemetry.left_output = 0.0f;
     s_telemetry.right_output = 0.0f;
@@ -214,6 +217,7 @@ void WHEEL_SpeedControlSetTarget(float left_cps, float right_cps)
  */
 void WHEEL_SpeedControlSetPid(float kp, float ki, float kd)
 {
+    // 双轮共用同一组在线参数，修改后清除历史误差和积分。
     PID_PositionSetGains(&s_left_pid, kp, ki, kd);
     PID_PositionSetGains(&s_right_pid, kp, ki, kd);
     PID_PositionReset(&s_left_pid);
@@ -229,6 +233,7 @@ void WHEEL_SpeedControlSetPid(float kp, float ki, float kd)
  */
 void WHEEL_SpeedControlSetFeedforward(float gain)
 {
+    // 限制在线前馈范围，防止误命令直接产生过大占空比。
     if (gain < 0.0f)
     {
         gain = 0.0f;
@@ -238,6 +243,7 @@ void WHEEL_SpeedControlSetFeedforward(float gain)
         gain = 0.2f;
     }
 
+    // 前馈改变后清除PID状态，避免旧积分与新前馈叠加。
     s_feedforward_gain = gain;
     s_telemetry.feedforward_gain = gain;
     PID_PositionReset(&s_left_pid);
@@ -252,6 +258,7 @@ void WHEEL_SpeedControlUpdate(uint32_t elapsed_ticks)
 {
     const int32_t left_count = MG513X_GetHallCount(MG513X_MOTOR_LEFT);
     const int32_t right_count = MG513X_GetHallCount(MG513X_MOTOR_RIGHT);
+    // 通过无符号差值兼容32位霍尔累计计数自然回绕。
     const int32_t left_delta = (int32_t)((uint32_t)left_count -
         (uint32_t)s_last_left_count);
     const int32_t right_delta = (int32_t)((uint32_t)right_count -
@@ -259,11 +266,13 @@ void WHEEL_SpeedControlUpdate(uint32_t elapsed_ticks)
     float left_delta_per_tick;
     float right_delta_per_tick;
 
+    // 没有经过有效控制节拍时不更新测速和PID。
     if (elapsed_ticks == 0U)
     {
         return;
     }
 
+    // 将本次总增量折算为单个10ms节拍的平均增量。
     left_delta_per_tick = (float)left_delta / (float)elapsed_ticks;
     right_delta_per_tick = (float)right_delta / (float)elapsed_ticks;
 
@@ -272,6 +281,7 @@ void WHEEL_SpeedControlUpdate(uint32_t elapsed_ticks)
     s_telemetry.left_native_delta = (float)left_delta;
     s_telemetry.right_native_delta = (float)right_delta;
     s_telemetry.elapsed_ticks = (float)elapsed_ticks;
+    // 用定长环形窗口维护双轮霍尔增量滑动和。
     s_left_delta_sum -= s_left_delta_history[s_delta_history_index];
     s_right_delta_sum -= s_right_delta_history[s_delta_history_index];
     s_left_delta_history[s_delta_history_index] = left_delta_per_tick;
@@ -285,6 +295,7 @@ void WHEEL_SpeedControlUpdate(uint32_t elapsed_ticks)
         ++s_delta_history_count;
     }
 
+    // 滑动平均结果换算为统一的x1霍尔计数每秒，并修正反馈方向。
     s_telemetry.left_feedback_cps =
         (s_left_delta_sum / (float)s_delta_history_count /
             WHEEL_SPEED_CONTROL_PERIOD_S) *
@@ -296,6 +307,7 @@ void WHEEL_SpeedControlUpdate(uint32_t elapsed_ticks)
         WHEEL_SPEED_RIGHT_FEEDBACK_SIGN /
         (float)MG513X_GetHallDecodeMultiplier(MG513X_MOTOR_RIGHT);
 
+    // 使能时执行双轮独立PID，失能时保持软件输出为零。
     if (s_telemetry.enabled)
     {
         s_telemetry.left_output = WHEEL_CalculateOutput(

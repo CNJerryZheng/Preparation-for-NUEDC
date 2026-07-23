@@ -68,6 +68,7 @@ volatile int16_t g_vision_center_y = 0;
  */
 static void COMMUNICATION_ResetParser(COMMUNICATION_Parser_t *parser)
 {
+    // 丢弃未完成帧并重新等待第一个包头字节。
     parser->state = COMMUNICATION_PARSE_HEADER_1;
     parser->command = 0U;
     parser->length = 0U;
@@ -85,6 +86,7 @@ static void COMMUNICATION_ResetParser(COMMUNICATION_Parser_t *parser)
 static bool COMMUNICATION_ParseByte(
     COMMUNICATION_Parser_t *parser, uint8_t data)
 {
+    // 状态机逐字节解析，避免在串口中断中执行完整协议业务。
     switch (parser->state)
     {
     case COMMUNICATION_PARSE_HEADER_1:
@@ -101,6 +103,7 @@ static bool COMMUNICATION_ParseByte(
         }
         else
         {
+            // 当前字节仍为首包头时直接保留同步，否则完全重新找包头。
             parser->state = (data == COMMUNICATION_FRAME_HEADER_1) ?
                 COMMUNICATION_PARSE_HEADER_2 :
                 COMMUNICATION_PARSE_HEADER_1;
@@ -119,6 +122,7 @@ static bool COMMUNICATION_ParseByte(
         parser->payload_index = 0U;
         if (parser->length > COMMUNICATION_MAX_PAYLOAD_LENGTH)
         {
+            // 非法长度可能造成数组越界，因此立即丢弃整帧。
             ++g_protocol_error_count;
             COMMUNICATION_ResetParser(parser);
         }
@@ -143,6 +147,7 @@ static bool COMMUNICATION_ParseByte(
     {
         const bool valid = data == parser->checksum;
 
+        // 无论校验是否通过，当前帧结束后都回到包头搜索状态。
         if (!valid)
         {
             ++g_protocol_error_count;
@@ -179,6 +184,7 @@ static void COMMUNICATION_HandleProgress(
     uint8_t frame[7];
     uint16_t progress;
 
+    // 只接受固定命令字和两字节进度载荷。
     if ((parser->command != COMMUNICATION_COMMAND_PROGRESS) ||
         (parser->length != 2U))
     {
@@ -188,11 +194,13 @@ static void COMMUNICATION_HandleProgress(
 
     progress = (uint16_t)parser->payload[0] |
         ((uint16_t)parser->payload[1] << 8U);
+    // 协议满量程为10000，异常上位机数据按100%处理。
     if (progress > 10000U)
     {
         progress = 10000U;
     }
 
+    // 保存本地进度后重组标准帧并转发给树莓派。
     g_vehicle_progress = progress;
     ++g_progress_frame_count;
     frame[0] = COMMUNICATION_FRAME_HEADER_1;
@@ -212,6 +220,7 @@ static void COMMUNICATION_HandleProgress(
 static void COMMUNICATION_HandleVision(
     const COMMUNICATION_Parser_t *parser)
 {
+    // 视觉帧载荷固定为有效标志和四个小端有符号坐标。
     if ((parser->command != COMMUNICATION_COMMAND_VISION) ||
         (parser->length != 9U))
     {
@@ -219,6 +228,7 @@ static void COMMUNICATION_HandleVision(
         return;
     }
 
+    // 保存原始视觉量用于调试，并把激光坐标提交给云台控制层。
     g_vision_ok = parser->payload[0];
     g_vision_laser_x = COMMUNICATION_ReadInt16(&parser->payload[1]);
     g_vision_laser_y = COMMUNICATION_ReadInt16(&parser->payload[3]);
@@ -254,6 +264,7 @@ void COMMUNICATION_ServiceProcess(void)
 {
     uint8_t data;
 
+    // UART2 只接收底盘进度，并把完整有效帧转发给树莓派。
     while (BSP_UART_MspaReadByte(&data))
     {
         if (COMMUNICATION_ParseByte(&s_mspa_parser, data))
@@ -262,6 +273,7 @@ void COMMUNICATION_ServiceProcess(void)
         }
     }
 
+    // UART3 接收树莓派视觉目标，并提交给云台位置闭环。
     while (BSP_UART_RpiReadByte(&data))
     {
         if (COMMUNICATION_ParseByte(&s_rpi_parser, data))

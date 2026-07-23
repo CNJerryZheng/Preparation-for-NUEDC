@@ -112,6 +112,7 @@ static void GIMBAL_UpdateOneAxis(
     float velocity_alpha;
     bool positive;
 
+    // 读取最新多圈位置，并对离散差分速度进行一阶低通滤波。
     axis->position = GIMBAL_DeviceGetEncoderCount(axis->axis);
     velocity_alpha = (float)elapsed_ms /
         (GIMBAL_VELOCITY_FILTER_TIME_CONSTANT_MS + (float)elapsed_ms);
@@ -122,6 +123,7 @@ static void GIMBAL_UpdateOneAxis(
     axis->last_position = axis->position;
     error = axis->target - (float)axis->position;
 
+    // 进入位置死区后逐步降频至零，避免目标附近反复换向抖动。
     if (GIMBAL_Abs(error) <= GIMBAL_POSITION_DEADBAND_COUNTS)
     {
         axis->integral = 0.0f;
@@ -131,6 +133,7 @@ static void GIMBAL_UpdateOneAxis(
     }
     else
     {
+        // 死区外执行带积分限幅和速度阻尼的位置闭环。
         axis->integral = GIMBAL_Clamp(axis->integral +
                 (error * (float)elapsed_ms * 0.001f),
             -GIMBAL_POSITION_INTEGRAL_LIMIT,
@@ -141,6 +144,7 @@ static void GIMBAL_UpdateOneAxis(
         requested_hz = GIMBAL_Clamp(requested_hz,
             -GIMBAL_MAX_STEP_FREQUENCY_HZ,
             GIMBAL_MAX_STEP_FREQUENCY_HZ);
+        // D36A 在过低频率下可能无法可靠起步，因此补偿到最低运行频率。
         if ((requested_hz > 0.0f) &&
             (requested_hz < GIMBAL_MIN_STEP_FREQUENCY_HZ))
         {
@@ -157,6 +161,7 @@ static void GIMBAL_UpdateOneAxis(
     }
 
     positive = axis->command_step_hz >= 0.0f;
+    // 只封锁朝已触发限位的方向，反方向仍可退出限位。
     if (GIMBAL_DeviceIsDirectionBlocked(axis->axis, positive))
     {
         axis->command_step_hz = 0.0f;
@@ -166,6 +171,7 @@ static void GIMBAL_UpdateOneAxis(
     }
 
     output_hz = GIMBAL_Abs(axis->command_step_hz);
+    // 斜坡减速阶段低于最低频率时，根据位置误差决定停止或维持最低频率。
     if (output_hz < GIMBAL_MIN_STEP_FREQUENCY_HZ)
     {
         if (GIMBAL_Abs(error) <= GIMBAL_POSITION_DEADBAND_COUNTS)
@@ -215,6 +221,7 @@ void GIMBAL_AxisInit(void)
 void GIMBAL_AxisSetVisionTarget(
     bool valid, int16_t laser_x, int16_t laser_y)
 {
+    // 目标失效时立即保持当前位置，避免继续追踪旧坐标。
     if (!valid)
     {
         s_vision_valid = false;
@@ -223,6 +230,7 @@ void GIMBAL_AxisSetVisionTarget(
         return;
     }
 
+    // 将图像坐标偏差转换为相对当前位置的编码器目标。
     s_yaw.target = GIMBAL_Clamp(
         (float)s_yaw.position +
             ((float)(laser_x - 320) * GIMBAL_YAW_COUNTS_PER_PIXEL *
@@ -240,11 +248,13 @@ void GIMBAL_AxisSetVisionTarget(
 /** @copydoc GIMBAL_AxisBeginAngleFollow */
 bool GIMBAL_AxisBeginAngleFollow(void)
 {
+    // 绝对位置尚未同步时不能建立可靠的相对跟随零点。
     if (!s_feedback_ready)
     {
         return false;
     }
 
+    // 记录当前两轴位置，使 WT901 后续角度变化成为相对目标。
     s_follow_yaw_origin = (float)s_yaw.position;
     s_follow_pitch_origin = (float)s_pitch.position;
     s_yaw.target = s_follow_yaw_origin;
@@ -260,11 +270,13 @@ bool GIMBAL_AxisBeginAngleFollow(void)
 void GIMBAL_AxisSetRelativeAngleTarget(
     float yaw_delta_deg, float pitch_delta_deg)
 {
+    // 只接受已完成反馈同步且已建立跟随零点的角度目标。
     if (!s_feedback_ready || !s_follow_origin_valid)
     {
         return;
     }
 
+    // 将相对角度换算为编码器计数，并限制在当前软件行程内。
     s_yaw.target = GIMBAL_Clamp(
         s_follow_yaw_origin +
             (yaw_delta_deg * GIMBAL_ENCODER_COUNTS_PER_DEGREE),
@@ -279,6 +291,7 @@ void GIMBAL_AxisSetRelativeAngleTarget(
 /** @copydoc GIMBAL_AxisHoldCurrentPosition */
 void GIMBAL_AxisHoldCurrentPosition(void)
 {
+    // 用当前反馈覆盖目标，同时清除积分和跟随零点，防止恢复时突然运动。
     s_yaw.target = (float)s_yaw.position;
     s_pitch.target = (float)s_pitch.position;
     s_yaw.integral = 0.0f;
@@ -296,21 +309,25 @@ bool GIMBAL_AxisIsReady(void)
 /** @copydoc GIMBAL_AxisUpdate */
 void GIMBAL_AxisUpdate(uint32_t elapsed_ms)
 {
+    // 无有效节拍时不更新速度差分，避免除零和重复控制。
     if (elapsed_ms == 0U)
     {
         return;
     }
 
     GIMBAL_DeviceUpdate();
+    // 上电阶段等待两轴 PWM 绝对角度完成 A/B 多圈位置对齐。
     if (!s_feedback_ready)
     {
         if (!GIMBAL_DeviceIsFeedbackReady())
         {
+            // 任一轴尚未同步时保持两轴停止，避免以错误位置闭环。
             GIMBAL_DeviceStop(GIMBAL_DEVICE_AXIS_YAW);
             GIMBAL_DeviceStop(GIMBAL_DEVICE_AXIS_PITCH);
             return;
         }
 
+        // 以同步完成时的位置初始化闭环，避免使能瞬间产生位置阶跃。
         s_yaw.position =
             GIMBAL_DeviceGetEncoderCount(GIMBAL_DEVICE_AXIS_YAW);
         s_pitch.position =
@@ -330,6 +347,7 @@ void GIMBAL_AxisUpdate(uint32_t elapsed_ms)
         s_feedback_ready = true;
     }
 
+    // 视觉目标使用独立超时计时，长时间无新帧时自动保持当前位置。
     if (s_vision_age_ms <= (UINT32_MAX - elapsed_ms))
     {
         s_vision_age_ms += elapsed_ms;
@@ -345,6 +363,7 @@ void GIMBAL_AxisUpdate(uint32_t elapsed_ms)
         s_pitch.target = (float)s_pitch.position;
     }
 
+    // 两轴使用相同控制周期分别完成位置闭环。
     GIMBAL_UpdateOneAxis(&s_yaw, elapsed_ms);
     GIMBAL_UpdateOneAxis(&s_pitch, elapsed_ms);
 }

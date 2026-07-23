@@ -16,6 +16,7 @@
  */
 void APP_MSPB_Init(void)
 {
+    // 先完成底层通信和周期节拍初始化，再启动依赖这些资源的业务服务。
     BSP_UART_Init();
     BSP_Timer_Init();
     GIMBAL_TaskInit();
@@ -27,6 +28,7 @@ void APP_MSPB_Init(void)
  */
 void APP_MSPB_Process(void)
 {
+    // 通信服务负责更新外部指令，云台任务随后使用最新指令完成闭环控制。
     COMMUNICATION_ServiceProcess();
     GIMBAL_TaskProcess();
 }

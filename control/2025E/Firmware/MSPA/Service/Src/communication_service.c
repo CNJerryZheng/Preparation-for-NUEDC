@@ -18,6 +18,7 @@
  */
 void COMMUNICATION_ServiceInit(void)
 {
+    // 正式模式始终启用轨迹进度服务，VOFA+仅由编译开关选择。
     TRAJECTORY_ProgressServiceInit();
 #if COMMUNICATION_VOFA_DEBUG_ENABLE
     VOFA_ServiceInit();
@@ -29,6 +30,7 @@ void COMMUNICATION_ServiceInit(void)
  */
 void COMMUNICATION_ServiceProcess(void)
 {
+    // 持续累计并上报底盘进度，调试模式下同时处理在线调参。
     TRAJECTORY_ProgressServiceProcess();
 #if COMMUNICATION_VOFA_DEBUG_ENABLE
     VOFA_ServiceProcess();

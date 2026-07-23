@@ -44,11 +44,13 @@ static bool VOFA_ParseSingleValue(const char *command,
     char *parse_end;
     const char *number_start;
 
+    // 任一输入地址为空时拒绝解析，避免调试命令造成非法访问。
     if ((command == 0) || (prefix == 0) || (value == 0))
     {
         return false;
     }
 
+    // 命令前缀必须完整匹配，随后只解析前缀后的浮点参数。
     prefix_length = strlen(prefix);
     if (strncmp(command, prefix, prefix_length) != 0)
     {
@@ -69,8 +71,10 @@ static void VOFA_ExecuteCommand(const char *command)
     WHEEL_SpeedTelemetry_t telemetry;
     float value;
 
+    // 执行命令前读取当前参数，单项修改时保留其余设定。
     WHEEL_SpeedControlGetTelemetry(&telemetry);
 
+    // STOP关闭循迹、速度闭环和驱动总使能。
     if (strcmp(command, "STOP") == 0)
     {
         g_line_follow_enabled = false;
@@ -81,6 +85,7 @@ static void VOFA_ExecuteCommand(const char *command)
     }
     else if (VOFA_ParseSingleValue(command, "EN=", &value))
     {
+        // EN命令进入独立轮速调试模式，不允许循迹外环同时接管目标。
         const bool enable = value != 0.0f;
         g_line_follow_enabled = false;
         CHASSIS_SetLineFollowEnabled(false);
@@ -89,14 +94,17 @@ static void VOFA_ExecuteCommand(const char *command)
     }
     else if (VOFA_ParseSingleValue(command, "T=", &value))
     {
+        // T命令同时设置左右轮目标速度。
         CHASSIS_SetWheelSpeedTarget(value, value);
     }
     else if (VOFA_ParseSingleValue(command, "TL=", &value))
     {
+        // TL命令只修改左轮目标并保留右轮目标。
         CHASSIS_SetWheelSpeedTarget(value, telemetry.right_target_cps);
     }
     else if (VOFA_ParseSingleValue(command, "TR=", &value))
     {
+        // TR命令只修改右轮目标并保留左轮目标。
         CHASSIS_SetWheelSpeedTarget(telemetry.left_target_cps, value);
     }
     else if (VOFA_ParseSingleValue(command, "KP=", &value))
@@ -124,6 +132,7 @@ static void VOFA_ProcessReceive(void)
 {
     uint8_t data;
 
+    // 按行接收文本命令，回车或换行表示一条命令结束。
     while (BSP_UART_VofaReadByte(&data))
     {
         if ((data == '\r') || (data == '\n'))
@@ -156,11 +165,13 @@ static void VOFA_SendJustFloat(const WHEEL_SpeedTelemetry_t *telemetry)
 {
     float channels[VOFA_CHANNEL_COUNT];
 
+    // 空遥测地址不发送，避免输出无效波形帧。
     if (telemetry == 0)
     {
         return;
     }
 
+    // 通道顺序固定，保证VOFA+工程中的曲线含义不会随运行改变。
     channels[0] = telemetry->left_target_cps;
     channels[1] = telemetry->left_feedback_cps;
     channels[2] = telemetry->left_output;
@@ -175,6 +186,7 @@ static void VOFA_SendJustFloat(const WHEEL_SpeedTelemetry_t *telemetry)
     channels[11] = telemetry->right_native_delta;
     channels[12] = telemetry->elapsed_ticks;
 
+    // JustFloat数据区后追加固定四字节帧尾。
     BSP_UART_VofaWrite((const uint8_t *)channels, sizeof(channels));
     BSP_UART_VofaWrite(s_justfloat_tail, sizeof(s_justfloat_tail));
 }
@@ -195,8 +207,10 @@ void VOFA_ServiceProcess(void)
 {
     WHEEL_SpeedTelemetry_t telemetry;
 
+    // 每次调度先处理下行命令，使新参数立即用于后续控制周期。
     VOFA_ProcessReceive();
     WHEEL_SpeedControlGetTelemetry(&telemetry);
+    // 按轮速更新计数分频到50Hz上传，避免占满调试串口带宽。
     if ((uint32_t)(telemetry.update_count - s_last_send_update_count) >=
         VOFA_SEND_INTERVAL_TICKS)
     {

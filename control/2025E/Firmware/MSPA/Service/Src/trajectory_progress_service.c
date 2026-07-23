@@ -59,17 +59,20 @@ static void TRAJECTORY_UpdateProgressValue(void)
     const float cycle_count = TRAJECTORY_GetCycleCount();
     float scaled_progress;
 
+    // 跨越整周期后先保留一帧100%，避免接收端只看到回绕后的低进度。
     if (s_cycle_complete_pending)
     {
         g_trajectory_progress = TRAJECTORY_PROGRESS_FULL_SCALE;
         return;
     }
+    // 周期距离配置无效时输出零进度，避免浮点除零。
     if (cycle_count <= 0.0f)
     {
         g_trajectory_progress = 0U;
         return;
     }
 
+    // 将当前等效行程线性映射到协议规定的0～10000范围。
     scaled_progress = s_cycle_count *
         (float)TRAJECTORY_PROGRESS_FULL_SCALE / cycle_count;
     if (scaled_progress > (float)TRAJECTORY_PROGRESS_FULL_SCALE)
@@ -86,6 +89,7 @@ static void TRAJECTORY_SendProgressFrame(void)
 {
     uint8_t frame[7];
 
+    // 按AA 55、命令、长度、载荷、异或校验的固定格式组帧。
     frame[0] = TRAJECTORY_FRAME_HEADER_1;
     frame[1] = TRAJECTORY_FRAME_HEADER_2;
     frame[2] = TRAJECTORY_COMMAND_PROGRESS;
@@ -102,6 +106,7 @@ void TRAJECTORY_ProgressServiceInit(void)
 {
     WHEEL_SpeedTelemetry_t telemetry;
 
+    // 从当前霍尔累计值开始计程，防止把上电前的计数差当作有效路程。
     s_last_left_native_count =
         MG513X_GetHallCount(MG513X_MOTOR_LEFT);
     s_last_right_native_count =
@@ -133,10 +138,12 @@ void TRAJECTORY_ProgressServiceProcess(void)
         MG513X_GetHallCount(MG513X_MOTOR_LEFT);
     const int32_t right_native_count =
         MG513X_GetHallCount(MG513X_MOTOR_RIGHT);
+    // 使用无符号差再转回有符号数，保证32位累计计数回绕时差值正确。
     const int32_t left_native_delta = (int32_t)(
         (uint32_t)left_native_count - (uint32_t)s_last_left_native_count);
     const int32_t right_native_delta = (int32_t)(
         (uint32_t)right_native_count - (uint32_t)s_last_right_native_count);
+    // 不论前进或倒车都按实际轮路程累计，并换算回统一的x1霍尔计数。
     const float left_x1_delta = TRAJECTORY_AbsCount(left_native_delta) /
         (float)MG513X_GetHallDecodeMultiplier(MG513X_MOTOR_LEFT);
     const float right_x1_delta = TRAJECTORY_AbsCount(right_native_delta) /
@@ -146,8 +153,10 @@ void TRAJECTORY_ProgressServiceProcess(void)
 
     s_last_left_native_count = left_native_count;
     s_last_right_native_count = right_native_count;
+    // 双轮路程取平均值，减小转弯时单侧轮速差对整车进度的影响。
     s_cycle_count += (left_x1_delta + right_x1_delta) * 0.5f;
 
+    // 支持一次更新跨越多个周期，并标记下一帧先上报100%。
     if ((cycle_count > 0.0f) && (s_cycle_count >= cycle_count))
     {
         do
@@ -158,6 +167,7 @@ void TRAJECTORY_ProgressServiceProcess(void)
     }
 
     WHEEL_SpeedControlGetTelemetry(&telemetry);
+    // 发送频率由轮速控制更新计数分频，避免依赖主循环执行速度。
     if ((telemetry.update_count - s_last_send_update_count) <
         TRAJECTORY_PROGRESS_SEND_INTERVAL_TICKS)
     {
@@ -167,10 +177,10 @@ void TRAJECTORY_ProgressServiceProcess(void)
     s_last_send_update_count = telemetry.update_count;
     TRAJECTORY_UpdateProgressValue();
     TRAJECTORY_SendProgressFrame();
+    // 100%帧发出后清除完成标志，下一帧从回绕后的真实进度继续。
     if (s_cycle_complete_pending)
     {
         s_cycle_complete_pending = false;
         TRAJECTORY_UpdateProgressValue();
     }
 }
-

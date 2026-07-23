@@ -16,6 +16,7 @@
  */
 void APP_MSPA_Init(void)
 {
+    // 先初始化底层串口和控制节拍，再启动依赖硬件资源的底盘业务。
     BSP_UART_Init();
     BSP_Timer_Init();
     CHASSIS_TaskInit();
@@ -27,6 +28,7 @@ void APP_MSPA_Init(void)
  */
 void APP_MSPA_Process(void)
 {
+    // 底盘控制优先消费周期节拍，通信服务随后处理进度上报和可选调试。
     CHASSIS_TaskProcess();
     COMMUNICATION_ServiceProcess();
 }

@@ -39,6 +39,7 @@ static int16_t CHASSIS_ClampDutyPercent(int16_t duty_percent)
  */
 void CHASSIS_ControlInit(void)
 {
+    // 清空所有控制模式和目标后，再初始化电机、循迹与轮速闭环。
     s_left_target_percent = 0;
     s_right_target_percent = 0;
     s_brake_requested = false;
@@ -66,14 +67,17 @@ void CHASSIS_SetEnabled(bool enable)
 void CHASSIS_SetLineFollowEnabled(bool enable)
 {
     s_line_follow_enabled = enable;
+    // 模式切换时清除循迹历史，避免沿用旧的误差和速度斜坡。
     LINE_ControlReset();
     if (enable)
     {
+        // 循迹外环输出轮速目标，因此启用轮速内环并退出独立调速模式。
         s_speed_closed_loop_enabled = false;
         WHEEL_SpeedControlSetEnabled(true);
     }
     else
     {
+        // 关闭循迹时同步关闭轮速内环并释放当前电机目标。
         WHEEL_SpeedControlSetEnabled(false);
         CHASSIS_Stop(false);
     }
@@ -98,6 +102,7 @@ void CHASSIS_SetSpeedClosedLoopEnabled(bool enable)
     WHEEL_SpeedControlSetEnabled(enable);
     if (enable)
     {
+        // 独立轮速调试与循迹模式互斥，防止两个模块同时修改目标。
         s_line_follow_enabled = false;
         LINE_ControlReset();
     }
@@ -195,6 +200,7 @@ void CHASSIS_GetWheelDutyPercent(
 void CHASSIS_ControlUpdate(
     const LINE_Result_t *line, uint32_t elapsed_ticks)
 {
+    // 循迹模式由循迹外环计算双轮速度目标，再交给速度内环。
     if (s_line_follow_enabled)
     {
         float left_target_cps;
@@ -205,8 +211,10 @@ void CHASSIS_ControlUpdate(
         WHEEL_SpeedControlSetTarget(left_target_cps, right_target_cps);
     }
 
+    // 每个有效节拍都更新测速和PID内部状态。
     WHEEL_SpeedControlUpdate(elapsed_ticks);
 
+    // 任一速度闭环模式生效时，用PID输出覆盖手动占空比目标。
     if (s_speed_closed_loop_enabled || s_line_follow_enabled)
     {
         WHEEL_SpeedControlGetOutput(
@@ -214,6 +222,7 @@ void CHASSIS_ControlUpdate(
         s_brake_requested = false;
     }
 
+    // 制动请求优先于普通占空比输出。
     if (s_brake_requested)
     {
         MG513X_Brake(MG513X_MOTOR_LEFT);

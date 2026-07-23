@@ -66,17 +66,21 @@ static float LINE_ControlKeepForward(float speed_cps)
 static void LINE_ControlCalculatePd(float error,
     float *left_cps, float *right_cps)
 {
+    // 偏差越大越主动降低基础速度，为急弯保留更多转向能力。
     float base_speed = LINE_CONTROL_BASE_SPEED_CPS -
         (LINE_ControlAbs(error) * LINE_CONTROL_TURN_SLOWDOWN_CPS);
+    // 比例项决定转向强度，微分项抑制误差快速变化造成的过冲。
     const float derivative = error - s_last_error;
     const float correction = (LINE_CONTROL_KP_CPS * error) +
         (LINE_CONTROL_KD_CPS * derivative);
 
+    // 正常循迹阶段不允许基础速度低于最低前进速度。
     if (base_speed < LINE_CONTROL_MIN_FORWARD_SPEED_CPS)
     {
         base_speed = LINE_CONTROL_MIN_FORWARD_SPEED_CPS;
     }
 
+    // 左右轮使用相反修正量形成差速转向。
     *left_cps = LINE_ControlKeepForward(
         LINE_ControlClamp(base_speed + correction));
     *right_cps = LINE_ControlKeepForward(
@@ -131,11 +135,13 @@ void LINE_ControlCalculate(const LINE_Result_t *line, uint32_t elapsed_ticks,
     float target_left = LINE_CONTROL_BASE_SPEED_CPS;
     float target_right = LINE_CONTROL_BASE_SPEED_CPS;
 
+    // 输出地址无效或没有控制节拍时保持调用方原值。
     if ((left_cps == 0) || (right_cps == 0) || (elapsed_ticks == 0U))
     {
         return;
     }
 
+    // 正常识别黑线时按连续位置误差执行PD差速。
     if ((line != 0) && (line->state == State_OK))
     {
         float position = line->position;
@@ -146,11 +152,13 @@ void LINE_ControlCalculate(const LINE_Result_t *line, uint32_t elapsed_ticks,
     }
     else if ((line != 0) && (line->state == State_Lose_Left))
     {
+        // 从左侧丢线时按最后方向原地搜索，外侧轮保持较高速度。
         target_left = LINE_CONTROL_LOST_INNER_SPEED_CPS;
         target_right = LINE_CONTROL_LOST_OUTER_SPEED_CPS;
     }
     else if ((line != 0) && (line->state == State_Lose_Right))
     {
+        // 从右侧丢线时采用与左侧丢线镜像的搜索动作。
         target_left = LINE_CONTROL_LOST_OUTER_SPEED_CPS;
         target_right = LINE_CONTROL_LOST_INNER_SPEED_CPS;
     }
@@ -158,9 +166,11 @@ void LINE_ControlCalculate(const LINE_Result_t *line, uint32_t elapsed_ticks,
         (line->state == State_Lose_Unknown) ||
         (line->state == State_Unknown)))
     {
+        // 状态暂时不可信时沿用最近有效误差，避免突然停车或随机转向。
         LINE_ControlCalculatePd(s_last_error, &target_left, &target_right);
     }
 
+    // 最终目标先做绝对限幅，再按控制周期执行速度斜坡。
     target_left = LINE_ControlClamp(target_left);
     target_right = LINE_ControlClamp(target_right);
     s_last_left_cps = LINE_ControlSlew(

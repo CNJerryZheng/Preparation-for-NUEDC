@@ -54,6 +54,7 @@ static float IMU_FollowAbs(float value)
  */
 static float IMU_FollowWrapDelta(float delta_deg)
 {
+    // WT901 航向角跨越正负180°时选择物理上更短的连续转角。
     if (delta_deg > 180.0f)
     {
         delta_deg -= 360.0f;
@@ -88,11 +89,13 @@ static uint32_t IMU_FollowAccumulateTime(
  */
 static bool IMU_FollowBeginReference(void)
 {
+    // 编码器未完成绝对位置同步时禁止建立跟随参考点。
     if (!GIMBAL_AxisBeginAngleFollow())
     {
         return false;
     }
 
+    // 当前 WT901 姿态和云台位置共同作为本次跟随的相对零点。
     s_last_yaw_deg = g_wt901_angle.yaw;
     s_last_pitch_deg = g_wt901_angle.pitch;
     s_unwrapped_yaw_deg = 0.0f;
@@ -128,11 +131,13 @@ void IMU_FollowServiceProcess(uint32_t elapsed_ms)
 #if IMU_FOLLOW_ENABLE
     const uint32_t current_update_count = g_wt901_angle_update_count;
 
+    // 没有新的控制节拍时不重复计算同一帧数据。
     if (elapsed_ms == 0U)
     {
         return;
     }
 
+    // 两轴反馈未就绪时只跟踪最新帧号，不允许发布运动目标。
     if (!GIMBAL_AxisIsReady())
     {
         g_wt901_follow_active = 0U;
@@ -141,6 +146,7 @@ void IMU_FollowServiceProcess(uint32_t elapsed_ms)
         return;
     }
 
+    // 帧序号变化表示收到新的角度帧，可以更新相对姿态目标。
     if (current_update_count != s_last_angle_update_count)
     {
         const uint32_t sample_elapsed_ms =
@@ -151,12 +157,14 @@ void IMU_FollowServiceProcess(uint32_t elapsed_ms)
         float pitch_target_deg;
 
         s_last_angle_update_count = current_update_count;
+        // 首个有效角度帧只建立零点，下一帧开始计算相对转角。
         if (g_wt901_follow_active == 0U)
         {
             (void)IMU_FollowBeginReference();
             return;
         }
 
+        // 累计相邻帧最短角度差，使 Yaw 能连续跨越正负180°。
         s_unwrapped_yaw_deg += IMU_FollowWrapDelta(
             g_wt901_angle.yaw - s_last_yaw_deg);
         s_unwrapped_pitch_deg += IMU_FollowWrapDelta(
@@ -164,6 +172,7 @@ void IMU_FollowServiceProcess(uint32_t elapsed_ms)
         s_last_yaw_deg = g_wt901_angle.yaw;
         s_last_pitch_deg = g_wt901_angle.pitch;
 
+        // 一阶低通抑制 WT901 静止噪声直接传递到步进电机。
         filter_alpha = (float)sample_elapsed_ms /
             (IMU_FOLLOW_FILTER_TIME_CONSTANT_MS +
              (float)sample_elapsed_ms);
@@ -174,18 +183,21 @@ void IMU_FollowServiceProcess(uint32_t elapsed_ms)
         g_wt901_follow_age_ms = 0U;
 
 #if IMU_FOLLOW_YAW_ENABLE
+        // 比例系数决定跟随倍率，符号参数用于统一传感器与电机正方向。
         yaw_target_deg = g_wt901_follow_yaw_deg *
             IMU_FOLLOW_YAW_SCALE * IMU_FOLLOW_YAW_SIGN;
 #else
         yaw_target_deg = 0.0f;
 #endif
 #if IMU_FOLLOW_PITCH_ENABLE
+        // Pitch 与 Yaw 独立配置，便于按机构方向分别校正。
         pitch_target_deg = g_wt901_follow_pitch_deg *
             IMU_FOLLOW_PITCH_SCALE * IMU_FOLLOW_PITCH_SIGN;
 #else
         pitch_target_deg = 0.0f;
 #endif
 
+        // 只有目标变化超过死区才提交，防止静止时频繁刷新目标。
         if ((IMU_FollowAbs(
                 yaw_target_deg - s_published_yaw_deg) >=
                 IMU_FOLLOW_TARGET_DEADBAND_DEG) ||
@@ -201,6 +213,7 @@ void IMU_FollowServiceProcess(uint32_t elapsed_ms)
         return;
     }
 
+    // 没有新帧时累计数据年龄，超时后保持当前位置并退出本次跟随。
     g_wt901_follow_age_ms = IMU_FollowAccumulateTime(
         g_wt901_follow_age_ms, elapsed_ms);
     if ((g_wt901_follow_active != 0U) &&

@@ -28,6 +28,7 @@ static void GIMBAL_TaskUpdateDebugStatus(void)
     MT6816_GetStatus(MT6816_AXIS_YAW, &yaw_encoder);
     MT6816_GetStatus(MT6816_AXIS_PITCH, &pitch_encoder);
 
+    // 汇总姿态源、编码器和控制器状态，避免 Live Watch 分散读取多个模块。
     g_gimbal_debug.wt901_yaw_deg = g_wt901_angle.yaw;
     g_gimbal_debug.wt901_pitch_deg = g_wt901_angle.pitch;
     g_gimbal_debug.wt901_angle_frames =
@@ -71,8 +72,10 @@ static void GIMBAL_TaskUpdateDebugStatus(void)
  */
 void GIMBAL_TaskInit(void)
 {
+    // 先初始化云台闭环，确保 WT901 数据到达前驱动器保持在安全状态。
     GIMBAL_AxisInit();
 
+    // WT901 初始化成功后才开放串口数据接收。
     if (WT901_Init() == WT901_OK)
     {
         (void)WT901_StartReceive();
@@ -88,6 +91,7 @@ void GIMBAL_TaskProcess(void)
 {
     const uint32_t elapsed_ticks = BSP_Timer_TakeGimbalTicks();
 
+    // 每次调度清空已接收的完整帧，只保留最新姿态供跟随业务使用。
     while (WT901_AnalyzeData())
     {
     }
@@ -96,6 +100,7 @@ void GIMBAL_TaskProcess(void)
     {
         return;
     }
+    // 先由业务层生成目标，再由控制层根据编码器反馈输出 STEP。
     IMU_FollowServiceProcess(elapsed_ticks);
     GIMBAL_AxisUpdate(elapsed_ticks);
     GIMBAL_TaskUpdateDebugStatus();
